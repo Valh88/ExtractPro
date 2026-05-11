@@ -1,0 +1,76 @@
+unit GameConfig;
+
+{$mode objfpc}{$H+}
+{$modeswitch advancedrecords}
+
+interface
+
+uses
+  SysUtils, Classes, help_types, EntityTypes;
+
+type
+  { Глобальный конфиг рейда }
+  TGameConfig = record
+    { Время }
+    RaidTime: Single;          // макс. дли��ельность рейда (сек)
+    ExtractionTime: Single;    // время экстракции (сек)
+
+    { Игроки }
+    MaxPlayers: Integer;
+    PlayerBaseHealth: Single;
+    PlayerBaseSpeed: Single;
+    PlayerBaseDamage: Single;
+    PlayerAttackRange: Single;
+
+    { Враги }
+    EnemyBaseHealth: Single;
+    EnemyBaseSpeed: Single;
+    EnemyBaseDamage: Single;
+    EnemyDetectionRange: Single;
+    EnemyAttackRange: Single;
+
+    { Подземелье }
+    RoomCount: Integer;
+    ConnectionsPerRoom: Integer;
+    RoomSize: Single;
+
+    { Спавн }
+    SpawnWaveCount: Integer;
+    SpawnWaveInterval: Single;
+
+    { Броня (формула: урон * (1 - Armor / (Armor + ArmorFormulaDiv))) }
+    ArmorFormulaDiv: Single;
+
+    procedure Init;
+  end;
+
+var
+  GlobalConfig: TGameConfig;
+
+implementation
+
+procedure TGameConfig.Init;
+begin
+  RaidTime := 600;
+  ExtractionTime := 5;
+  MaxPlayers := 8;
+  PlayerBaseHealth := 100;
+  PlayerBaseSpeed := 5;
+  PlayerBaseDamage := 15;
+  PlayerAttackRange := 2;
+  EnemyBaseHealth := 30;
+  EnemyBaseSpeed := 3;
+  EnemyBaseDamage := 10;
+  EnemyDetectionRange := 8;
+  EnemyAttackRange := 1.5;
+  RoomCount := 12;
+  ConnectionsPerRoom := 2;
+  RoomSize := 18;
+  SpawnWaveCount := 5;
+  SpawnWaveInterval := 2;
+  ArmorFormulaDiv := 100;
+end;
+
+initialization
+  GlobalConfig.Init;
+end.

@@ -1,0 +1,4 @@
+backup
+.vscode
+*.lps
+logic/packagefiles.xml

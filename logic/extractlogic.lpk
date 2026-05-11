@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="5">
+    <Name Value="ExtractLogic"/>
+    <Type Value="RunAndDesignTime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Files>
+      <Item>
+        <Filename Value="src/interfaces.pas"/>
+        <UnitName Value="Interfaces"/>
+      </Item>
+      <Item>
+        <Filename Value="src/EntityTypes.pas"/>
+        <UnitName Value="EntityTypes"/>
+      </Item>
+      <Item>
+        <Filename Value="src/WorldTypes.pas"/>
+        <UnitName Value="WorldTypes"/>
+      </Item>
+      <Item>
+        <Filename Value="src/GameWorld.pas"/>
+        <UnitName Value="GameWorld"/>
+      </Item>
+      <Item>
+        <Filename Value="src/GameConfig.pas"/>
+        <UnitName Value="GameConfig"/>
+      </Item>
+      <Item>
+        <Filename Value="src/castle_bridges/EntityBridge.pas"/>
+        <UnitName Value="EntityBridge"/>
+      </Item>
+      <Item>
+        <Filename Value="src/castle_bridges/WorldBridge.pas"/>
+        <UnitName Value="WorldBridge"/>
+      </Item>
+      <Item>
+        <Filename Value="src/EventBus.pas"/>
+        <UnitName Value="EventBus"/>
+      </Item>
+      <Item>
+        <Filename Value="src/help_types.pas"/>
+        <UnitName Value="help_types"/>
+      </Item>
+      <Item>
+        <Filename Value="src/castle_bridges/EntityManager.pas"/>
+        <UnitName Value="EntityManager"/>
+      </Item>
+      <Item>
+        <Filename Value="../Extract/code/behaviours/charactercontrollerbehavior.pas"/>
+        <UnitName Value="CharacterControllerBehavior"/>
+      </Item>
+      <Item>
+        <Filename Value="../Extract/code/behaviours/firstpersoncamerabehavior.pas"/>
+        <UnitName Value="FirstPersonCameraBehavior"/>
+      </Item>
+      <Item>
+        <Filename Value="../Extract/code/behaviours/MouseLookOverlay.pas"/>
+        <UnitName Value="MouseLookOverlay"/>
+      </Item>
+      <Item>
+        <Filename Value="../Extract/code/behaviours/TouchMoveControl.pas"/>
+        <UnitName Value="TouchMoveControl"/>
+      </Item>
+    </Files>
+    <RequiredPkgs>
+      <Item>
+        <PackageName Value="castle_engine_base"/>
+      </Item>
+      <Item>
+        <PackageName Value="FCL"/>
+      </Item>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

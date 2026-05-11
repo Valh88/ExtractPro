@@ -1,0 +1,7 @@
+program ExactExample;
+
+
+begin
+
+end.
+

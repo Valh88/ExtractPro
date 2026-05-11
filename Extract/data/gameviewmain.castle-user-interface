@@ -1,0 +1,146 @@
+{
+  "$$ClassName" : "TCastleViewport",
+  "Background" : "Background",
+  "Camera" : "Camera1",
+  "FullSize" : true,
+  "Items" : {
+    "$$ClassName" : "TCastleRootTransform",
+    "PhysicsProperties" : {
+      "$$ClassName" : "TPhysicsProperties",
+      "LayerCollisions" : {
+        "$$ClassName" : "TCastleLayerCollisions"
+      },
+      "LayerNames" : {
+        "$$ClassName" : "TCastleLayerNames"
+      }
+    },
+    "$Children" : [
+      {
+        "$$ClassName" : "TCastleCamera",
+        "Name" : "Camera1",
+        "Orthographic" : {
+          "$$ClassName" : "TCastleOrthographic"
+        },
+        "Perspective" : {
+          "$$ClassName" : "TCastlePerspective"
+        },
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "Y" : 2.0000000000000000E+000,
+          "Z" : 7.1707711219787598E+000
+        }
+      },
+      {
+        "$$ClassName" : "TCastlePointLight",
+        "Name" : "PointLight1",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : 4.0000000000000000E+000,
+          "Y" : 5.3340244293212891E+000,
+          "Z" : 1.0000000000000000E+000
+        }
+      },
+      {
+        "$$ClassName" : "TCastlePlane",
+        "CastShadows" : false,
+        "Name" : "Plane1",
+        "RenderOptions" : {
+          "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+        },
+        "SizePersistent" : {
+          "$$ClassName" : "TCastleVector2Persistent",
+          "X" : 1.0000000000000000E+001,
+          "Y" : 1.0000000000000000E+001
+        },
+        "$Behaviors" : [
+          {
+            "$$ClassName" : "TCastlePlaneCollider",
+            "Name" : "PlaneCollider1"
+          },
+          {
+            "$$ClassName" : "TCastleRigidBody",
+            "Dynamic" : false,
+            "Gravity" : false,
+            "Name" : "RigidBody1"
+          }
+        ]
+      },
+      {
+        "$$ClassName" : "TCastleCylinder",
+        "Name" : "Cylinder1",
+        "RenderOptions" : {
+          "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+        },
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : 3.9179162979125977E+000,
+          "Y" : 1.0490036010742187E+000,
+          "Z" : -2.1086997985839844E+000
+        }
+      }
+    ]
+  },
+  "Name" : "Viewport1",
+  "$NonVisualComponents" : [
+    {
+      "$$ClassName" : "TCastleBackground",
+      "Name" : "Background"
+    }
+  ],
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleLabel",
+      "Name" : "LabelFps",
+      "Text" : [
+        "LabelFps"
+      ],
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.2500000000000000E+003,
+        "Y" : 8.8000000000000000E+002
+      }
+    }
+  ],
+  "InternalDesignCamera" : {
+    "$$ClassName" : "TCastleCamera",
+    "Name" : "",
+    "Orthographic" : {
+      "$$ClassName" : "TCastleOrthographic"
+    },
+    "Perspective" : {
+      "$$ClassName" : "TCastlePerspective"
+    },
+    "RotationPersistent" : {
+      "$$ClassName" : "TCastleVector4RotationPersistent",
+      "W" : 1.7627462148666382E+000,
+      "X" : -1.6814714670181274E-001,
+      "Y" : 9.6632879972457886E-001,
+      "Z" : 1.9476988911628723E-001
+    },
+    "ScalePersistent" : {
+      "$$ClassName" : "TCastleVector3Persistent",
+      "Y" : 1.0000001192092896E+000,
+      "Z" : 1.0000001192092896E+000
+    },
+    "TranslationPersistent" : {
+      "$$ClassName" : "TCastleVector3Persistent",
+      "X" : 1.3263154029846191E+001,
+      "Y" : 3.3709428310394287E+000,
+      "Z" : -1.5168356895446777E+000
+    }
+  },
+  "InternalDesignNavigations[dnFly]" : {
+    "$$ClassName" : "TCastleWalkNavigationDesign",
+    "Name" : ""
+  },
+  "InternalDesignNavigations[dnExamine]" : {
+    "$$ClassName" : "TCastleExamineNavigationDesign",
+    "Exists" : false,
+    "Name" : ""
+  },
+  "InternalDesignNavigations[dn2D]" : {
+    "$$ClassName" : "TCastle2DNavigationDesign",
+    "Exists" : false,
+    "Name" : ""
+  }
+}
