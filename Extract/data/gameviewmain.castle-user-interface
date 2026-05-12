@@ -71,7 +71,7 @@
       },
       {
         "$$ClassName" : "TCastleDirectionalLight",
-        "Name" : "DirectionalLight1",
+        "Name" : "Son",
         "RotationPersistent" : {
           "$$ClassName" : "TCastleVector4RotationPersistent",
           "W" : 5.4849767684936523E-001,

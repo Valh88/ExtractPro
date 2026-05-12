@@ -5,17 +5,11 @@ unit GameWorld;
 interface
 
 uses
-  SysUtils, Classes, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus;
+  SysUtils, Classes, Contnrs, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
+  WorldSystemBase, AISystem, CombatSystem, PvPSystem, ExtractionSystem, SpawnerSystem;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
-
-  TSpawnWave = record
-    EnemyCount: Integer;
-    Interval: Single;
-    Timer: Single;
-    RoomIndex: Integer;
-  end;
 
   TGameWorld = class
   private
@@ -24,21 +18,14 @@ type
     FNextEntityId: TEntityId;
     FRaidTime: Single;
     FMaxRaidTime: Single;
-    FExtractTime: Single;
-    FSpawnWaves: array of TSpawnWave;
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
+    FSystems: TObjectList;
+    FSpawner: TSpawnerSystem;
 
     function AllocateEntityId: TEntityId;
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
-    procedure UpdateAI(const SecondsPassed: Single);
-    procedure UpdateCombat(const SecondsPassed: Single);
-    procedure UpdatePvP(const SecondsPassed: Single);
-    procedure UpdateExtraction(const SecondsPassed: Single);
-    procedure UpdateSpawner(const SecondsPassed: Single);
-    function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
-    function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
   public
     constructor Create(AWorld: IGameWorld; AFactory: IEntityFactory);
     destructor Destroy; override;
@@ -56,7 +43,13 @@ type
     function GetData: TGameWorldData;
     procedure SetEntityVisual(const AEntityId: TEntityId; const Visual: IGameEntity);
     procedure RemoveEntity(const AEntityId: TEntityId);
+
+    { Доступ для систем }
     property Data: TGameWorldData read FData;
+    function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
+    function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
+    procedure QueueEvent(const Ev: TGameEvent);
+
     property Phase: TRaidPhase read FPhase;
     property RaidTime: Single read FRaidTime;
     property World: IGameWorld read FWorld write FWorld;
@@ -76,7 +69,14 @@ begin
   FNextEntityId := 1;
   FPhase := rpExploring;
   FMaxRaidTime := GlobalConfig.RaidTime;
-  FExtractTime := GlobalConfig.ExtractionTime;
+
+  FSystems := TObjectList.Create(False);
+  FSystems.Add(TAISystem.Create(Self));
+  FSystems.Add(TCombatSystem.Create(Self));
+  FSystems.Add(TPvPSystem.Create(Self));
+  FSystems.Add(TExtractionSystem.Create(Self));
+  FSpawner := TSpawnerSystem.Create(Self);
+  FSystems.Add(FSpawner);
 end;
 
 destructor TGameWorld.Destroy;
@@ -84,6 +84,7 @@ begin
   FData.Free;
   FWorld := nil;
   FFactory := nil;
+  FSystems.Free;
   inherited;
 end;
 
@@ -199,15 +200,15 @@ begin
     Exit;
   end;
 
-  UpdateSpawner(SecondsPassed);
-  UpdateAI(SecondsPassed);
-  UpdateCombat(SecondsPassed);
-  UpdatePvP(SecondsPassed);
-
-  if FPhase = rpExtracting then
-    UpdateExtraction(SecondsPassed);
+  for i := 0 to FSystems.Count - 1 do
+    TWorldSystemBase(FSystems[i]).Update(SecondsPassed);
 
   GameEventBus.Flush;
+end;
+
+procedure TGameWorld.QueueEvent(const Ev: TGameEvent);
+begin
+  GameEventBus.Queue(Ev);
 end;
 
 function TGameWorld.AddPlayer: Integer;
@@ -276,15 +277,8 @@ begin
 end;
 
 procedure TGameWorld.SpawnWave(const RoomIndex, Count: Integer; const Interval: Single);
-var
-  W: TSpawnWave;
 begin
-  W.EnemyCount := Count;
-  W.Interval := Interval;
-  W.Timer := 0;
-  W.RoomIndex := RoomIndex;
-  SetLength(FSpawnWaves, Length(FSpawnWaves) + 1);
-  FSpawnWaves[High(FSpawnWaves)] := W;
+  FSpawner.AddWave(RoomIndex, Count, Interval);
 end;
 
 procedure TGameWorld.GenerateDungeon;
@@ -400,232 +394,6 @@ begin
   end;
   if Result <> -1 then
     Dist := Sqrt(Dist);
-end;
-
-procedure TGameWorld.UpdateAI(const SecondsPassed: Single);
-var
-  i, PlayerIdx: Integer;
-  PlayerDist: Single;
-  EnemyPos: TVector2;
-  PlayerPos: TVector2;
-begin
-  for i := 0 to High(FData.Enemies) do
-  begin
-    if not FData.Enemies[i].Stats.IsAlive then
-      Continue;
-    if FData.Enemies[i].Visual = nil then
-      Continue;
-    EnemyPos := FData.Enemies[i].Visual.Position;
-
-    PlayerIdx := FindClosestPlayer(EnemyPos, PlayerDist);
-    if PlayerIdx = -1 then
-      Continue;
-
-    case FData.Enemies[i].AIState of
-      asIdle:
-        if PlayerDist <= FData.Enemies[i].DetectionRange then
-          FData.Enemies[i].AIState := asChase;
-
-      asPatrol:
-        if PlayerDist <= FData.Enemies[i].DetectionRange then
-          FData.Enemies[i].AIState := asChase;
-
-      asChase:
-      begin
-        if PlayerDist > FData.Enemies[i].DetectionRange * 1.5 then
-        begin
-          FData.Enemies[i].AIState := asIdle;
-          Continue;
-        end;
-
-        if PlayerDist <= FData.Enemies[i].AttackRange then
-        begin
-          FData.Enemies[i].AIState := asAttack;
-          Continue;
-        end;
-
-        if FData.Players[PlayerIdx].Visual <> nil then
-        begin
-          PlayerPos := FData.Players[PlayerIdx].Visual.Position;
-          EnemyPos.X := EnemyPos.X + (PlayerPos.X - EnemyPos.X) / PlayerDist *
-            FData.Enemies[i].Stats.Speed * SecondsPassed;
-          EnemyPos.Y := EnemyPos.Y + (PlayerPos.Y - EnemyPos.Y) / PlayerDist *
-            FData.Enemies[i].Stats.Speed * SecondsPassed;
-          FData.Enemies[i].Visual.Position := EnemyPos;
-        end;
-      end;
-
-      asAttack:
-      begin
-        if PlayerDist > FData.Enemies[i].AttackRange * 1.2 then
-          FData.Enemies[i].AIState := asChase;
-      end;
-
-      asDead:
-        { ничего }
-    end;
-  end;
-end;
-
-procedure TGameWorld.UpdateCombat(const SecondsPassed: Single);
-var
-  i, PlayerIdx: Integer;
-  PlayerDist: Single;
-  DamageInfo: TDamageInfo;
-  AliveCount: Integer;
-  E: TGameEvent;
-  EnemyPos: TVector2;
-begin
-  for i := 0 to High(FData.Enemies) do
-  begin
-    if FData.Enemies[i].AIState <> asAttack then
-      Continue;
-    if not FData.Enemies[i].Stats.IsAlive then
-      Continue;
-    if FData.Enemies[i].Visual = nil then
-      Continue;
-
-    EnemyPos := FData.Enemies[i].Visual.Position;
-    PlayerIdx := FindClosestPlayer(EnemyPos, PlayerDist);
-    if PlayerIdx = -1 then
-      Continue;
-
-    DamageInfo.Amount := FData.Enemies[i].Damage * SecondsPassed;
-    DamageInfo.DamageType := dtPhysical;
-    DamageInfo.SourceId := FData.Enemies[i].Id;
-    FData.Players[PlayerIdx].Stats.TakeDamage(DamageInfo);
-
-    if not FData.Players[PlayerIdx].Stats.IsAlive then
-    begin
-      FData.Players[PlayerIdx].Inventory.Free;
-      FData.Players[PlayerIdx].Status := psDead;
-      E.EventType := gePlayerDied;
-      E.EntityId := FData.Players[PlayerIdx].Id;
-      E.SourceId := FData.Enemies[i].Id;
-      GameEventBus.Queue(E);
-    end
-    else
-    begin
-      E.EventType := gePlayerDamaged;
-      E.EntityId := FData.Players[PlayerIdx].Id;
-      E.SourceId := FData.Enemies[i].Id;
-      E.Amount := DamageInfo.Amount;
-      GameEventBus.Queue(E);
-    end;
-  end;
-  AliveCount := 0;
-  for i := 0 to High(FData.Enemies) do
-  begin
-    if FData.Enemies[i].Stats.IsAlive then
-    begin
-      if AliveCount <> i then
-        FData.Enemies[AliveCount] := FData.Enemies[i];
-      Inc(AliveCount);
-    end
-    else
-    begin
-      FData.Enemies[i].LootTable := nil;
-    end;
-  end;
-  SetLength(FData.Enemies, AliveCount);
-end;
-
-procedure TGameWorld.UpdatePvP(const SecondsPassed: Single);
-var
-  i, TargetIdx: Integer;
-  TargetDist: Single;
-  DamageInfo: TDamageInfo;
-  E: TGameEvent;
-  MyPos: TVector2;
-begin
-  for i := 0 to High(FData.Players) do
-  begin
-    if FData.Players[i].Status <> psInRaid then
-      Continue;
-    if FData.Players[i].Visual = nil then
-      Continue;
-
-    MyPos := FData.Players[i].Visual.Position;
-    TargetIdx := FindAlivePlayer(MyPos, FData.Players[i].Id, TargetDist);
-    if TargetIdx = -1 then
-      Continue;
-    if TargetDist > FData.Players[i].AttackRange then
-      Continue;
-
-    DamageInfo.Amount := FData.Players[i].Damage * SecondsPassed;
-    DamageInfo.DamageType := dtPhysical;
-    DamageInfo.SourceId := FData.Players[i].Id;
-    FData.Players[TargetIdx].Stats.TakeDamage(DamageInfo);
-
-    if not FData.Players[TargetIdx].Stats.IsAlive then
-    begin
-      FData.Players[i].Kills := FData.Players[i].Kills + 1;
-      FData.Players[TargetIdx].Inventory.Free;
-      FData.Players[TargetIdx].Status := psDead;
-      E.EventType := gePlayerDied;
-      E.EntityId := FData.Players[TargetIdx].Id;
-      E.SourceId := FData.Players[i].Id;
-      GameEventBus.Queue(E);
-    end
-    else
-    begin
-      E.EventType := gePlayerDamaged;
-      E.EntityId := FData.Players[TargetIdx].Id;
-      E.SourceId := FData.Players[i].Id;
-      E.Amount := DamageInfo.Amount;
-      GameEventBus.Queue(E);
-    end;
-  end;
-end;
-
-procedure TGameWorld.UpdateExtraction(const SecondsPassed: Single);
-var
-  i: Integer;
-  E: TGameEvent;
-begin
-  for i := 0 to High(FData.Players) do
-  begin
-    if FData.Players[i].Status <> psInRaid then
-      Continue;
-    if not FData.Players[i].IsExtracting then
-      Continue;
-
-    FData.Players[i].ExtractionProgress := FData.Players[i].ExtractionProgress +
-      SecondsPassed / FExtractTime;
-
-    if FData.Players[i].ExtractionProgress >= 1 then
-    begin
-      FData.Players[i].Status := psExtracted;
-      E.EventType := gePlayerExtracted;
-      E.EntityId := FData.Players[i].Id;
-      GameEventBus.Queue(E);
-    end;
-  end;
-end;
-
-procedure TGameWorld.UpdateSpawner(const SecondsPassed: Single);
-var
-  i: Integer;
-begin
-  for i := High(FSpawnWaves) downto 0 do
-  begin
-    FSpawnWaves[i].Timer := FSpawnWaves[i].Timer + SecondsPassed;
-
-    while (FSpawnWaves[i].EnemyCount > 0) and
-          (FSpawnWaves[i].Timer >= FSpawnWaves[i].Interval) do
-    begin
-      SpawnEnemy(FSpawnWaves[i].RoomIndex);
-      FSpawnWaves[i].Timer := FSpawnWaves[i].Timer - FSpawnWaves[i].Interval;
-      Dec(FSpawnWaves[i].EnemyCount);
-    end;
-
-    if FSpawnWaves[i].EnemyCount <= 0 then
-    begin
-      if i < High(FSpawnWaves) then
-        FSpawnWaves[i] := FSpawnWaves[High(FSpawnWaves)];
-      SetLength(FSpawnWaves, Length(FSpawnWaves) - 1);
-    end;
-  end;
 end;
 
 end.

@@ -73,6 +73,12 @@ type
     function CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
   end;
 
+  { Базовая игровая система }
+  IWorldSystem = interface
+    ['{B1C2D3E4-F5A6-7890-BCDE-F0123456789A}']
+    procedure Update(const SecondsPassed: Single);
+  end;
+
 implementation
 
 end.
