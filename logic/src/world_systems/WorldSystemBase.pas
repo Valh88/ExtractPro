@@ -9,25 +9,10 @@ uses
 
 type
   TWorldSystemBase = class(TInterfacedObject, IWorldSystem)
-  protected
-    FWorldObj: TObject;
-    function GetWorld: TObject;
   public
-    constructor Create(const AWorldObj: TObject);
     procedure Update(const SecondsPassed: Single); virtual; abstract;
   end;
 
 implementation
-
-constructor TWorldSystemBase.Create(const AWorldObj: TObject);
-begin
-  inherited Create;
-  FWorldObj := AWorldObj;
-end;
-
-function TWorldSystemBase.GetWorld: TObject;
-begin
-  Result := FWorldObj;
-end;
 
 end.

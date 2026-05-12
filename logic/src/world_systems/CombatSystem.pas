@@ -10,7 +10,10 @@ uses
 
 type
   TCombatSystem = class(TWorldSystemBase)
+  private
+    FGameObj: TObject;
   public
+    constructor Create(AWorldObj: TObject);
     procedure Update(const SecondsPassed: Single); override;
   end;
 
@@ -18,13 +21,15 @@ implementation
 
 uses GameWorld;
 
-function W(Obj: TObject): TGameWorld;
+constructor TCombatSystem.Create(AWorldObj: TObject);
 begin
-  Result := Obj as TGameWorld;
+  inherited Create;
+  FGameObj := AWorldObj;
 end;
 
 procedure TCombatSystem.Update(const SecondsPassed: Single);
 var
+  G: TGameWorld;
   Data: TGameWorldData;
   i, PlayerIdx, AliveCount: Integer;
   PlayerDist: Single;
@@ -32,7 +37,8 @@ var
   DamageInfo: TDamageInfo;
   E: TGameEvent;
 begin
-  Data := W(FWorldObj).Data;
+  G := FGameObj as TGameWorld;
+  Data := G.Data;
   for i := 0 to High(Data.Enemies) do
   begin
     if Data.Enemies[i].AIState <> asAttack then Continue;
@@ -40,7 +46,7 @@ begin
     if Data.Enemies[i].Visual = nil then Continue;
 
     EnemyPos := Data.Enemies[i].Visual.Position;
-    PlayerIdx := W(FWorldObj).FindClosestPlayer(EnemyPos, PlayerDist);
+    PlayerIdx := G.FindClosestPlayer(EnemyPos, PlayerDist);
     if PlayerIdx = -1 then Continue;
 
     DamageInfo.Amount := Data.Enemies[i].Damage * SecondsPassed;
@@ -55,14 +61,14 @@ begin
       E.EventType := gePlayerDied;
       E.EntityId := Data.Players[PlayerIdx].Id;
       E.SourceId := Data.Enemies[i].Id;
-      W(FWorldObj).QueueEvent(E);
+      G.QueueEvent(E);
     end else
     begin
       E.EventType := gePlayerDamaged;
       E.EntityId := Data.Players[PlayerIdx].Id;
       E.SourceId := Data.Enemies[i].Id;
       E.Amount := DamageInfo.Amount;
-      W(FWorldObj).QueueEvent(E);
+      G.QueueEvent(E);
     end;
   end;
 

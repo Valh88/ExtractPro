@@ -10,7 +10,10 @@ uses
 
 type
   TExtractionSystem = class(TWorldSystemBase)
+  private
+    FGameObj: TObject;
   public
+    constructor Create(AWorldObj: TObject);
     procedure Update(const SecondsPassed: Single); override;
   end;
 
@@ -18,18 +21,21 @@ implementation
 
 uses GameWorld;
 
-function W(Obj: TObject): TGameWorld;
+constructor TExtractionSystem.Create(AWorldObj: TObject);
 begin
-  Result := Obj as TGameWorld;
+  inherited Create;
+  FGameObj := AWorldObj;
 end;
 
 procedure TExtractionSystem.Update(const SecondsPassed: Single);
 var
+  G: TGameWorld;
   Data: TGameWorldData;
   i: Integer;
   E: TGameEvent;
 begin
-  Data := W(FWorldObj).Data;
+  G := FGameObj as TGameWorld;
+  Data := G.Data;
   for i := 0 to High(Data.Players) do
   begin
     if Data.Players[i].Status <> psInRaid then Continue;
@@ -43,7 +49,7 @@ begin
       Data.Players[i].Status := psExtracted;
       E.EventType := gePlayerExtracted;
       E.EntityId := Data.Players[i].Id;
-      W(FWorldObj).QueueEvent(E);
+      G.QueueEvent(E);
     end;
   end;
 end;

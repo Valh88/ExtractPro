@@ -19,7 +19,9 @@ type
   TSpawnerSystem = class(TWorldSystemBase)
   private
     FWaves: array of TSpawnWaveData;
+    FGameObj: TObject;
   public
+    constructor Create(AWorldObj: TObject);
     procedure AddWave(const RoomIndex, Count: Integer; const Interval: Single);
     procedure Update(const SecondsPassed: Single); override;
   end;
@@ -28,9 +30,10 @@ implementation
 
 uses GameWorld;
 
-function W(Obj: TObject): TGameWorld;
+constructor TSpawnerSystem.Create(AWorldObj: TObject);
 begin
-  Result := Obj as TGameWorld;
+  inherited Create;
+  FGameObj := AWorldObj;
 end;
 
 procedure TSpawnerSystem.AddWave(const RoomIndex, Count: Integer; const Interval: Single);
@@ -48,7 +51,9 @@ end;
 procedure TSpawnerSystem.Update(const SecondsPassed: Single);
 var
   i: Integer;
+  G: TGameWorld;
 begin
+  G := FGameObj as TGameWorld;
   for i := High(FWaves) downto 0 do
   begin
     FWaves[i].Timer := FWaves[i].Timer + SecondsPassed;
@@ -56,7 +61,7 @@ begin
     while (FWaves[i].EnemyCount > 0) and
           (FWaves[i].Timer >= FWaves[i].Interval) do
     begin
-      W(FWorldObj).SpawnEnemy(FWaves[i].RoomIndex);
+      G.SpawnEnemy(FWaves[i].RoomIndex);
       FWaves[i].Timer := FWaves[i].Timer - FWaves[i].Interval;
       Dec(FWaves[i].EnemyCount);
     end;

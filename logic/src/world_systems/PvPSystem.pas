@@ -10,7 +10,10 @@ uses
 
 type
   TPvPSystem = class(TWorldSystemBase)
+  private
+    FGameObj: TObject;
   public
+    constructor Create(AWorldObj: TObject);
     procedure Update(const SecondsPassed: Single); override;
   end;
 
@@ -18,13 +21,15 @@ implementation
 
 uses GameWorld;
 
-function W(Obj: TObject): TGameWorld;
+constructor TPvPSystem.Create(AWorldObj: TObject);
 begin
-  Result := Obj as TGameWorld;
+  inherited Create;
+  FGameObj := AWorldObj;
 end;
 
 procedure TPvPSystem.Update(const SecondsPassed: Single);
 var
+  G: TGameWorld;
   Data: TGameWorldData;
   i, TargetIdx: Integer;
   TargetDist: Single;
@@ -32,14 +37,15 @@ var
   DamageInfo: TDamageInfo;
   E: TGameEvent;
 begin
-  Data := W(FWorldObj).Data;
+  G := FGameObj as TGameWorld;
+  Data := G.Data;
   for i := 0 to High(Data.Players) do
   begin
     if Data.Players[i].Status <> psInRaid then Continue;
     if Data.Players[i].Visual = nil then Continue;
 
     MyPos := Data.Players[i].Visual.Position;
-    TargetIdx := W(FWorldObj).FindAlivePlayer(MyPos, Data.Players[i].Id, TargetDist);
+    TargetIdx := G.FindAlivePlayer(MyPos, Data.Players[i].Id, TargetDist);
     if TargetIdx = -1 then Continue;
     if TargetDist > Data.Players[i].AttackRange then Continue;
 
@@ -56,14 +62,14 @@ begin
       E.EventType := gePlayerDied;
       E.EntityId := Data.Players[TargetIdx].Id;
       E.SourceId := Data.Players[i].Id;
-      W(FWorldObj).QueueEvent(E);
+      G.QueueEvent(E);
     end else
     begin
       E.EventType := gePlayerDamaged;
       E.EntityId := Data.Players[TargetIdx].Id;
       E.SourceId := Data.Players[i].Id;
       E.Amount := DamageInfo.Amount;
-      W(FWorldObj).QueueEvent(E);
+      G.QueueEvent(E);
     end;
   end;
 end;
