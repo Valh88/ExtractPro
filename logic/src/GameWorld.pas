@@ -5,11 +5,13 @@ unit GameWorld;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
+  SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
   WorldSystemBase, AISystem, CombatSystem, PvPSystem, ExtractionSystem, SpawnerSystem;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
+
+  TSystemList = specialize TFPGObjectList<TWorldSystemBase>;
 
   TGameWorld = class
   private
@@ -20,7 +22,7 @@ type
     FMaxRaidTime: Single;
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
-    FSystems: TObjectList;
+    FSystems: TSystemList;
     FSpawner: TSpawnerSystem;
 
     function AllocateEntityId: TEntityId;
@@ -70,7 +72,7 @@ begin
   FPhase := rpExploring;
   FMaxRaidTime := GlobalConfig.RaidTime;
 
-  FSystems := TObjectList.Create(False);
+  FSystems := TSystemList.Create(True);
   FSystems.Add(TAISystem.Create(Self));
   FSystems.Add(TCombatSystem.Create(Self));
   FSystems.Add(TPvPSystem.Create(Self));
@@ -81,6 +83,7 @@ end;
 
 destructor TGameWorld.Destroy;
 begin
+  FSystems.Free;
   FData.Free;
   FWorld := nil;
   FFactory := nil;
@@ -201,7 +204,7 @@ begin
   end;
 
   for i := 0 to FSystems.Count - 1 do
-    TWorldSystemBase(FSystems[i]).Update(SecondsPassed);
+    FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
 end;
@@ -282,57 +285,9 @@ begin
 end;
 
 procedure TGameWorld.GenerateDungeon;
-var
-  i, j, k, Target: Integer;
-  R: TDungeonRoom;
-  AlreadyConnected: Boolean;
 begin
+  FData.ExtractionPoints := nil;
   FData.Rooms := nil;
-  SetLength(FData.Rooms, GlobalConfig.RoomCount);
-
-  for i := 0 to GlobalConfig.RoomCount - 1 do
-  begin
-    R.Bounds.Left := (i mod 4) * GlobalConfig.RoomSize;
-    R.Bounds.Bottom := (i div 4) * GlobalConfig.RoomSize;
-    R.Bounds.Width := GlobalConfig.RoomSize - 2;
-    R.Bounds.Height := GlobalConfig.RoomSize - 2;
-
-    if i = 0 then
-      R.RoomType := rtSpawn
-    else if i = GlobalConfig.RoomCount - 1 then
-      R.RoomType := rtExtraction
-    else if Random < 0.15 then
-      R.RoomType := rtBoss
-    else
-      R.RoomType := rtNormal;
-
-    R.Connections := nil;
-    for j := 0 to GlobalConfig.ConnectionsPerRoom - 1 do
-    begin
-      Target := Random(GlobalConfig.RoomCount);
-      if Target = i then
-        Continue;
-
-      AlreadyConnected := False;
-      for k := 0 to High(R.Connections) do
-        if R.Connections[k] = Target then
-        begin
-          AlreadyConnected := True;
-          Break;
-        end;
-      if AlreadyConnected then
-        Continue;
-
-      SetLength(R.Connections, Length(R.Connections) + 1);
-      R.Connections[High(R.Connections)] := Target;
-    end;
-
-    FData.Rooms[i] := R;
-  end;
-
-  SetLength(FData.ExtractionPoints, 1);
-  FData.ExtractionPoints[0].X := FData.Rooms[GlobalConfig.RoomCount - 1].Bounds.Left + FData.Rooms[GlobalConfig.RoomCount - 1].Bounds.Width / 2;
-  FData.ExtractionPoints[0].Y := FData.Rooms[GlobalConfig.RoomCount - 1].Bounds.Bottom + FData.Rooms[GlobalConfig.RoomCount - 1].Bounds.Height / 2;
 end;
 
 function TGameWorld.GetData: TGameWorldData;

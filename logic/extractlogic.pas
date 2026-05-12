@@ -9,7 +9,10 @@ interface
 
 uses
   Interfaces, EntityTypes, WorldTypes, GameWorld, GameConfig, EntityBridge, 
-  WorldBridge, EventBus, help_types, EntityManager, LazarusPackageIntf;
+  WorldBridge, EventBus, help_types, EntityManager, 
+  CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
+  TouchMoveControl, AISystem, CombatSystem, ExtractionSystem, PvPSystem, 
+  SpawnerSystem, WorldSystemBase, LazarusPackageIntf;
 
 implementation
 
