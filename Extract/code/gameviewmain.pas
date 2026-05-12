@@ -56,7 +56,7 @@ begin
   FMouseLookUi := TMouseLookOverlay.Create(Self);
   FMouseLookUi.FullSize := true;
   FMouseLookUi.Viewport := Viewport1;
-  FMouseLookUi.Hero := TCastleTransformDesign(Entity.Transform).DesignRoot;
+  FMouseLookUi.Hero := Entity.Transform;
   InsertBack(FMouseLookUi);
 end;
 

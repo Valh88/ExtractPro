@@ -130,7 +130,7 @@ begin
   FViewport := nil;
   FCameraMode := cmFirstPerson;
   FMoveSpeed := 5.0;
-  FMouseSensitivity := 5.0;
+  FMouseSensitivity := 2.0;
   FInvertVerticalMouseLook := False;
   FInvertVerticalThirdPerson := True;   { в 3rd person вверх мыши = камера вниз по умолчанию инвертирована }
   FInvertHorizontalMouseLook := False;

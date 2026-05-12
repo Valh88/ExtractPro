@@ -86,6 +86,13 @@ begin
     raise Exception.Create('DesignRoot is nil in ' + FPlayerUrl);
   Cylinder.CastShadows := True;
 
+  HeadCamera := Design.DesignedComponent('HeadCamera', False) as TCastleCamera;
+  if HeadCamera <> nil then
+  begin
+    HeadCamera.Rotation := Vector4(1, 0, 0, 0);
+    FViewport.Camera := HeadCamera;
+  end;
+
   CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
   CharCtrl.Viewport := FViewport;
   CharCtrl.Camera := HeadCamera;
@@ -94,9 +101,6 @@ begin
 
   if Cylinder.RigidBody <> nil then
     Cylinder.RigidBody.LockRotation := [0, 2];
-  HeadCamera := Design.DesignedComponent('HeadCamera', False) as TCastleCamera;
-  if HeadCamera <> nil then
-    FViewport.Camera := HeadCamera;
 
   CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
   CharCtrl.Viewport := FViewport;
@@ -116,7 +120,7 @@ begin
   FPSCam.InvertHorizontalMouseLook := True;
   Cylinder.AddBehavior(FPSCam);
 
-  Result := TEntityBridge.Create(AEntityId, Design);
+  Result := TEntityBridge.Create(AEntityId, Cylinder, Design); // Cylinder or Design?
 end;
 
 end.

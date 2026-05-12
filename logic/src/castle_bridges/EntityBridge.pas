@@ -12,6 +12,7 @@ type
   private
     FEntityId: TEntityId;
     FTransform: TCastleTransform;
+    FOwner: TComponent;
 
     function GetEntityId: TEntityId;
     function GetTransform: TCastleTransform;
@@ -24,7 +25,8 @@ type
     function GetVisible: Boolean;
     procedure SetVisible(const Value: Boolean);
   public
-    constructor Create(const AEntityId: TEntityId; const ATransform: TCastleTransform);
+    constructor Create(const AEntityId: TEntityId; const ATransform: TCastleTransform;
+      const AOwner: TComponent = nil);
     destructor Destroy; override;
 
     { IGameEntity }
@@ -44,17 +46,19 @@ implementation
 
 { TEntityBridge }
 
-constructor TEntityBridge.Create(const AEntityId: TEntityId; const ATransform: TCastleTransform);
+constructor TEntityBridge.Create(const AEntityId: TEntityId; const ATransform: TCastleTransform;
+  const AOwner: TComponent = nil);
 begin
   inherited Create;
   FEntityId := AEntityId;
   FTransform := ATransform;
-  FTransform.Exists := False;
+  FOwner := AOwner;
 end;
 
 destructor TEntityBridge.Destroy;
 begin
   FreeAndNil(FTransform);
+  FreeAndNil(FOwner);
   inherited;
 end;
 

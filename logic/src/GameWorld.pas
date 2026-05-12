@@ -213,7 +213,6 @@ end;
 function TGameWorld.AddPlayer: Integer;
 var
   P: TPlayerData;
-  E: TGameEvent;
 begin
   P.Id := AllocateEntityId;
   P.Stats.MaxHealth := GlobalConfig.PlayerBaseHealth;
@@ -230,6 +229,9 @@ begin
   SetLength(FData.Players, Length(FData.Players) + 1);
   FData.Players[High(FData.Players)] := P;
   Result := High(FData.Players);
+
+  if (FWorld <> nil) and (FFactory <> nil) then
+    FWorld.RegisterEntity(FFactory.CreatePlayerEntity(P.Id));
 end;
 
 procedure TGameWorld.StartExtraction;
@@ -268,6 +270,9 @@ begin
   Ev.EntityId := E.Id;
   Ev.Position := E.SpawnPosition;
   GameEventBus.Queue(Ev);
+
+  if (FWorld <> nil) and (FFactory <> nil) then
+    FWorld.RegisterEntity(FFactory.CreateEnemyEntity(E.Id));
 end;
 
 procedure TGameWorld.SpawnWave(const RoomIndex, Count: Integer; const Interval: Single);

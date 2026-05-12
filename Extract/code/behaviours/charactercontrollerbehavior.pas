@@ -106,7 +106,6 @@ function TCharacterControllerBehavior.ForwardDir: TVector3;
 var
   D: TVector3;
 begin
-  { Направление "вперёд" — по взгляду камеры (в плоскости XZ), чтобы W двигал в сторону просмотра. }
   if (FCamera <> nil) and FCamera.HasWorldTransform then
     D := FCamera.WorldDirection
   else if (Parent <> nil) and Parent.HasWorldTransform then
