@@ -58,6 +58,8 @@ begin
   FMouseLookUi.Viewport := Viewport1;
   FMouseLookUi.Hero := Entity.Transform;
   InsertBack(FMouseLookUi);
+  Entity := Factory.CreatePlayerEntity(43);
+  FWorldBridge.RegisterEntity(Entity);
 end;
 
 procedure TViewMain.Stop;

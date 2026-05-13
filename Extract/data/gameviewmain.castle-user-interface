@@ -57,19 +57,6 @@
         ]
       },
       {
-        "$$ClassName" : "TCastleCylinder",
-        "Name" : "Cylinder1",
-        "RenderOptions" : {
-          "$$ClassName" : "TCastleScene.TSceneRenderOptions"
-        },
-        "TranslationPersistent" : {
-          "$$ClassName" : "TCastleVector3Persistent",
-          "X" : 3.9179162979125977E+000,
-          "Y" : 1.0490036010742187E+000,
-          "Z" : -2.1086997985839844E+000
-        }
-      },
-      {
         "$$ClassName" : "TCastleDirectionalLight",
         "Name" : "Son",
         "RotationPersistent" : {
@@ -79,7 +66,8 @@
         },
         "TranslationPersistent" : {
           "$$ClassName" : "TCastleVector3Persistent",
-          "Y" : 1.3870601654052734E+001
+          "Y" : 6.0409641265869141E+000,
+          "Z" : 4.7842249870300293E+000
         }
       }
     ]
@@ -116,10 +104,15 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.2690947055816650E+000,
-      "X" : -1.9829194247722626E-001,
-      "Y" : 9.7025275230407715E-001,
-      "Z" : 1.3888910412788391E-001
+      "W" : 1.1197942495346069E+000,
+      "X" : -2.2983343899250031E-001,
+      "Y" : 9.6370285749435425E-001,
+      "Z" : 1.3584405183792114E-001
+    },
+    "ScalePersistent" : {
+      "$$ClassName" : "TCastleVector3Persistent",
+      "X" : 9.9999994039535522E-001,
+      "Z" : 9.9999994039535522E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
