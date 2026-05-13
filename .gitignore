@@ -3,3 +3,4 @@ backup
 *.lps
 logic/packagefiles.xml
 *.res
+castle-engine-output

@@ -40,3 +40,4 @@ AndroidSigningProperties.txt
 
 # May contain settings specific to your user / machine
 CastleProjectLocalSettings.json
+castle-engine-output
