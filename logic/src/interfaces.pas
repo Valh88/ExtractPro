@@ -5,7 +5,7 @@ unit Interfaces;
 interface
 
 uses
-  SysUtils, Classes, CastleTransform, help_types;
+  SysUtils, Classes, CastleTransform, CastleKeysMouse, CastleUIControls, help_types;
 
 type
 
@@ -62,6 +62,7 @@ type
     procedure UnregisterEntity(EntityId: TEntityId);
     function FindEntity(EntityId: TEntityId): IGameEntity;
     function HasEntity(EntityId: TEntityId): Boolean;
+    function Press(const Event: TInputPressRelease): Boolean;
   end;
 
   { Фабрика визуалов — мост для создания IGameEntity внутри логики }

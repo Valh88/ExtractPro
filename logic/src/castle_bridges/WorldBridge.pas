@@ -5,7 +5,7 @@ unit WorldBridge;
 interface
 
 uses
-  SysUtils, Classes, CastleTransform, CastleVectors, help_types,
+  SysUtils, Classes, CastleTransform, CastleVectors, CastleKeysMouse, CastleUIControls, help_types,
   Interfaces, GameWorld;
 
 type
@@ -31,6 +31,7 @@ type
     procedure UnregisterEntity(EntityId: TEntityId);
     function FindEntity(EntityId: TEntityId): IGameEntity;
     function HasEntity(EntityId: TEntityId): Boolean;
+    function Press(const Event: TInputPressRelease): Boolean;
   end;
 
 implementation
@@ -78,6 +79,7 @@ end;
 procedure TWorldBridge.Start;
 begin
   FGameLogic.Start;
+
 end;
 
 procedure TWorldBridge.Stop;
@@ -178,6 +180,11 @@ end;
 function TWorldBridge.HasEntity(EntityId: TEntityId): Boolean;
 begin
   Result := FindEntity(EntityId) <> nil;
+end;
+
+function TWorldBridge.Press(const Event: TInputPressRelease): Boolean;
+begin
+  Result := False;
 end;
 
 end.

@@ -80,6 +80,7 @@ end;
 function TViewMain.Press(const Event: TInputPressRelease): Boolean;
 begin
   Result := inherited;
+  FWorldBridge.Press(Event);
 end;
 
 end.

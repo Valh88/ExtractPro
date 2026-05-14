@@ -97,7 +97,7 @@
       <Filename Value="Extract"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="code"/>
+      <IncludeFiles Value="code;$(ProjOutDir)"/>
       <OtherUnitFiles Value="code"/>
       <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
@@ -119,7 +119,8 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dDEBUG"/>
+      <CustomOptions Value="-dDEBUG 
+-dVISUAL"/>
     </Other>
   </CompilerOptions>
   <Debugging>
