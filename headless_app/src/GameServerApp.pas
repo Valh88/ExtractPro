@@ -1,26 +1,20 @@
 {
   GameServerApp.pas — головной цикл headless-сервера ExtractPro.
 
-  Выносит логику main-блока .dpr в отдельный класс,
-  чтобы сервер можно было переиспользовать и настраивать
-  без правки точки входа.
-
-  ⚠ Не использует CastleTransform/CastleScene — чистый сервер
-    без OpenGL-зависимостей. Физика опциональна через WorldBridge
-    в визуальном режиме.
+  Загружает физическую сцену из gameviewmain.castle-user-interface,
+  редактируемой в редакторе CGE. Сцена работает в headless режиме
+  (физика, raycasts) без окна.
 
   ── Использование ───────────────────────────────────────────────────
-    ServerApp := TGameServerApp.Create;
-    ServerApp.ParseArgs;
-    ServerApp.Run;
-    ServerApp.Free;
+    TGameServerApp.RunApp;
 
   ── Команды ─────────────────────────────────────────────────────────
     --port=N           порт (по умолчанию 7777)
     --max-players=N    макс игроков (по умолчанию 8)
 
   ── Зависимости ────────────────────────────────────────────────────
-    SysUtils, NetServer, GameWorld, WorldBridge
+    SysUtils, CastleTransform, CastleScene, CastleComponentSerialize,
+    NetServer, GameWorld, WorldBridge
 }
 unit GameServerApp;
 
@@ -30,6 +24,7 @@ interface
 
 uses
   SysUtils, Classes,
+  CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
   NetServer, NetMessages;
 
@@ -40,6 +35,7 @@ type
   TGameServerApp = class
   private
     FServer: TGameServer;
+    FWorldRoot: TCastleAbstractRootTransform;
     FPort: Word;
     FMaxPlayers: Integer;
     FRunning: Boolean;
@@ -47,6 +43,7 @@ type
     FOnTick: TTickEvent;
     FOnLog: TLogEvent;
     procedure Log(const Msg: String);
+    procedure LoadScene;
   public
     constructor Create;
     destructor Destroy; override;
@@ -110,6 +107,17 @@ begin
   end;
 end;
 
+procedure TGameServerApp.LoadScene;
+var
+  Design: TCastleTransformDesign;
+begin
+  FWorldRoot := TCastleRootTransform.Create(nil);
+  Design := TCastleTransformDesign.Create(nil);
+  Design.Url := 'castle-data:/physics_scene.castle-transform';
+  FWorldRoot.Add(Design);
+  FWorldRoot.UpdateIncreaseTime(0);
+end;
+
 procedure TGameServerApp.Run;
 const
   DT = 1 / 60;
@@ -152,6 +160,7 @@ end;
 class procedure TGameServerApp.RunApp;
 begin
   ServerApp := TGameServerApp.Create;
+  ServerApp.OnTick := ;
   try
     ServerApp.ParseArgs;
     ServerApp.Run;

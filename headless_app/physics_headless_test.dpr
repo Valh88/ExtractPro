@@ -59,7 +59,8 @@ uses
   CastleWindow, CastleViewport, CastleUIControls, CastleControls,
   GameViewServerTest, ServerEntityFactory, GameServerApp
   {$else}
-  , GameServerApp
+  , CastleVectors, CastleTransform, CastleScene,
+  GameServerApp
   {$endif}
   ;
 
