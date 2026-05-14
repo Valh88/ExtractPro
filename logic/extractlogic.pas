@@ -11,8 +11,7 @@ uses
   Interfaces, EntityTypes, WorldTypes, GameWorld, GameConfig, EntityBridge, 
   WorldBridge, EventBus, help_types, EntityManager, 
   CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
-  TouchMoveControl, AISystem, CombatSystem, ExtractionSystem, PvPSystem, 
-  SpawnerSystem, WorldSystemBase, RNL, NetMessages, NetServer, NetClient, 
+  TouchMoveControl, WorldSystemBase, RNL, NetMessages, NetServer, NetClient, 
   LazarusPackageIntf;
 
 implementation

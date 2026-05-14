@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  WorldSystemBase, AISystem, CombatSystem, PvPSystem, ExtractionSystem, SpawnerSystem;
+  WorldSystemBase;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
@@ -23,7 +23,6 @@ type
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
     FSystems: TSystemList;
-    FSpawner: TSpawnerSystem;
 
     function AllocateEntityId: TEntityId;
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
@@ -39,7 +38,6 @@ type
     { Управление миром }
     function AddPlayer: Integer;
     procedure SpawnEnemy(const RoomIndex: Integer);
-    procedure SpawnWave(const RoomIndex, Count: Integer; const Interval: Single);
     procedure GenerateDungeon;
     procedure StartExtraction;
     function GetData: TGameWorldData;
@@ -73,12 +71,6 @@ begin
   FMaxRaidTime := GlobalConfig.RaidTime;
 
   FSystems := TSystemList.Create(True);
-  FSystems.Add(TAISystem.Create(Self));
-  FSystems.Add(TCombatSystem.Create(Self));
-  FSystems.Add(TPvPSystem.Create(Self));
-  FSystems.Add(TExtractionSystem.Create(Self));
-  FSpawner := TSpawnerSystem.Create(Self);
-  FSystems.Add(FSpawner);
 end;
 
 destructor TGameWorld.Destroy;
@@ -277,11 +269,6 @@ begin
 
   if (FWorld <> nil) and (FFactory <> nil) then
     FWorld.RegisterEntity(FFactory.CreateEnemyEntity(E.Id));
-end;
-
-procedure TGameWorld.SpawnWave(const RoomIndex, Count: Integer; const Interval: Single);
-begin
-  FSpawner.AddWave(RoomIndex, Count, Interval);
 end;
 
 procedure TGameWorld.GenerateDungeon;

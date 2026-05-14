@@ -10,10 +10,7 @@ uses
 
 type
   TAISystem = class(TWorldSystemBase)
-  private
-    FGameObj: TObject;
   public
-    constructor Create(AWorldObj: TObject);
     procedure Update(const SecondsPassed: Single); override;
   end;
 
@@ -21,21 +18,15 @@ implementation
 
 uses GameWorld;
 
-constructor TAISystem.Create(AWorldObj: TObject);
-begin
-  inherited Create;
-  FGameObj := AWorldObj;
-end;
-
 procedure TAISystem.Update(const SecondsPassed: Single);
 var
-  G: TGameWorld;
-  Data: TGameWorldData;
   i, PlayerIdx: Integer;
   PlayerDist: Single;
   EnemyPos, PlayerPos: TVector2;
+  G: TGameWorld;
+  Data: TGameWorldData;
 begin
-  G := FGameObj as TGameWorld;
+  G := WorldObj as TGameWorld;
   Data := G.Data;
   for i := 0 to High(Data.Enemies) do
   begin

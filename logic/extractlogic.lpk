@@ -68,26 +68,6 @@
         <UnitName Value="TouchMoveControl"/>
       </Item>
       <Item>
-        <Filename Value="src/world_systems/AISystem.pas"/>
-        <UnitName Value="AISystem"/>
-      </Item>
-      <Item>
-        <Filename Value="src/world_systems/CombatSystem.pas"/>
-        <UnitName Value="CombatSystem"/>
-      </Item>
-      <Item>
-        <Filename Value="src/world_systems/ExtractionSystem.pas"/>
-        <UnitName Value="ExtractionSystem"/>
-      </Item>
-      <Item>
-        <Filename Value="src/world_systems/PvPSystem.pas"/>
-        <UnitName Value="PvPSystem"/>
-      </Item>
-      <Item>
-        <Filename Value="src/world_systems/SpawnerSystem.pas"/>
-        <UnitName Value="SpawnerSystem"/>
-      </Item>
-      <Item>
         <Filename Value="src/world_systems/WorldSystemBase.pas"/>
         <UnitName Value="WorldSystemBase"/>
       </Item>
