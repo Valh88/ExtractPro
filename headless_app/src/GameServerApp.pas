@@ -19,6 +19,7 @@
 unit GameServerApp;
 
 {$mode objfpc}{$H+}
+{$modeswitch functionreferences}
 
 interface
 
@@ -29,8 +30,12 @@ uses
   NetServer, NetMessages;
 
 type
-  TTickEvent = procedure(Sender: TObject; const SecondsPassed: Single) of object;
-  TLogEvent = procedure(Sender: TObject; const Msg: String) of object;
+  TGameServerApp = class;
+
+  TGameServerAppProc = reference to procedure(const App: TGameServerApp);
+
+  TTickEvent = reference to procedure(Sender: TObject; const SecondsPassed: Single);
+  TLogEvent = reference to procedure(Sender: TObject; const Msg: String);
 
   TGameServerApp = class
   private
@@ -50,7 +55,7 @@ type
     procedure ParseArgs;
     procedure Run;
     procedure Stop;
-    class procedure RunApp;
+    class procedure RunApp(const ASetup: TGameServerAppProc = nil);
     property Server: TGameServer read FServer;
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
@@ -157,11 +162,12 @@ begin
   FRunning := False;
 end;
 
-class procedure TGameServerApp.RunApp;
+class procedure TGameServerApp.RunApp(const ASetup: TGameServerAppProc);
 begin
   ServerApp := TGameServerApp.Create;
-  ServerApp.OnTick := ;
   try
+    if Assigned(ASetup) then
+      ASetup(ServerApp);
     ServerApp.ParseArgs;
     ServerApp.Run;
   finally

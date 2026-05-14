@@ -39,6 +39,7 @@
 unit NetClient;
 
 {$mode objfpc}{$H+}
+{$modeswitch functionreferences}
 
 interface
 
@@ -49,10 +50,9 @@ uses
 
 type
   TClientState = (csDisconnected, csConnecting, csConnected, csDisconnecting);
-
-  TClientConnectEvent = procedure(Sender: TObject) of object;
-  TClientDisconnectEvent = procedure(Sender: TObject) of object;
-  TClientReceiveEvent = procedure(Sender: TObject; const Msg: TNetMessage) of object;
+  TClientConnectEvent = reference to procedure(Sender: TObject);
+  TClientDisconnectEvent = reference to procedure(Sender: TObject);
+  TClientReceiveEvent = reference to procedure(Sender: TObject; const Msg: TNetMessage);
 
   TGameClient = class
   private

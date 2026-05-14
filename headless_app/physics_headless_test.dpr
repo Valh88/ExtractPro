@@ -77,7 +77,14 @@ end;
 
 begin
 {$ifdef HEADLESS}
-  TGameServerApp.RunApp;
+  TGameServerApp.RunApp(
+    // procedure(const App: TGameServerApp)
+    // begin
+    //   WriteLn('Hello from headless app');
+    //   Flush(Output);
+      
+    // end
+  );
 {$else}
   Application.OnInitialize := @ApplicationInitialize;
   Window := TCastleWindow.Create(Application);

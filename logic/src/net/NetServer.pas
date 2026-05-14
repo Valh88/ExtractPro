@@ -49,6 +49,7 @@
 unit NetServer;
 
 {$mode objfpc}{$H+}
+{$modeswitch functionreferences}
 
 interface
 
@@ -64,9 +65,9 @@ type
     Connected: Boolean;
   end;
 
-  TServerConnectEvent = procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32) of object;
-  TServerDisconnectEvent = procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32) of object;
-  TServerReceiveEvent = procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage) of object;
+  TServerConnectEvent = reference to procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+  TServerDisconnectEvent = reference to procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+  TServerReceiveEvent = reference to procedure(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
 
   TGameServer = class
   private

@@ -33,6 +33,7 @@ unit NetMessages;
 
 {$mode objfpc}{$H+}
 {$modeswitch advancedrecords}
+{$modeswitch functionreferences}
 
 interface
 
@@ -80,7 +81,7 @@ type
   end;
 
   { Event fired when server receives a message }
-  TNetReceiveEvent = procedure(Sender: TObject; const Msg: TNetMessage) of object;
+  TNetReceiveEvent = reference to procedure(Sender: TObject; const Msg: TNetMessage);
 
 implementation
 
