@@ -1,0 +1,40 @@
+{
+  "$$ClassName" : "TCastleCylinder",
+  "CastShadows" : false,
+  "Height" : 1.7000000476837158E+000,
+  "Name" : "Player",
+  "Radius" : 5.0000000000000000E-001,
+  "RenderOptions" : {
+    "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+  },
+  "TranslationPersistent" : {
+    "$$ClassName" : "TCastleVector3Persistent",
+    "Y" : 1.9414161443710327E+000
+  },
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleCamera",
+      "Name" : "HeadCamera",
+      "Orthographic" : {
+        "$$ClassName" : "TCastleOrthographic"
+      },
+      "Perspective" : {
+        "$$ClassName" : "TCastlePerspective"
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : 9.1964840888977051E-001
+      }
+    }
+  ],
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleCapsuleCollider",
+      "Name" : "CapsuleCollider"
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody"
+    }
+  ]
+}

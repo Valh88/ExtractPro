@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <UserPkgLinks Version="3" Count="39">
+    <Item1>
+      <Name Value="alternative_castle_engine_window_based_on_lcl"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/castle-engine-7.0-alpha.3.snapshot-linux-x86_64/castle_game_engine/packages/lazarus/alternative_castle_engine_window_based_on_lcl.lpk"/>
+      <LastUsed Value="2026/04/07 23:27:52"/>
+    </Item1>
+    <Item2>
+      <Name Value="BeamETF"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/projects/pascal/BeamETF/packages/beametf.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item2>
+    <Item3>
+      <Name Value="BridgeCge"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/CGE/shotg_project/shared_units/bridgecge.lpk"/>
+      <LastUsed Value="2026/04/29 14:01:29"/>
+    </Item3>
+    <Item4>
+      <Name Value="castle_engine_base"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/castle-engine-7.0-alpha.3.snapshot-linux-x86_64/castle_game_engine/packages/lazarus/castle_engine_base.lpk"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item4>
+    <Item5>
+      <Name Value="castle_engine_editor_components"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/castle-engine-7.0-alpha.3/castle-engine-7.0-alpha.3.snapshot-linux-x86_64/castle_game_engine/packages/lazarus/castle_engine_editor_components.lpk"/>
+      <LastUsed Value="2026/04/03 20:28:30"/>
+    </Item5>
+    <Item6>
+      <Name Value="castle_engine_indy"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/castle-engine-7.0-alpha.3/castle_game_engine/packages/lazarus/castle_engine_indy.lpk"/>
+      <LastUsed Value="2026/01/28 19:38:56"/>
+    </Item6>
+    <Item7>
+      <Name Value="castle_engine_lcl"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/castle-engine-7.0-alpha.3.snapshot-linux-x86_64/castle_game_engine/packages/lazarus/castle_engine_lcl.lpk"/>
+      <LastUsed Value="2026/04/07 23:27:52"/>
+    </Item7>
+    <Item8>
+      <Name Value="castle_engine_window"/>
+      <Version Major="6" Minor="93" Release="1"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/castle-engine-7.0-alpha.3.snapshot-linux-x86_64/castle_game_engine/packages/lazarus/castle_engine_window.lpk"/>
+      <LastUsed Value="2026/05/14 13:16:31"/>
+    </Item8>
+    <Item9>
+      <Name Value="CryptoLib4PascalPackage"/>
+      <Version Major="3" Minor="2"/>
+      <Filename Value="/home/vano/projects/pascal/CryptoLib4Pascal/CryptoLib/src/Packages/FPC/CryptoLib4PascalPackage.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item9>
+    <Item10>
+      <Name Value="CuboWorldPackage"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/CubeWorld/Package/cuboworldpackage.lpk"/>
+      <LastUsed Value="2026/03/13 17:00:44"/>
+    </Item10>
+    <Item11>
+      <Name Value="ExarctLogic"/>
+      <Filename Value="/run/media/vano/9C33-6BBD/projects/game_projects/castle-delphi/CGE/ExtractPro/logic/src/exarctlogic.lpk"/>
+      <LastUsed Value="2026/05/09 15:03:26"/>
+    </Item11>
+    <Item12>
+      <Name Value="Expasnif"/>
+      <Filename Value="/home/vano/Документы/projects/elixir/ex_pasnif/package/expasnif.lpk"/>
+      <LastUsed Value="2026/03/08 13:15:19"/>
+    </Item12>
+    <Item13>
+      <Name Value="ExtractLogic"/>
+      <Filename Value="/run/media/vano/9C33-6BBD/projects/game_projects/castle-delphi/CGE/ExtractPro/logic/extractlogic.lpk"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item13>
+    <Item14>
+      <Name Value="fcl_base_pas2js"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/fpcupdeluxe/ccr/pas2js-rtl/packages/fcl-base/src/fcl_base_pas2js.lpk"/>
+      <LastUsed Value="2026/01/21 16:30:03"/>
+    </Item14>
+    <Item15>
+      <Name Value="fpcunit_pas2js"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/fpcupdeluxe/ccr/pas2js-rtl/packages/fpcunit/src/fpcunit_pas2js.lpk"/>
+      <LastUsed Value="2026/01/21 16:30:03"/>
+    </Item15>
+    <Item16>
+      <Name Value="GeneralLOgic"/>
+      <Filename Value="/home/vano/castle-engine-7.0-alpha.3/CGE/one_shot/one-shot/general/generallogic.lpk"/>
+      <LastUsed Value="2026/04/02 13:40:27"/>
+    </Item16>
+    <Item17>
+      <Name Value="HashLib4PascalPackage"/>
+      <Version Major="4" Minor="1"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/HashLib/src/Packages/FPC/HashLib4PascalPackage.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item17>
+    <Item18>
+      <Name Value="LibsodiumPas"/>
+      <Filename Value="/home/vano/Загрузки/libsodium-1.0.21/libsodiumpas/packages/libsodiumpas.lpk"/>
+      <LastUsed Value="2026/03/26 12:59:52"/>
+    </Item18>
+    <Item19>
+      <Name Value="LogicGame"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/CGE/shotg_project/logic/logicgame.lpk"/>
+      <LastUsed Value="2026/04/29 14:01:28"/>
+    </Item19>
+    <Item20>
+      <Name Value="lualib"/>
+      <Filename Value="/home/vano/projects/pascal/lualib/package/lualib.lpk"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item20>
+    <Item21>
+      <Name Value="lualib_jit"/>
+      <Filename Value="/home/vano/projects/pascal/lualib/package/lualib_jit.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item21>
+    <Item22>
+      <Name Value="Maxim"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/maxim/package/maxim.lpk"/>
+      <LastUsed Value="2026/04/14 21:56:41"/>
+    </Item22>
+    <Item23>
+      <Name Value="mormot2"/>
+      <Version Major="2" Minor="4"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/mORMot2/packages/lazarus/mormot2.lpk"/>
+      <LastUsed Value="2026/05/09 11:59:41"/>
+    </Item23>
+    <Item24>
+      <Name Value="mormot2ui"/>
+      <Version Major="2" Minor="4"/>
+      <Filename Value="/home/vano/castle-engine-7.0-alpha.3/CGE/TriglavProject/mORMot2/packages/lazarus/mormot2ui.lpk"/>
+      <LastUsed Value="2026/01/30 22:51:30"/>
+    </Item24>
+    <Item25>
+      <Name Value="NetBaddy"/>
+      <Filename Value="/home/vano/Документы/projects/elixir/net_buddy/sdk/packages/netbaddy.lpk"/>
+      <LastUsed Value="2026/04/02 21:50:06"/>
+    </Item25>
+    <Item26>
+      <Name Value="NetBuddyPas"/>
+      <Filename Value="/home/vano/projects/pascal/NetBuddyPas/packages/netbuddypas.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item26>
+    <Item27>
+      <Name Value="NewPackage"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/CGE/ExtractPro/logic/newpackage.lpk"/>
+      <LastUsed Value="2026/04/29 15:26:04"/>
+    </Item27>
+    <Item28>
+      <Name Value="pas2js_fcldb"/>
+      <Filename Value="/home/vano/fpcupdeluxe/ccr/pas2js-rtl/packages/fcl-db/src/pas2js_fcldb.lpk"/>
+      <LastUsed Value="2026/01/21 16:30:02"/>
+    </Item28>
+    <Item29>
+      <Name Value="pas2js_rtl"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/fpcupdeluxe/ccr/pas2js-rtl/packages/rtl/src/pas2js_rtl.lpk"/>
+      <LastUsed Value="2026/02/27 11:50:31"/>
+    </Item29>
+    <Item30>
+      <Name Value="Pasact"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/Pasact/package/pasact.lpk"/>
+      <LastUsed Value="2026/04/08 18:52:43"/>
+    </Item30>
+    <Item31>
+      <Name Value="PasCollision"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/PasCollision/pascollision.lpk"/>
+      <LastUsed Value="2026/03/05 13:08:04"/>
+    </Item31>
+    <Item32>
+      <Name Value="PasErkNif"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/paserlnif/package/paserknif.lpk"/>
+      <LastUsed Value="2026/03/11 11:39:56"/>
+    </Item32>
+    <Item33>
+      <Name Value="PathFinder"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/Pathfinder/package/pathfinder.lpk"/>
+      <LastUsed Value="2026/02/27 10:51:36"/>
+    </Item33>
+    <Item34>
+      <Name Value="phoenix_pkg"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/PhoenixChannel/phoenix_pkg.lpk"/>
+      <LastUsed Value="2026/02/27 11:50:31"/>
+    </Item34>
+    <Item35>
+      <Name Value="Rts"/>
+      <Filename Value="/home/vano/Engines/castle-engine-7.0-alpha.3/CGE/rts_proto/rts_proto/deps/rts/packages/rts.lpk"/>
+      <LastUsed Value="2026/04/14 21:55:36"/>
+    </Item35>
+    <Item36>
+      <Name Value="SimpleBaseLib4PascalPackage"/>
+      <Version Major="2" Minor="5"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/SimpleBaseLib/src/Packages/FPC/SimpleBaseLib4PascalPackage.lpk"/>
+      <LastUsed Value="2026/04/14 00:46:11"/>
+    </Item36>
+    <Item37>
+      <Name Value="TapalkaPackage"/>
+      <Filename Value="/home/vano/Документы/projects/pascal/Tapalka/tapalkapackage.lpk"/>
+      <LastUsed Value="2026/04/10 16:06:36"/>
+    </Item37>
+    <Item38>
+      <Name Value="TiledCollisionPas"/>
+      <Filename Value="/home/vano/fpcupdeluxe/custom_libraries/TiledCollisionPas/packages/tiledcollisionpas.lpk"/>
+      <LastUsed Value="2026/04/05 23:26:11"/>
+    </Item38>
+    <Item39>
+      <Name Value="uniqueinstance_package"/>
+      <Version Major="1"/>
+      <Filename Value="/home/vano/fpcupdeluxe/ccr/uniqueinstance/uniqueinstance/uniqueinstance_package.lpk"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item39>
+  </UserPkgLinks>
+  <GlobalPkgLinks Version="3" Count="56">
+    <Item1>
+      <Name Value="anchordocking"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item1>
+    <Item2>
+      <Name Value="anchordockingdsgn"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item2>
+    <Item3>
+      <Name Value="buildintf"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item3>
+    <Item4>
+      <Name Value="chmhelppkg"/>
+      <Version Minor="2" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item4>
+    <Item5>
+      <Name Value="cmdlinedebuggerbase"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item5>
+    <Item6>
+      <Name Value="codetools"/>
+      <Version Major="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item6>
+    <Item7>
+      <Name Value="cody"/>
+      <Version Major="1" Minor="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item7>
+    <Item8>
+      <Name Value="datetimectrls"/>
+      <Version Major="1" Minor="5" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item8>
+    <Item9>
+      <Name Value="datetimectrlsdsgn"/>
+      <Version Major="1" Minor="5" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item9>
+    <Item10>
+      <Name Value="dbflaz"/>
+      <Version Minor="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item10>
+    <Item11>
+      <Name Value="debuggerintf"/>
+      <Version Minor="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item11>
+    <Item12>
+      <Name Value="dockedformeditor"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item12>
+    <Item13>
+      <Name Value="externhelp"/>
+      <Version Major="1" Minor="3"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item13>
+    <Item14>
+      <Name Value="fcl"/>
+      <Version Major="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item14>
+    <Item15>
+      <Name Value="fpcunitide"/>
+      <Version Minor="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item15>
+    <Item16>
+      <Name Value="fpcunittestrunner"/>
+      <Version Minor="1"/>
+      <LastUsed Value="2026/03/05 13:08:04"/>
+    </Item16>
+    <Item17>
+      <Name Value="fpdebug"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item17>
+    <Item18>
+      <Name Value="freetypelaz"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item18>
+    <Item19>
+      <Name Value="ideconfig"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item19>
+    <Item20>
+      <Name Value="idedebugger"/>
+      <Version Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item20>
+    <Item21>
+      <Name Value="ideintf"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item21>
+    <Item22>
+      <Name Value="idepackager"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item22>
+    <Item23>
+      <Name Value="ideproject"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item23>
+    <Item24>
+      <Name Value="ideutilspkg"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item24>
+    <Item25>
+      <Name Value="instantfpclaz"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item25>
+    <Item26>
+      <Name Value="jcfbase"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item26>
+    <Item27>
+      <Name Value="jcfidelazarus"/>
+      <Version Major="2"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item27>
+    <Item28>
+      <Name Value="laz.virtualtreeview_package"/>
+      <Version Major="5" Minor="5" Release="3" Build="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item28>
+    <Item29>
+      <Name Value="lazcontroldsgn"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item29>
+    <Item30>
+      <Name Value="lazcontrols"/>
+      <Version Major="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item30>
+    <Item31>
+      <Name Value="lazdaemon"/>
+      <Version Minor="9" Release="9"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item31>
+    <Item32>
+      <Name Value="lazdebuggerfp"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item32>
+    <Item33>
+      <Name Value="lazdebuggerfplldb"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item33>
+    <Item34>
+      <Name Value="lazdebuggergdbmi"/>
+      <Version Minor="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item34>
+    <Item35>
+      <Name Value="lazdebuggerintf"/>
+      <Version Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item35>
+    <Item36>
+      <Name Value="lazdebuggerlldb"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item36>
+    <Item37>
+      <Name Value="lazedit"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item37>
+    <Item38>
+      <Name Value="lazopenglcontext"/>
+      <Version Release="1"/>
+      <LastUsed Value="2026/04/07 23:27:52"/>
+    </Item38>
+    <Item39>
+      <Name Value="lazprojectgroups"/>
+      <Version Minor="7"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item39>
+    <Item40>
+      <Name Value="laztestinsight"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item40>
+    <Item41>
+      <Name Value="lazutils"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item41>
+    <Item42>
+      <Name Value="lcl"/>
+      <Version Major="4" Minor="99"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item42>
+    <Item43>
+      <Name Value="lclbase"/>
+      <Version Major="4" Minor="99"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item43>
+    <Item44>
+      <Name Value="lclextensions_package"/>
+      <Version Minor="6" Release="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item44>
+    <Item45>
+      <Name Value="leakview"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item45>
+    <Item46>
+      <Name Value="lhelpcontrolpkg"/>
+      <Version Minor="2"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item46>
+    <Item47>
+      <Name Value="memdslaz"/>
+      <Version Major="1" Minor="2" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item47>
+    <Item48>
+      <Name Value="pas2jsdsgn"/>
+      <Version Major="1" Release="2"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item48>
+    <Item49>
+      <Name Value="projtemplates"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item49>
+    <Item50>
+      <Name Value="sdflaz"/>
+      <Version Minor="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item50>
+    <Item51>
+      <Name Value="simplewebservergui"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item51>
+    <Item52>
+      <Name Value="sqldblaz"/>
+      <Version Major="1" Release="2"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item52>
+    <Item53>
+      <Name Value="synedit"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:53:26"/>
+    </Item53>
+    <Item54>
+      <Name Value="syneditdsgn"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item54>
+    <Item55>
+      <Name Value="tachartlazaruspkg"/>
+      <Version Major="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item55>
+    <Item56>
+      <Name Value="weblaz"/>
+      <Version Major="1" Release="1"/>
+      <LastUsed Value="2026/05/14 13:16:30"/>
+    </Item56>
+  </GlobalPkgLinks>
+</CONFIG>
