@@ -6,7 +6,7 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
-        <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours;src/world_systems"/>
+        <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
@@ -90,6 +90,22 @@
       <Item>
         <Filename Value="src/world_systems/WorldSystemBase.pas"/>
         <UnitName Value="WorldSystemBase"/>
+      </Item>
+      <Item>
+        <Filename Value="src/net/RNL.pas"/>
+        <UnitName Value="RNL"/>
+      </Item>
+      <Item>
+        <Filename Value="src/net/NetMessages.pas"/>
+        <UnitName Value="NetMessages"/>
+      </Item>
+      <Item>
+        <Filename Value="src/net/NetServer.pas"/>
+        <UnitName Value="NetServer"/>
+      </Item>
+      <Item>
+        <Filename Value="src/net/NetClient.pas"/>
+        <UnitName Value="NetClient"/>
       </Item>
     </Files>
     <RequiredPkgs>

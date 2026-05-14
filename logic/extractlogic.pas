@@ -12,7 +12,8 @@ uses
   WorldBridge, EventBus, help_types, EntityManager, 
   CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
   TouchMoveControl, AISystem, CombatSystem, ExtractionSystem, PvPSystem, 
-  SpawnerSystem, WorldSystemBase, LazarusPackageIntf;
+  SpawnerSystem, WorldSystemBase, RNL, NetMessages, NetServer, NetClient, 
+  LazarusPackageIntf;
 
 implementation
 

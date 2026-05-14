@@ -62,8 +62,12 @@ begin
 end;
 
 function TEntityManager.CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
+var 
+  Entity: TEntityBridge;
 begin
   Result := CreateEntity(AEntityId, FPlayerUrl);
+  // Entity := Result as TEntityBridge;
+  // (Result as TEntityBridge).Transform.RigidBody.LockRotation := [0, 2];
 end;
 
 function TEntityManager.CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;

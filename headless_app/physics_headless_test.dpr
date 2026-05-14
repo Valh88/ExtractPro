@@ -1,92 +1,82 @@
 {
-  Visual (default): window + viewport, see box + sphere.
-  Headless: console, physics only.
-
-  Visual:  castle-engine compile
-  Headless: castle-engine compile --compiler-option=-dHEADLESS
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                      ExtractPro Server                             │
+  ├─────────────────────────────────────────────────────────────────────┤
+  │                                                                     │
+  │  ── Режимы сборки ───────────────────────────────────────────────── │
+  │                                                                     │
+  │    castle-engine compile                        headless (default)  │
+  │    castle-engine compile --compiler-option=-dVISUAL   окно + физика │
+  │                                                                     │
+  │  ── Команды запуска (headless) ────────────────────��─────────────── │
+  │                                                                     │
+  │    ./ExtractProServer                           порт 7777, 8 слотов │
+  │    ./ExtractProServer --port=8888               порт 8888           │
+  │    ./ExtractProServer --max-players=16          до 16 игроков       │
+  │    ./ExtractProServer --port=9001 --max-players=4                   │
+  │                                                                     │
+  │  ── Визуальный режим (-dVISUAL) ─────────────────────────────────── │
+  │                                                                     │
+  │    Запускает TCastleWindow со вьюпортом + физическая сцена.         │
+  │    Сервер автоматически стартует на порту 7777.                     │
+  │    LabelStatus показывает количество подключённых игроков.          │
+  │    WASD + мышь — свободный полёт по сцене (CGE examine navigation).│
+  │    Подключиться: отдельный экземпляр Extract/клиента.              │
+  │                                                                     │
+  │  ── Сетевая архитектура ─────────────────────────────────────────── │
+  │                                                                     │
+  │    TGameServer (NetServer.pas)          ←──  RNL (UDP)              │
+  │      │  OnConnect + OnDisconnect + OnReceive                        │
+  │      │                                                              │
+  │    TGameWorld (GameWorld.pas)           игровая логика              │
+  │      │  AISystem, CombatSystem, ...                                 │
+  │                                                                     │
+  │    Пакеты: TNetMessage с msg* типом (NetMessages.pas)               │
+  │                                                                     │
+  │  ── Зависимости ─────────────────────────────────────────────────── │
+  │    RNL, help_types, EntityTypes, WorldTypes, GameWorld,             │
+  │    GameConfig, WorldBridge, NetServer, NetMessages                  │
+  │                                                                     │
+  └─────────────────────────────────────────────────────────────────────┘
 }
+
 program headless_app;
 
 {$mode objfpc}{$H+}
 
-{$ifdef HEADLESS}
-  {$ifdef MSWINDOWS} {$apptype CONSOLE} {$endif}
-{$else}
+{$ifdef VISUAL}
   {$ifdef MSWINDOWS} {$apptype GUI} {$endif}
+{$else}
+  {$ifdef MSWINDOWS} {$apptype CONSOLE} {$endif}
+  {$define HEADLESS}
 {$endif}
 
 uses
   {$IFDEF UNIX} CThreads, {$ENDIF}
-  SysUtils, Classes,
-  CastleVectors, CastleTransform, CastleScene, CastleUtils,
-  PhysicsWorldSetup
-  {$ifndef HEADLESS}
-  , CastleWindow, CastleViewport
+  SysUtils, Classes
+  {$ifdef VISUAL}
+  , CastleVectors, CastleTransform, CastleScene, CastleUtils, CastleParameters,
+  CastleWindow, CastleViewport, CastleUIControls, CastleControls,
+  GameViewServerTest, ServerEntityFactory, GameServerApp
+  {$else}
+  , GameServerApp
   {$endif}
   ;
 
-{$ifndef HEADLESS}
+{$ifdef VISUAL}
 var
   Window: TCastleWindow;
 
 procedure ApplicationInitialize;
-var
-  V: TCastleViewport;
-  Ball: TCastleTransform;
-  Light: TCastleDirectionalLight;
 begin
-  V := TCastleViewport.Create(Application);
-  V.FullSize := true;
-  Window.Controls.InsertFront(V);
-  BuildPhysicsDemo(V.Items, True, Ball);
-  Light := TCastleDirectionalLight.Create(Application);
-  Light.Translation := Vector3(4, 12, 6);
-  V.Items.Add(Light);
-  V.Camera.SetWorldView(
-    Vector3(6, 5, 6),
-    Vector3(-1, -0.45, -1),
-    Vector3(0, 1, 0));
+  ViewServerTest := TViewServerTest.Create(Application);
+  Window.Container.View := ViewServerTest;
 end;
 {$endif}
 
-{$ifdef HEADLESS}
-var
-  WorldRoot: TCastleRootTransform;
-  Ball: TCastleTransform;
-  Dt: Single;
-  Step: Integer;
-  RayHit: TRayCastResult;
-{$endif}
-
 begin
 {$ifdef HEADLESS}
-  InternalCastleApplicationMode := appRunning;
-
-  WorldRoot := TCastleRootTransform.Create(nil);
-  try
-    BuildPhysicsDemo(WorldRoot, False, Ball);
-
-    WriteLn('Physics headless (define HEADLESS): ball falls on static box.');
-    Dt := 1 / 60;
-
-    for Step := 1 to 120 do
-    begin
-      WorldRoot.UpdateIncreaseTime(Dt);
-
-      if (Step mod 20) = 0 then
-      begin
-        RayHit := WorldRoot.PhysicsRayCast(
-          Vector3(0, 5, 0), Vector3(0, -1, 0), 20, nil, AllLayers);
-        WriteLn(Format('step %d  ball Y=%.4f  ray_hit=%s  ray_Y=%.4f',
-          [Step, Ball.Translation.Y, BoolToStr(RayHit.Hit, True),
-           RayHit.Point.Y]));
-      end;
-    end;
-
-    WriteLn('Done.');
-  finally
-    FreeAndNil(WorldRoot);
-  end;
+  TGameServerApp.RunApp;
 {$else}
   Application.OnInitialize := @ApplicationInitialize;
   Window := TCastleWindow.Create(Application);
