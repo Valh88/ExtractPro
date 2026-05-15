@@ -50,24 +50,23 @@ begin
   begin
     Design := TCastleTransformDesign.Create(nil);
     Design.Url := AUrl;
-    Transform := Design;
+    Transform := Design.DesignRoot;
   end else
   begin
     Scene := TCastleScene.Create(nil);
     Scene.Url := AUrl;
     Transform := Scene;
   end;
-
-  Result := TEntityBridge.Create(AEntityId, Transform);
+  Result := TEntityBridge.Create(AEntityId, Transform, Design);
 end;
 
 function TEntityManager.CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
-var 
-  Entity: TEntityBridge;
 begin
   Result := CreateEntity(AEntityId, FPlayerUrl);
-  // Entity := Result as TEntityBridge;
-  // (Result as TEntityBridge).Transform.RigidBody.LockRotation := [0, 2];
+  if Result.Transform.RigidBody <> nil then
+  begin
+    Result.Transform.RigidBody.LockRotation := [0, 2];
+  end;
 end;
 
 function TEntityManager.CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
@@ -104,17 +103,9 @@ begin
   Cylinder.AddBehavior(CharCtrl);
 
   if Cylinder.RigidBody <> nil then
+  begin
     Cylinder.RigidBody.LockRotation := [0, 2];
-
-  CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
-  CharCtrl.Viewport := FViewport;
-  CharCtrl.Camera := HeadCamera;
-
-  // Cylinder.CastShadows := True;
-  Cylinder.AddBehavior(CharCtrl);
-
-  if Cylinder.RigidBody <> nil then
-    Cylinder.RigidBody.LockRotation := [0, 2];
+  end;
 
   FPSCam := TFirstPersonCameraBehavior.Create(Cylinder);
   FPSCam.Viewport := FViewport;

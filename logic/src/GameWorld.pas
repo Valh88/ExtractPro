@@ -18,7 +18,6 @@ type
     FData: TGameWorldData;
     FPhase: TRaidPhase;
     FNextEntityId: TEntityId;
-    FRaidTime: Single;
     FMaxRaidTime: Single;
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
@@ -51,7 +50,6 @@ type
     procedure QueueEvent(const Ev: TGameEvent);
 
     property Phase: TRaidPhase read FPhase;
-    property RaidTime: Single read FRaidTime;
     property World: IGameWorld read FWorld write FWorld;
     property Factory: IEntityFactory read FFactory write FFactory;
   end;
@@ -170,7 +168,6 @@ end;
 procedure TGameWorld.Start;
 begin
   FPhase := rpExploring;
-  FRaidTime := 0;
   FData.Init;
 end;
 
@@ -183,18 +180,6 @@ procedure TGameWorld.Update(const SecondsPassed: Single);
 var
   i: Integer;
 begin
-  FRaidTime := FRaidTime + SecondsPassed;
-  if FRaidTime >= FMaxRaidTime then
-  begin
-    for i := 0 to High(FData.Players) do
-      if FData.Players[i].Status = psInRaid then
-      begin
-        FData.Players[i].Inventory.Free;
-        FData.Players[i].Status := psDead;
-      end;
-    Exit;
-  end;
-
   for i := 0 to FSystems.Count - 1 do
     FSystems[i].Update(SecondsPassed);
 

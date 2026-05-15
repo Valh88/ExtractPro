@@ -57,8 +57,10 @@ end;
 
 destructor TEntityBridge.Destroy;
 begin
-  FreeAndNil(FTransform);
-  FreeAndNil(FOwner);
+  if FOwner <> nil then
+    FreeAndNil(FOwner)
+  else
+    FreeAndNil(FTransform);
   inherited;
 end;
 

@@ -136,7 +136,7 @@ begin
   FInvertHorizontalMouseLook := False;
   FCameraSmoothFactor := 15;
   FMouseSmoothFactor := 0;
-  FEyeHeight := 0.8;
+  FEyeHeight := 1.2;
   FCameraDistance := 4.0;
   FCameraHeight := 2.0;
   FFocusHeight := 1.0;

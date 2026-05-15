@@ -1,6 +1,5 @@
 {
   "$$ClassName" : "TCastleCylinder",
-  "CastShadows" : false,
   "Height" : 1.7000000476837158E+000,
   "Name" : "Player",
   "Radius" : 5.0000000000000000E-001,
