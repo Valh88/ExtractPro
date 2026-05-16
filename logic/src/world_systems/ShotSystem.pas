@@ -19,7 +19,7 @@ type
 
 implementation
 
-uses GameWorld;
+uses GameWorld, BulletTimer;
 
 { TShotSystem }
 
@@ -40,6 +40,7 @@ var
   Cam: TCastleTransform;
   i: Integer;
   CamPos, Dir: CastleVectors.TVector3;
+  B: TBulletBehavior;
 begin
   Result := False;
   if Event.EventType <> itMouseButton then Exit;
@@ -65,6 +66,9 @@ begin
   Inc(FNextBulletId);
   Bullet.Transform.Translation := CamPos + Dir * 1.0;
   Bullet.Transform.RigidBody.LinearVelocity := Dir * 20;
+
+  B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
+  if B <> nil then B.GameWorld := GW;
 
   GW.World.RegisterEntity(Bullet);
   Result := True;

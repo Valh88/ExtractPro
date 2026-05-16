@@ -5,18 +5,22 @@ unit BulletTimer;
 interface
 
 uses
-  Classes, CastleTransform, Interfaces, BehaviorBase;
+  Classes, CastleTransform, Interfaces, BehaviorBase, GameWorld, help_types;
 
 type
   TBulletBehavior = class(TBehaviorBase)
   private
     FTime: Single;
     FMaxTime: Single;
+    FEntityId: TEntityId;
+    FGameWorld: TGameWorld;
     FOnHit: TCollisionEvent;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent; const AEntityId: TEntityId;
+      const AMaxTime: Single = 20);
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
     procedure OnCollision(const CollisionDetails: TPhysicsCollisionDetails);
+    property GameWorld: TGameWorld read FGameWorld write FGameWorld;
     property OnHit: TCollisionEvent read FOnHit write FOnHit;
   end;
 
@@ -24,20 +28,22 @@ implementation
 
 { TBulletBehavior }
 
-constructor TBulletBehavior.Create(AOwner: TComponent);
+constructor TBulletBehavior.Create(AOwner: TComponent; const AEntityId: TEntityId;
+  const AMaxTime: Single = 20);
 begin
   inherited Create(AOwner);
   FTime := 0;
-  FMaxTime := 20;
+  FMaxTime := AMaxTime;
+  FEntityId := AEntityId;
 end;
 
 procedure TBulletBehavior.OnCollision(const CollisionDetails: TPhysicsCollisionDetails);
-var
-  RB: TCastleRigidBody;
 begin
+  if FTime < 0.1 then Exit;
   if Assigned(FOnHit) then
     FOnHit(CollisionDetails);
-  writeLn('OnCollision: ');
+  WriteLn('Collision');
+  FTime := FMaxTime;
 end;
 
 procedure TBulletBehavior.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
@@ -48,6 +54,9 @@ begin
   begin
     if Parent <> nil then
       Parent.Exists := False;
+    if FGameWorld <> nil then
+      FGameWorld.QueueDeadEntity(FEntityId);
+    RemoveMe := rtRemove;
   end;
 end;
 

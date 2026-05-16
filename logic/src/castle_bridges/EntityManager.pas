@@ -140,7 +140,7 @@ begin
   Sphere.AddBehavior(RB);
   Sphere.AddBehavior(Collider);
 
-  Bullet := TBulletBehavior.Create(Sphere);
+  Bullet := TBulletBehavior.Create(Sphere, AEntityId);
   RB.OnCollisionEnter := @Bullet.OnCollision;
   Sphere.AddBehavior(Bullet);
 

@@ -21,10 +21,12 @@ type
     FMaxRaidTime: Single;
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
+    FDeadEntities: array of TEntityId;
 
     function AllocateEntityId: TEntityId;
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
+    procedure FlushDeadEntities;
   protected
     FSystems: TSystemList;
     procedure RegisterSystems; virtual;
@@ -52,6 +54,7 @@ type
     function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
     function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
     procedure QueueEvent(const Ev: TGameEvent);
+    procedure QueueDeadEntity(const AEntityId: TEntityId);
 
     property Phase: TRaidPhase read FPhase;
     property World: IGameWorld read FWorld write FWorld;
@@ -194,6 +197,7 @@ begin
     FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
+  FlushDeadEntities;
 end;
 
 function TGameWorld.Press(const Event: TInputPressRelease): Boolean;
@@ -208,6 +212,25 @@ end;
 procedure TGameWorld.QueueEvent(const Ev: TGameEvent);
 begin
   GameEventBus.Queue(Ev);
+end;
+
+procedure TGameWorld.QueueDeadEntity(const AEntityId: TEntityId);
+var
+  L: Integer;
+begin
+  L := Length(FDeadEntities);
+  SetLength(FDeadEntities, L + 1);
+  FDeadEntities[L] := AEntityId;
+end;
+
+procedure TGameWorld.FlushDeadEntities;
+var
+  Id: TEntityId;
+begin
+  for Id in FDeadEntities do
+    if FWorld <> nil then
+      FWorld.UnregisterEntity(Id);
+  FDeadEntities := nil;
 end;
 
 function TGameWorld.AddPlayer: Integer;
