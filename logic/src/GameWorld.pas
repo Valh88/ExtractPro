@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  WorldSystemBase;
+  WorldSystemBase, CastleKeysMouse;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
@@ -30,6 +30,7 @@ type
     constructor Create(AWorld: IGameWorld; AFactory: IEntityFactory);
     destructor Destroy; override;
 
+    function Press(const Event: TInputPressRelease): Boolean;
     procedure Start;
     procedure Stop;
     procedure Update(const SecondsPassed: Single);
@@ -184,6 +185,15 @@ begin
     FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
+end;
+
+function TGameWorld.Press(const Event: TInputPressRelease): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  for i := 0 to FSystems.Count - 1 do
+    if FSystems[i].Press(Event) then Exit(True);
 end;
 
 procedure TGameWorld.QueueEvent(const Ev: TGameEvent);

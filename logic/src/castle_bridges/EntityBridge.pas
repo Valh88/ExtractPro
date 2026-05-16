@@ -5,7 +5,7 @@ unit EntityBridge;
 interface
 
 uses
-  SysUtils, Classes, CastleScene, CastleTransform, CastleVectors, help_types, Interfaces;
+  SysUtils, Classes, CastleScene, CastleTransform, CastleVectors, help_types, Interfaces, BehaviorBase;
 
 type
   TEntityBridge = class(TInterfacedObject, IGameEntity)
@@ -36,6 +36,9 @@ type
     property Rotation: Single read GetRotation write SetRotation;
     property Scale: Single read GetScale write SetScale;
     property Visible: Boolean read GetVisible write SetVisible;
+
+    procedure AddBehavior(const ABehavior: TBehaviorBase);
+    procedure RemoveBehavior(var ABehavior: TBehaviorBase);
 
     procedure PlayAnimation(const Name: String; Loop: Boolean);
     procedure StopAnimation;
@@ -127,6 +130,21 @@ end;
 
 procedure TEntityBridge.SyncFromData(const EntityData: Pointer);
 begin
+end;
+
+procedure TEntityBridge.AddBehavior(const ABehavior: TBehaviorBase);
+begin
+  if ABehavior = nil then Exit;
+  ABehavior.Entity := Self;
+  FTransform.AddBehavior(ABehavior);
+end;
+
+procedure TEntityBridge.RemoveBehavior(var ABehavior: TBehaviorBase);
+begin
+  if ABehavior = nil then Exit;
+  ABehavior.Entity := nil;
+  FTransform.RemoveBehavior(ABehavior);
+  FreeAndNil(ABehavior);
 end;
 
 end.

@@ -184,7 +184,7 @@ end;
 
 function TWorldBridge.Press(const Event: TInputPressRelease): Boolean;
 begin
-  Result := False;
+  Result := FGameLogic.Press(Event);
 end;
 
 end.
