@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  WorldSystemBase, CastleKeysMouse;
+  WorldSystemBase, CastleKeysMouse, ShotSystem;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
@@ -46,6 +46,7 @@ type
 
     { Доступ для систем }
     property Data: TGameWorldData read FData;
+    function FindEntity(const AEntityId: TEntityId): IGameEntity;
     function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
     function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
     procedure QueueEvent(const Ev: TGameEvent);
@@ -70,6 +71,7 @@ begin
   FMaxRaidTime := GlobalConfig.RaidTime;
 
   FSystems := TSystemList.Create(True);
+  FSystems.Add(TShotSystem.Create(Self));
 end;
 
 destructor TGameWorld.Destroy;
@@ -121,7 +123,7 @@ begin
     FData.Enemies[Idx].Visual := Visual;
     Exit;
   end;
-  P.Id := AEntityId;
+  P.Id := AEntityId; //TODO удалить это в будущем, заглушка
   P.Stats.MaxHealth := 100;
   P.Stats.Health := 100;
   P.Stats.Speed := 10;
@@ -278,6 +280,19 @@ begin
 end;
 
 { Игровой цикл }
+
+function TGameWorld.FindEntity(const AEntityId: TEntityId): IGameEntity;
+var
+  i: Integer;
+begin
+  for i := 0 to High(FData.Players) do
+    if (FData.Players[i].Id = AEntityId) and (FData.Players[i].Visual <> nil) then
+      Exit(FData.Players[i].Visual);
+  for i := 0 to High(FData.Enemies) do
+    if (FData.Enemies[i].Id = AEntityId) and (FData.Enemies[i].Visual <> nil) then
+      Exit(FData.Enemies[i].Visual);
+  Result := nil;
+end;
 
 function TGameWorld.FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
 var

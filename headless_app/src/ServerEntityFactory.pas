@@ -46,6 +46,7 @@ type
     function CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateMainPlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
+    function CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
   end;
 
 implementation
@@ -86,6 +87,12 @@ begin
   Scene := TCastleScene.Create(nil);
   Scene.Url := FEnemyUrl;
   Result := TEntityBridge.Create(AEntityId, Scene);
+end;
+
+function TServerEntityFactory.CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
+begin
+  //Заглушка
+  Result := CreateEnemyEntity(AEntityId);
 end;
 
 end.

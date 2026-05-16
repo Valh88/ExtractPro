@@ -6,7 +6,8 @@ interface
 
 uses
   SysUtils, Classes, CastleScene, CastleTransform, CastleVectors, CastleViewport, CastleCameras,
-  help_types, Interfaces, EntityBridge,
+  CastleShapes,
+  help_types, Interfaces, EntityBridge, BehaviorBase, BulletTimer,
   CharacterControllerBehavior, FirstPersonCameraBehavior;
 
 type
@@ -22,6 +23,7 @@ type
     function CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateMainPlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
+    function CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
   end;
 
 implementation
@@ -116,6 +118,33 @@ begin
   Cylinder.AddBehavior(FPSCam);
 
   Result := TEntityBridge.Create(AEntityId, Cylinder, Design); // Cylinder or Design?
+end;
+
+function TEntityManager.CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
+var
+  Sphere: TCastleSphere;
+  RB: TCastleRigidBody;
+  Collider: TCastleSphereCollider;
+  Bullet: TBulletBehavior;
+begin
+  Sphere := TCastleSphere.Create(nil);
+  Sphere.Radius := 0.15;
+  Sphere.Color := Vector4(1, 0.8, 0, 1);
+
+  RB := TCastleRigidBody.Create(Sphere);
+  RB.Dynamic := True;
+
+  Collider := TCastleSphereCollider.Create(Sphere);
+  Collider.Radius := 0.15;
+
+  Sphere.AddBehavior(RB);
+  Sphere.AddBehavior(Collider);
+
+  Bullet := TBulletBehavior.Create(Sphere);
+  RB.OnCollisionEnter := @Bullet.OnCollision;
+  Sphere.AddBehavior(Bullet);
+
+  Result := TEntityBridge.Create(AEntityId, Sphere);
 end;
 
 end.

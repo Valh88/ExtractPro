@@ -15,6 +15,7 @@ See https://castle-engine.io/project_manifest for documentation of this file.
       <path value="code/" />
       <path value="code/behaviours/" />
       <path value="../logic/src/" />
+      <path value="../logic/src/behaviors/" />
       <path value="../logic/src/net/" />
       <path value="../logic/src/castle_bridges/" />
       <path value="../logic/src/world_systems/" />

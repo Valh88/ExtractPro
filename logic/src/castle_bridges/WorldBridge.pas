@@ -5,8 +5,8 @@ unit WorldBridge;
 interface
 
 uses
-  SysUtils, Classes, CastleTransform, CastleVectors, CastleKeysMouse, CastleUIControls, help_types,
-  Interfaces, GameWorld;
+  SysUtils, Classes, CastleTransform, CastleVectors, CastleKeysMouse, CastleUIControls,
+    help_types, Interfaces, GameWorld;
 
 type
   TWorldBridge = class(TInterfacedObject, IGameWorld)

@@ -72,6 +72,7 @@ type
     function CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateMainPlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
+    function CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
   end;
 
   { Базовая игровая система }
