@@ -116,6 +116,8 @@ type
     property CameraHeight: Single read FCameraHeight write FCameraHeight;
     { Третье лицо: высота точки на теле, на которую смотрит камера. }
     property FocusHeight: Single read FFocusHeight write FFocusHeight;
+    { Стабильный горизонтальный угол (рад), вычисленный из ввода мыши. }
+    property HorizontalAngle: Single read FAngleHorizontal;
   end;
 
 implementation

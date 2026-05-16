@@ -98,17 +98,6 @@ begin
     FViewport.Camera := HeadCamera;
   end;
 
-  CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
-  CharCtrl.Viewport := FViewport;
-  CharCtrl.Camera := HeadCamera;
-  CharCtrl.MoveSpeed := 6;
-  Cylinder.AddBehavior(CharCtrl);
-
-  if Cylinder.RigidBody <> nil then
-  begin
-    Cylinder.RigidBody.LockRotation := [0, 2];
-  end;
-
   FPSCam := TFirstPersonCameraBehavior.Create(Cylinder);
   FPSCam.Viewport := FViewport;
   FPSCam.Camera := HeadCamera;
@@ -116,6 +105,18 @@ begin
   FPSCam.CursorVisible := False;
   FPSCam.InvertHorizontalMouseLook := True;
   Cylinder.AddBehavior(FPSCam);
+
+  CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
+  CharCtrl.Viewport := FViewport;
+  CharCtrl.Camera := HeadCamera;
+  CharCtrl.MoveSpeed := 6;
+  CharCtrl.FirstPersonCam := FPSCam;
+  Cylinder.AddBehavior(CharCtrl);
+
+  if Cylinder.RigidBody <> nil then
+  begin
+    Cylinder.RigidBody.LockRotation := [0, 2];
+  end;
 
   Result := TEntityBridge.Create(AEntityId, Cylinder, Design); // Cylinder or Design?
 end;
@@ -133,6 +134,7 @@ begin
 
   RB := TCastleRigidBody.Create(Sphere);
   RB.Dynamic := True;
+  RB.Gravity := False;
 
   Collider := TCastleSphereCollider.Create(Sphere);
   Collider.Radius := 0.15;

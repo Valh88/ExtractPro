@@ -1,17 +1,3 @@
-{
-  Поведение: универсальный контроллер персонажа.
-
-  - Движение WASD (или стрелки) по плоскости XZ.
-  - На сенсорных устройствах автоматически создаётся TTouchMoveControl (джойстик слева) и его вектор используется для движения.
-  - Прыжок по пробелу.
-
-  Логика движения вынесена из FirstPersonCameraBehavior, чтобы её можно было
-  переиспользовать с разными камерами.
-
-  Предусловия:
-    - Поведение добавлено к TCastleTransform с TCastleRigidBody (Dynamic = True).
-    - Гравитация включена у rigid body.
-}
 unit CharacterControllerBehavior;
 
 {$mode objfpc}{$H+}
@@ -22,7 +8,7 @@ uses
   Classes,
   CastleVectors, CastleTransform, CastleCameras,
   CastleViewport, CastleUIControls, CastleKeysMouse, CastleApplicationProperties,
-  TouchMoveControl;
+  FirstPersonCameraBehavior, TouchMoveControl;
 
 type
   TCharacterControllerBehavior = class(TCastleBehavior)
@@ -36,6 +22,7 @@ type
     FTouchMoveControl: TTouchMoveControl;
     FMoving: Boolean;
     FCanJump: Boolean;
+    FFirstPersonCam: TFirstPersonCameraBehavior;
     procedure EnsureTouchMoveControl;
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
@@ -45,17 +32,13 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
 
-    { Вьюпорт, из которого берётся контейнер ввода. На сенсорных устройствах при установленном Viewport создаётся джойстик. }
     property Viewport: TCastleViewport read FViewport write FViewport;
-    { Камера, по направлению взгляда которой считается "вперёд" для WASD. Если nil — используется ориентация тела (Parent.Direction). }
     property Camera: TCastleCamera read FCamera write FCamera;
-    { Максимальная скорость бега по земле. }
     property MoveSpeed: Single read FMoveSpeed write FMoveSpeed;
     property SmoothStop: Single read FSmoothStop write FSmoothStop;
-    { Начальная вертикальная скорость прыжка. }
     property JumpSpeed: Single read FJumpSpeed write FJumpSpeed;
-    { Вектор движения от сенсорного джойстика (если используется). Можно задавать извне для кастомной логики. }
     property TouchMove: TVector2 read FTouchMove write FTouchMove;
+    property FirstPersonCam: TFirstPersonCameraBehavior read FFirstPersonCam write FFirstPersonCam;
   end;
 
 implementation
@@ -103,21 +86,11 @@ begin
 end;
 
 function TCharacterControllerBehavior.ForwardDir: TVector3;
-var
-  D: TVector3;
 begin
-  if (FCamera <> nil) and FCamera.HasWorldTransform then
-    D := FCamera.WorldDirection
-  else if (Parent <> nil) and Parent.HasWorldTransform then
-    D := Parent.Direction
+  if FFirstPersonCam <> nil then
+    Result := Vector3(Sin(FFirstPersonCam.HorizontalAngle), 0, -Cos(FFirstPersonCam.HorizontalAngle))
   else
-    D := Vector3(0, 0, -1);
-
-  D.Y := 0;
-  if D.IsPerfectlyZero then
-    Result := Vector3(0, 0, -1)
-  else
-    Result := D.Normalize;
+    Result := Vector3(0, 0, -1);
 end;
 
 function TCharacterControllerBehavior.RightDir: TVector3;
@@ -156,7 +129,6 @@ begin
   MoveDir := TVector3.Zero;
   FMoving := false;
 
-  { Сенсорный джойстик: при ненулевом векторе используем его (Y = вперёд, X = вправо). }
   if FTouchMove.Length > 0.01 then
   begin
     MoveDir := ForwardDir * FTouchMove.Y + RightDir * FTouchMove.X;
@@ -187,12 +159,9 @@ begin
     end;
   end;
   if Cont.Pressed[keyShift] then
-  begin
-    Speed := Speed * 2;
-  end else
-  begin
+    Speed := Speed * 2
+  else
     Speed := FMoveSpeed;
-  end;
   Vel := RB.LinearVelocity;
 
   if FMoving then
@@ -209,7 +178,6 @@ begin
     Vel.Z := Vel.Z * (1 - FSmoothStop * SecondsPassed);
   end;
 
-  { Прыжок: простая проверка "практически на земле" по вертикальной скорости. }
   FCanJump := Abs(Vel.Y) < 0.01;
   if FCanJump and Cont.Pressed[keySpace] then
     Vel.Y := FJumpSpeed;
@@ -218,4 +186,3 @@ begin
 end;
 
 end.
-
