@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  WorldSystemBase, CastleKeysMouse, ShotSystem;
+  WorldSystemBase, CastleKeysMouse;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
@@ -21,19 +21,21 @@ type
     FMaxRaidTime: Single;
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
-    FSystems: TSystemList;
 
     function AllocateEntityId: TEntityId;
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
+  protected
+    FSystems: TSystemList;
+    procedure RegisterSystems; virtual;
   public
     constructor Create(AWorld: IGameWorld; AFactory: IEntityFactory);
     destructor Destroy; override;
 
-    function Press(const Event: TInputPressRelease): Boolean;
-    procedure Start;
-    procedure Stop;
-    procedure Update(const SecondsPassed: Single);
+    function Press(const Event: TInputPressRelease): Boolean; virtual;
+    procedure Start; virtual;
+    procedure Stop; virtual;
+    procedure Update(const SecondsPassed: Single); virtual;
 
     { Управление миром }
     function AddPlayer: Integer;
@@ -56,6 +58,8 @@ type
     property Factory: IEntityFactory read FFactory write FFactory;
   end;
 
+  TGameWorldClass = class of TGameWorld;
+
 implementation
 
 { TGameWorld }
@@ -71,17 +75,20 @@ begin
   FMaxRaidTime := GlobalConfig.RaidTime;
 
   FSystems := TSystemList.Create(True);
-  FSystems.Add(TShotSystem.Create(Self));
+  RegisterSystems;
 end;
 
 destructor TGameWorld.Destroy;
 begin
+  FWorld := nil;
   FSystems.Free;
   FData.Free;
-  FWorld := nil;
   FFactory := nil;
-  FSystems.Free;
   inherited;
+end;
+
+procedure TGameWorld.RegisterSystems;
+begin
 end;
 
 function TGameWorld.AllocateEntityId: TEntityId;

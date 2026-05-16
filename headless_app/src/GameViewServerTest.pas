@@ -31,9 +31,9 @@ interface
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
-  help_types, Interfaces, WorldBridge, GameWorld, GameConfig,
+  help_types, Interfaces, GameConfig,
   RNL, NetServer, NetMessages,
-  ServerEntityFactory;
+  ServerEntityFactory, GameWorldServer;
 
 type
   TViewServerTest = class(TCastleView)
@@ -48,7 +48,7 @@ type
     procedure Update(const SecondsPassed: Single; var HandleInput: Boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
   private
-    FWorldBridge: IGameWorld;
+    FGameClient: TGameWorldServer;
     FGameServer: TGameServer;
     procedure OnServerConnect(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
     procedure OnServerDisconnect(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
@@ -79,8 +79,8 @@ begin
     'castle-data:/PlayerProto.castle-transform',
     ''
   );
-  FWorldBridge := TWorldBridge.Create(Viewport1.Items, Factory);
-  FWorldBridge.Start;
+  FGameClient := TGameWorldServer.Create(Viewport1.Items, Factory);
+  FGameClient.Start;
 
   FGameServer := TGameServer.Create(7777, 8);
   FGameServer.OnConnect := @OnServerConnect;
@@ -93,7 +93,7 @@ end;
 procedure TViewServerTest.Stop;
 begin
   FGameServer.Free;
-  FWorldBridge := nil;
+  FGameClient.Free;
   Viewport1.Camera := nil;
   inherited;
 end;
@@ -104,13 +104,15 @@ begin
   LabelFps.Caption := 'FPS: ' + Container.Fps.ToString;
   if FGameServer <> nil then
     FGameServer.Service(0);
-  if FWorldBridge <> nil then
-    FWorldBridge.Update(SecondsPassed);
+  if FGameClient <> nil then
+    FGameClient.Update(SecondsPassed);
 end;
 
 function TViewServerTest.Press(const Event: TInputPressRelease): Boolean;
 begin
   Result := inherited;
+  if FGameClient <> nil then
+    FGameClient.Press(Event);
 end;
 
 procedure TViewServerTest.OnServerConnect(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);

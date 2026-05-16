@@ -5,20 +5,19 @@ unit WorldBridge;
 interface
 
 uses
-  SysUtils, Classes, CastleTransform, CastleVectors, CastleKeysMouse, CastleUIControls,
-    help_types, Interfaces, GameWorld;
+  SysUtils, Classes, CastleTransform, CastleVectors, CastleKeysMouse, CastleUIControls, help_types,
+  Interfaces, GameWorld;
 
 type
   TWorldBridge = class(TInterfacedObject, IGameWorld)
   private
     FRoot: TCastleAbstractRootTransform;
     FGameLogic: TGameWorld;
-    FFactory: IEntityFactory;
   public
-    constructor Create(const ARoot: TCastleAbstractRootTransform; const AFactory: IEntityFactory);
+    constructor Create(const ARoot: TCastleAbstractRootTransform);
     destructor Destroy; override;
 
-    property GameLogic: TGameWorld read FGameLogic;
+    property GameLogic: TGameWorld read FGameLogic write FGameLogic;
 
     { IGameWorld }
     procedure Start;
@@ -38,21 +37,16 @@ implementation
 
 { TWorldBridge }
 
-constructor TWorldBridge.Create(const ARoot: TCastleAbstractRootTransform; const AFactory: IEntityFactory);
+constructor TWorldBridge.Create(const ARoot: TCastleAbstractRootTransform);
 begin
   inherited Create;
   FRoot := ARoot;
-  FFactory := AFactory;
-  FGameLogic := TGameWorld.Create(Self, AFactory);
 end;
 
 destructor TWorldBridge.Destroy;
 var
   i: Integer;
 begin
-  if FGameLogic <> nil then
-    FGameLogic.World := nil;
-
   if (FGameLogic <> nil) and (FRoot <> nil) then
   begin
     for i := 0 to High(FGameLogic.Data.Players) do
@@ -68,9 +62,6 @@ begin
         FGameLogic.Data.Enemies[i].Visual := nil;
       end;
   end;
-
-  FGameLogic.Free;
-  FFactory := nil;
   inherited;
 end;
 
@@ -78,13 +69,10 @@ end;
 
 procedure TWorldBridge.Start;
 begin
-  FGameLogic.Start;
-
 end;
 
 procedure TWorldBridge.Stop;
 begin
-  FGameLogic.Stop;
 end;
 
 procedure TWorldBridge.Resume;
@@ -97,7 +85,6 @@ end;
 
 procedure TWorldBridge.Update(const SecondsPassed: Single);
 begin
-  FGameLogic.Update(SecondsPassed);
 end;
 
 function TWorldBridge.RayCast(const FromPoint, ToPoint: help_types.TVector3; out ResultData: TRayCastResult): Boolean;
@@ -184,7 +171,7 @@ end;
 
 function TWorldBridge.Press(const Event: TInputPressRelease): Boolean;
 begin
-  Result := FGameLogic.Press(Event);
+  Result := False;
 end;
 
 end.

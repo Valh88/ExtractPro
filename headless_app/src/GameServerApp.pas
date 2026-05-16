@@ -27,7 +27,8 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  NetServer, NetMessages;
+  NetServer, NetMessages,
+  ServerEntityFactory, GameWorldServer;
 
 type
   TGameServerApp = class;
@@ -41,6 +42,7 @@ type
   private
     FServer: TGameServer;
     FWorldRoot: TCastleAbstractRootTransform;
+    FGameWorld: TGameWorldServer;
     FPort: Word;
     FMaxPlayers: Integer;
     FRunning: Boolean;
@@ -57,6 +59,7 @@ type
     procedure Stop;
     class procedure RunApp(const ASetup: TGameServerAppProc = nil);
     property Server: TGameServer read FServer;
+    property GameWorld: TGameWorldServer read FGameWorld;
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
     property Running: Boolean read FRunning;
@@ -83,6 +86,8 @@ end;
 destructor TGameServerApp.Destroy;
 begin
   Stop;
+  FGameWorld.Free;
+  FWorldRoot.Free;
   inherited;
 end;
 
@@ -115,12 +120,17 @@ end;
 procedure TGameServerApp.LoadScene;
 var
   Design: TCastleTransformDesign;
+  Factory: IEntityFactory;
 begin
   FWorldRoot := TCastleRootTransform.Create(nil);
   Design := TCastleTransformDesign.Create(nil);
   Design.Url := 'castle-data:/physics_scene.castle-transform';
   FWorldRoot.Add(Design);
   FWorldRoot.UpdateIncreaseTime(0);
+
+  Factory := TServerEntityFactory.Create('', '');
+  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory);
+  FGameWorld.Start;
 end;
 
 procedure TGameServerApp.Run;
@@ -129,6 +139,8 @@ const
 begin
   if FRunning then Exit;
   FRunning := True;
+
+  LoadScene;
 
   FServer := TGameServer.Create(FPort, FMaxPlayers);
   FServer.Start;
@@ -141,6 +153,7 @@ begin
     while FRunning do
     begin
       FServer.Service(0);
+      FGameWorld.Update(DT);
 
       if Assigned(FOnTick) then
         FOnTick(Self, DT);

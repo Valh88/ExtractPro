@@ -5,7 +5,7 @@ interface
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
-  help_types, Interfaces, WorldBridge, EntityManager,
+  help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient,
   MouseLookOverlay;
 
 type
@@ -20,7 +20,7 @@ type
     procedure Update(const SecondsPassed: Single; var HandleInput: Boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
   private
-    FWorldBridge: IGameWorld;
+    FGameClient: TGameWorldClient;
     FMouseLookUi: TMouseLookOverlay;
   end;
 
@@ -48,10 +48,10 @@ begin
     'castle-data:/EnemyProto.castle-transform',
     Viewport1
   );
-  FWorldBridge := TWorldBridge.Create(Viewport1.Items, Factory);
-  FWorldBridge.Start;
+  FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory);
+  FGameClient.Start;
   Entity := Factory.CreateMainPlayerEntity(42);
-  FWorldBridge.RegisterEntity(Entity);
+  FGameClient.World.RegisterEntity(Entity);
 
   FMouseLookUi := TMouseLookOverlay.Create(Self);
   FMouseLookUi.FullSize := true;
@@ -59,13 +59,13 @@ begin
   FMouseLookUi.Hero := Entity.Transform;
   InsertBack(FMouseLookUi);
   Entity := Factory.CreatePlayerEntity(43);
-  FWorldBridge.RegisterEntity(Entity);
+  FGameClient.World.RegisterEntity(Entity);
 end;
 
 procedure TViewMain.Stop;
 begin
   Viewport1.Camera := nil;
-  FWorldBridge := nil;
+  FGameClient.Free;
   inherited;
 end;
 
@@ -73,14 +73,15 @@ procedure TViewMain.Update(const SecondsPassed: Single; var HandleInput: Boolean
 begin
   inherited;
   LabelFps.Caption := 'FPS: ' + Container.Fps.ToString;
-  if FWorldBridge <> nil then
-    FWorldBridge.Update(SecondsPassed);
+  if FGameClient <> nil then
+    FGameClient.Update(SecondsPassed);
 end;
 
 function TViewMain.Press(const Event: TInputPressRelease): Boolean;
 begin
   Result := inherited;
-  FWorldBridge.Press(Event);
+  if FGameClient <> nil then
+    FGameClient.Press(Event);
 end;
 
 end.

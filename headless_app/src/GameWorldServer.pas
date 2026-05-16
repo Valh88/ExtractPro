@@ -1,12 +1,12 @@
-unit GameWorldClient;
+unit GameWorldServer;
 
 interface
 
 uses
-  GameWorld, ShotSystem, WorldBridge, CastleTransform, help_types, CastleKeysMouse, Interfaces;
+  GameWorld, WorldBridge, CastleTransform, Interfaces;
 
 type
-  TGameWorldClient = class(TGameWorld)
+  TGameWorldServer = class(TGameWorld)
   protected
     procedure RegisterSystems; override;
   public
@@ -16,9 +16,9 @@ type
 
 implementation
 
-{ TGameWorldClient }
+{ TGameWorldServer }
 
-constructor TGameWorldClient.Create(const ARoot: TCastleAbstractRootTransform;
+constructor TGameWorldServer.Create(const ARoot: TCastleAbstractRootTransform;
   const AFactory: IEntityFactory);
 var
   B: TWorldBridge;
@@ -28,10 +28,9 @@ begin
   B.GameLogic := Self;
 end;
 
-procedure TGameWorldClient.RegisterSystems;
+procedure TGameWorldServer.RegisterSystems;
 begin
   inherited;
-  FSystems.Add(TShotSystem.Create(Self));
 end;
 
 end.
