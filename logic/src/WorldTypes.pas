@@ -21,6 +21,7 @@ type
     Rooms: TDungeonRoomArray;
     Players: array of TPlayerData;
     Enemies: TEnemyArray;
+    Bullets: TBulletArray;
     Items: TItemArray;
     ExtractionPoints: array of TVector2;
     procedure Init;
@@ -38,6 +39,7 @@ begin
   Rooms := nil;
   Players := nil;
   Enemies := nil;
+  Bullets := nil;
   Items := nil;
   ExtractionPoints := nil;
 end;
@@ -55,6 +57,7 @@ begin
   Rooms := nil;
   Players := nil;
   Enemies := nil;
+  Bullets := nil;
   Items := nil;
   ExtractionPoints := nil;
 end;

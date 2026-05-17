@@ -56,6 +56,14 @@ type
     procedure Free;
   end;
 
+  TBulletData = record
+    Id: TEntityId;
+    OwnerId: TEntityId;
+    Visual: IGameEntity;
+  end;
+
+  TBulletArray = array of TBulletData;
+
 implementation
 
 { TInventory }

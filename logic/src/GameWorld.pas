@@ -23,7 +23,6 @@ type
     FFactory: IEntityFactory;
     FDeadEntities: array of TEntityId;
 
-    function AllocateEntityId: TEntityId;
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
     procedure FlushDeadEntities;
@@ -34,13 +33,15 @@ type
     constructor Create(AWorld: IGameWorld; AFactory: IEntityFactory);
     destructor Destroy; override;
 
+    function AllocateEntityId: TEntityId;
     function Press(const Event: TInputPressRelease): Boolean; virtual;
     procedure Start; virtual;
     procedure Stop; virtual;
     procedure Update(const SecondsPassed: Single); virtual;
 
     { Управление миром }
-    function AddPlayer: Integer;
+    procedure AddPlayer(const AVisual: IGameEntity);
+    procedure AddBullet(const AVisual: IGameEntity; const AOwnerId: TEntityId);
     procedure SpawnEnemy(const RoomIndex: Integer);
     procedure GenerateDungeon;
     procedure StartExtraction;
@@ -173,7 +174,18 @@ begin
     if Idx < Last then
       FData.Enemies[Idx] := FData.Enemies[Last];
     SetLength(FData.Enemies, Last);
+    Exit;
   end;
+  Last := High(FData.Bullets);
+  for Idx := 0 to Last do
+    if FData.Bullets[Idx].Id = AEntityId then
+    begin
+      FData.Bullets[Idx].Visual := nil;
+      if Idx < Last then
+        FData.Bullets[Idx] := FData.Bullets[Last];
+      SetLength(FData.Bullets, Last);
+      Exit;
+    end;
 end;
 
 { IGameWorld }
@@ -197,6 +209,7 @@ begin
     FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
+  WriteLn(Length(Data.Bullets));
   FlushDeadEntities;
 end;
 
@@ -228,16 +241,19 @@ var
   Id: TEntityId;
 begin
   for Id in FDeadEntities do
+  begin
     if FWorld <> nil then
       FWorld.UnregisterEntity(Id);
+    RemoveEntity(Id);
+  end;
   FDeadEntities := nil;
 end;
 
-function TGameWorld.AddPlayer: Integer;
+procedure TGameWorld.AddPlayer(const AVisual: IGameEntity);
 var
   P: TPlayerData;
 begin
-  P.Id := AllocateEntityId;
+  P.Id := AVisual.EntityId;
   P.Stats.MaxHealth := GlobalConfig.PlayerBaseHealth;
   P.Stats.Health := GlobalConfig.PlayerBaseHealth;
   P.Stats.Speed := GlobalConfig.PlayerBaseSpeed;
@@ -248,13 +264,30 @@ begin
   P.Kills := 0;
   P.Damage := GlobalConfig.PlayerBaseDamage;
   P.AttackRange := GlobalConfig.PlayerAttackRange;
+  P.Visual := AVisual;
 
   SetLength(FData.Players, Length(FData.Players) + 1);
   FData.Players[High(FData.Players)] := P;
-  Result := High(FData.Players);
 
-  if (FWorld <> nil) and (FFactory <> nil) then
-    FWorld.RegisterEntity(FFactory.CreatePlayerEntity(P.Id));
+  if (FWorld <> nil) then
+  begin
+    FWorld.RegisterEntity(AVisual);
+  end;
+end;
+
+procedure TGameWorld.AddBullet(const AVisual: IGameEntity; const AOwnerId: TEntityId);
+var
+  B: TBulletData;
+begin
+  B.Id := AVisual.EntityId;
+  B.OwnerId := AOwnerId;
+  B.Visual := AVisual;
+
+  SetLength(FData.Bullets, Length(FData.Bullets) + 1);
+  FData.Bullets[High(FData.Bullets)] := B;
+
+  if (FWorld <> nil) then
+    FWorld.RegisterEntity(AVisual);
 end;
 
 procedure TGameWorld.StartExtraction;
@@ -321,6 +354,9 @@ begin
   for i := 0 to High(FData.Enemies) do
     if (FData.Enemies[i].Id = AEntityId) and (FData.Enemies[i].Visual <> nil) then
       Exit(FData.Enemies[i].Visual);
+  for i := 0 to High(FData.Bullets) do
+    if (FData.Bullets[i].Id = AEntityId) and (FData.Bullets[i].Visual <> nil) then
+      Exit(FData.Bullets[i].Visual);
   Result := nil;
 end;
 

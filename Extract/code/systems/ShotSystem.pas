@@ -19,7 +19,7 @@ type
 
 implementation
 
-uses GameWorld, BulletTimer;
+uses GameWorld, BulletTimer, GameWorldClient;
 
 { TShotSystem }
 
@@ -35,7 +35,7 @@ end;
 
 function TShotSystem.Press(const Event: TInputPressRelease): Boolean;
 var
-  GW: TGameWorld;
+  GW: TGameWorldClient;
   MainPlayer, Bullet: IGameEntity;
   Cam: TCastleTransform;
   i: Integer;
@@ -46,8 +46,8 @@ begin
   if Event.EventType <> itMouseButton then Exit;
   if not Event.IsMouseButton(buttonLeft) then Exit;
 
-  GW := WorldObj as TGameWorld;
-  MainPlayer := GW.FindEntity(42);
+  GW := WorldObj as TGameWorldClient;
+  MainPlayer := GW.FindEntity(GW.MainPlayerId);
   if MainPlayer = nil then Exit;
 
   Cam := nil;
@@ -70,7 +70,7 @@ begin
   B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
   if B <> nil then B.GameWorld := GW;
 
-  GW.World.RegisterEntity(Bullet);
+  GW.AddBullet(Bullet, GW.MainPlayerId);
   Result := True;
 end;
 

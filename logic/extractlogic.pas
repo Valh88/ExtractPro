@@ -12,7 +12,7 @@ uses
   WorldBridge, EventBus, help_types, EntityManager, 
   CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
   TouchMoveControl, WorldSystemBase, RNL, NetMessages, NetServer, NetClient, 
-  LazarusPackageIntf;
+  BulletTimer, GameWorldClient, LazarusPackageIntf;
 
 implementation
 

@@ -6,7 +6,7 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
-        <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net"/>
+        <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;../Extract/code/systems;../Extract/code"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
@@ -86,6 +86,14 @@
       <Item>
         <Filename Value="src/net/NetClient.pas"/>
         <UnitName Value="NetClient"/>
+      </Item>
+      <Item>
+        <Filename Value="src/behaviors/BulletTimer.pas"/>
+        <UnitName Value="BulletTimer"/>
+      </Item>
+      <Item>
+        <Filename Value="../Extract/code/GameWorldClient.pas"/>
+        <UnitName Value="GameWorldClient"/>
       </Item>
     </Files>
     <RequiredPkgs>

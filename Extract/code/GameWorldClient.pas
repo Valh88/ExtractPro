@@ -8,10 +8,12 @@ uses
 type
   TGameWorldClient = class(TGameWorld)
   protected
+    FMainPlayerId: TEntityId;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory);
+    property MainPlayerId: TEntityId read FMainPlayerId write FMainPlayerId;
   end;
 
 implementation

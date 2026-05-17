@@ -50,16 +50,17 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory);
   FGameClient.Start;
-  Entity := Factory.CreateMainPlayerEntity(42);
-  FGameClient.World.RegisterEntity(Entity);
+  Entity := Factory.CreateMainPlayerEntity(FGameClient.AllocateEntityId);
+  FGameClient.AddPlayer(Entity);
+  FGameClient.MainPlayerId := Entity.EntityId;
 
   FMouseLookUi := TMouseLookOverlay.Create(Self);
   FMouseLookUi.FullSize := true;
   FMouseLookUi.Viewport := Viewport1;
   FMouseLookUi.Hero := Entity.Transform;
   InsertBack(FMouseLookUi);
-  Entity := Factory.CreatePlayerEntity(43);
-  FGameClient.World.RegisterEntity(Entity);
+  Entity := Factory.CreatePlayerEntity(FGameClient.AllocateEntityId);
+  FGameClient.AddPlayer(Entity);
 end;
 
 procedure TViewMain.Stop;

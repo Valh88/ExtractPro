@@ -134,7 +134,6 @@ procedure TWorldBridge.RegisterEntity(Entity: IGameEntity);
 begin
   Entity.Transform.Exists := True;
   FRoot.Add(Entity.Transform);
-  FGameLogic.SetEntityVisual(Entity.EntityId, Entity);
 end;
 
 procedure TWorldBridge.UnregisterEntity(EntityId: TEntityId);
@@ -143,10 +142,7 @@ var
 begin
   Entity := FindEntity(EntityId);
   if Entity <> nil then
-  begin
     FRoot.Remove(Entity.Transform);
-    FGameLogic.RemoveEntity(EntityId);
-  end;
 end;
 
 function TWorldBridge.FindEntity(EntityId: TEntityId): IGameEntity;
@@ -161,6 +157,10 @@ begin
     if (FGameLogic.Data.Enemies[i].Visual <> nil) and
        (FGameLogic.Data.Enemies[i].Visual.EntityId = EntityId) then
       Exit(FGameLogic.Data.Enemies[i].Visual);
+  for i := 0 to High(FGameLogic.Data.Bullets) do
+    if (FGameLogic.Data.Bullets[i].Visual <> nil) and
+       (FGameLogic.Data.Bullets[i].Visual.EntityId = EntityId) then
+      Exit(FGameLogic.Data.Bullets[i].Visual);
   Result := nil;
 end;
 
