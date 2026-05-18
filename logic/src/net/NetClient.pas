@@ -114,9 +114,6 @@ end;
 procedure TGameClient.Connect(const AHost: String; APort: Word);
 var
   Addr: TRNLAddress;
-  Ev: TRNLHostEvent;
-const
-  HANDSHAKE_TIMEOUT = 3000;
 begin
   if FState <> csDisconnected then Exit;
   FHostAddr := AHost;
@@ -124,31 +121,8 @@ begin
   FHost.Start;
   Addr := TRNLAddress.CreateFromString(AHost + ':' + IntToStr(APort));
   FPeer := FHost.Connect(Addr, 2);
-  if FPeer = nil then Exit;
-  FState := csConnecting;
-
-  Ev.Initialize;
-  try
-    while FHost.ConnectService(Ev, HANDSHAKE_TIMEOUT) = RNL_HOST_SERVICE_STATUS_EVENT do
-    begin
-      if Ev.Type_ = RNL_HOST_EVENT_TYPE_PEER_DENIAL then
-      begin
-        FPeer := nil;
-        FState := csDisconnected;
-        Break;
-      end;
-      ClearEvent;
-    end;
-
-    if (FState = csConnecting) and (FPeer <> nil) then
-    begin
-      FState := csConnected;
-      if Assigned(FOnConnected) then
-        FOnConnected(Self);
-    end;
-  finally
-    Ev.Free;
-  end;
+  if FPeer <> nil then
+    FState := csConnecting;
 end;
 
 procedure TGameClient.Disconnect;
@@ -176,6 +150,29 @@ var
   Bytes: TBytes;
 begin
   if FState = csDisconnected then Exit;
+
+  if FState = csConnecting then
+  begin
+    ClearEvent;
+    Status := FHost.ConnectService(FEvent, ATimeoutMs);
+    if Status = RNL_HOST_SERVICE_STATUS_EVENT then
+    begin
+      if FEvent.Type_ = RNL_HOST_EVENT_TYPE_PEER_DENIAL then
+      begin
+        FPeer := nil;
+        FState := csDisconnected;
+      end;
+      Exit;
+    end;
+
+    if (FState = csConnecting) and (FPeer <> nil) then
+    begin
+      FState := csConnected;
+      if Assigned(FOnConnected) then
+        FOnConnected(Self);
+    end;
+    Exit;
+  end;
 
   ClearEvent;
   Status := FHost.Service(FEvent, ATimeoutMs);

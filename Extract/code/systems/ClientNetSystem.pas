@@ -7,7 +7,6 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse,
-  CastleLog,
   RNL, NetMessages, NetClient;
 
 type
@@ -108,18 +107,9 @@ begin
   FClient.OnReceive := @OnClientReceive;
   try
     FClient.Connect(FHost, FPort);
-    if FClient.State = csConnected then
-      System.WriteLn(StdErr, '[Client] Connected!')
-    else
-      System.WriteLn(StdErr, '[Client] Connect failed, still in state ', Integer(FClient.State));
-    System.Flush(StdErr);
   except
     on E: Exception do
-    begin
-      System.WriteLn(StdErr, '[Client] Connect FAILED: ', E.Message);
-      System.Flush(StdErr);
       FreeAndNil(FClient);
-    end;
   end;
 end;
 
@@ -137,12 +127,6 @@ begin
 
   if FClient.State <> csDisconnected then
     FClient.Service(50);
-
-  if FClient.State = csConnected then
-  begin
-    System.WriteLn(StdErr, '[Client] CONNECTED!');
-    System.Flush(StdErr);
-  end;
 
   if (FClient.State = csDisconnected) and FConnected and (FRetryCount < FMaxRetries) then
   begin
