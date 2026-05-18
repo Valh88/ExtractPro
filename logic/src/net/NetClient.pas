@@ -151,35 +151,19 @@ var
 begin
   if FState = csDisconnected then Exit;
 
-  if FState = csConnecting then
-  begin
-    ClearEvent;
-    Status := FHost.ConnectService(FEvent, ATimeoutMs);
-    if Status = RNL_HOST_SERVICE_STATUS_EVENT then
-    begin
-      if FEvent.Type_ = RNL_HOST_EVENT_TYPE_PEER_DENIAL then
-      begin
-        FPeer := nil;
-        FState := csDisconnected;
-      end;
-      Exit;
-    end;
-
-    if (FState = csConnecting) and (FPeer <> nil) then
-    begin
-      FState := csConnected;
-      if Assigned(FOnConnected) then
-        FOnConnected(Self);
-    end;
-    Exit;
-  end;
-
   ClearEvent;
   Status := FHost.Service(FEvent, ATimeoutMs);
 
   if Status = RNL_HOST_SERVICE_STATUS_EVENT then
   begin
     case FEvent.Type_ of
+      RNL_HOST_EVENT_TYPE_PEER_CONNECT:
+      begin
+        FState := csConnected;
+        if Assigned(FOnConnected) then
+          FOnConnected(Self);
+      end;
+
       RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
       begin
         FPeer := nil;
