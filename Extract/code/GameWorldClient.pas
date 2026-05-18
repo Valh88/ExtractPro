@@ -3,7 +3,7 @@ unit GameWorldClient;
 interface
 
 uses
-  GameWorld, ShotSystem, WorldBridge, CastleTransform, help_types, CastleKeysMouse, Interfaces;
+  GameWorld, ShotSystem, WorldBridge, CastleTransform, help_types, CastleKeysMouse, Interfaces, ClientNetSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -34,6 +34,7 @@ procedure TGameWorldClient.RegisterSystems;
 begin
   inherited;
   FSystems.Add(TShotSystem.Create(Self));
+  FSystems.Add(TClientNetSystem.Create(Self));
 end;
 
 end.

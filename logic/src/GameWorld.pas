@@ -209,7 +209,6 @@ begin
     FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
-  WriteLn(Length(Data.Bullets));
   FlushDeadEntities;
 end;
 

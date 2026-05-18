@@ -16,6 +16,7 @@
       <path value="../logic/src/castle_bridges/" />
       <path value="../logic/src/world_systems/" />
       <path value="../Extract/code/behaviours/" />
+      <path value="src/systems/" />
     </search_paths>
   </compiler_options>
 </project>

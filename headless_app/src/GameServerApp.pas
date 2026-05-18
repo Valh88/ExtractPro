@@ -27,7 +27,6 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  NetServer, NetMessages,
   ServerEntityFactory, GameWorldServer;
 
 type
@@ -40,7 +39,6 @@ type
 
   TGameServerApp = class
   private
-    FServer: TGameServer;
     FWorldRoot: TCastleAbstractRootTransform;
     FGameWorld: TGameWorldServer;
     FPort: Word;
@@ -58,7 +56,6 @@ type
     procedure Run;
     procedure Stop;
     class procedure RunApp(const ASetup: TGameServerAppProc = nil);
-    property Server: TGameServer read FServer;
     property GameWorld: TGameWorldServer read FGameWorld;
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
@@ -129,7 +126,7 @@ begin
   FWorldRoot.UpdateIncreaseTime(0);
 
   Factory := TServerEntityFactory.Create('', '');
-  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory);
+  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers);
   FGameWorld.Start;
 end;
 
@@ -142,8 +139,8 @@ begin
 
   LoadScene;
 
-  FServer := TGameServer.Create(FPort, FMaxPlayers);
-  FServer.Start;
+  if FGameWorld.NetSystem <> nil then
+    FGameWorld.NetSystem.StartServer;
 
   Log(Format('ExtractPro Server starting on port %d (max %d players)',
     [FPort, FMaxPlayers]));
@@ -152,7 +149,6 @@ begin
   try
     while FRunning do
     begin
-      FServer.Service(0);
       FGameWorld.Update(DT);
 
       if Assigned(FOnTick) then
@@ -160,13 +156,12 @@ begin
 
       Inc(FTickCount);
       if (FTickCount mod 3600) = 0 then
-        Log(Format('[%d] Players: %d', [FTickCount div 60, FServer.Peers]));
+        Log(Format('[%d] Players: %d', [FTickCount div 60,
+          FGameWorld.NetSystem.Server.Peers]));
 
       Sleep(Round(DT * 1000));
     end;
   finally
-    FServer.Free;
-    FServer := nil;
   end;
 end;
 

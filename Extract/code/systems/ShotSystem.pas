@@ -1,6 +1,8 @@
 unit ShotSystem;
 
 {$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
 
 interface
 
@@ -13,6 +15,7 @@ type
     FNextBulletId: TEntityId;
   public
     constructor Create(AWorldObj: TObject);
+    destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
   end;
@@ -27,6 +30,30 @@ constructor TShotSystem.Create(AWorldObj: TObject);
 begin
   inherited Create(AWorldObj);
   FNextBulletId := 1000;
+end;
+
+destructor TShotSystem.Destroy;
+var
+  GW: TGameWorldClient;
+  i: Integer;
+  Bullet: IGameEntity;
+  B: TBulletBehavior;
+begin
+  GW := WorldObj as TGameWorldClient;
+  for i := 0 to High(GW.Data.Bullets) do
+  begin
+    Bullet := GW.Data.Bullets[i].Visual;
+    if Bullet <> nil then
+    begin
+      B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
+      if B <> nil then
+      begin
+        B.OnHit := nil;
+        B.GameWorld := nil;
+      end;
+    end;
+  end;
+  inherited;
 end;
 
 procedure TShotSystem.Update(const SecondsPassed: Single);
@@ -68,7 +95,14 @@ begin
   Bullet.Transform.RigidBody.LinearVelocity := Dir * 20;
 
   B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
-  if B <> nil then B.GameWorld := GW;
+  if B <> nil then
+  begin
+    B.GameWorld := GW;
+    B.OnHit := procedure(const HitEntityId: TEntityId; const Damage: TDamageInfo)
+    begin
+      WriteLn(HitEntityId);
+    end;
+  end;
 
   GW.AddBullet(Bullet, GW.MainPlayerId);
   Result := True;

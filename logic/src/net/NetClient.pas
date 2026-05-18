@@ -114,6 +114,9 @@ end;
 procedure TGameClient.Connect(const AHost: String; APort: Word);
 var
   Addr: TRNLAddress;
+  Ev: TRNLHostEvent;
+const
+  HANDSHAKE_TIMEOUT = 3000;
 begin
   if FState <> csDisconnected then Exit;
   FHostAddr := AHost;
@@ -121,8 +124,31 @@ begin
   FHost.Start;
   Addr := TRNLAddress.CreateFromString(AHost + ':' + IntToStr(APort));
   FPeer := FHost.Connect(Addr, 2);
-  if FPeer <> nil then
-    FState := csConnecting;
+  if FPeer = nil then Exit;
+  FState := csConnecting;
+
+  Ev.Initialize;
+  try
+    while FHost.ConnectService(Ev, HANDSHAKE_TIMEOUT) = RNL_HOST_SERVICE_STATUS_EVENT do
+    begin
+      if Ev.Type_ = RNL_HOST_EVENT_TYPE_PEER_DENIAL then
+      begin
+        FPeer := nil;
+        FState := csDisconnected;
+        Break;
+      end;
+      ClearEvent;
+    end;
+
+    if (FState = csConnecting) and (FPeer <> nil) then
+    begin
+      FState := csConnected;
+      if Assigned(FOnConnected) then
+        FOnConnected(Self);
+    end;
+  finally
+    Ev.Free;
+  end;
 end;
 
 procedure TGameClient.Disconnect;
@@ -153,33 +179,28 @@ begin
 
   ClearEvent;
   Status := FHost.Service(FEvent, ATimeoutMs);
-  if Status <> RNL_HOST_SERVICE_STATUS_EVENT then Exit;
 
-  case FEvent.Type_ of
-    RNL_HOST_EVENT_TYPE_PEER_CONNECT:
-    begin
-      FState := csConnected;
-      if Assigned(FOnConnected) then
-        FOnConnected(Self);
-    end;
+  if Status = RNL_HOST_SERVICE_STATUS_EVENT then
+  begin
+    case FEvent.Type_ of
+      RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
+      begin
+        FPeer := nil;
+        FState := csDisconnected;
+        if Assigned(FOnDisconnected) then
+          FOnDisconnected(Self);
+      end;
 
-    RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
-    begin
-      FPeer := nil;
-      FState := csDisconnected;
-      if Assigned(FOnDisconnected) then
-        FOnDisconnected(Self);
-    end;
-
-    RNL_HOST_EVENT_TYPE_PEER_RECEIVE:
-    begin
-      if FEvent.Message = nil then Exit;
-      Bytes := FEvent.Message.AsBytes;
-      FEvent.Message.DecRef;
-      FEvent.Message := nil;
-      if TNetMessage.Unpack(Bytes, Msg) then
-        if Assigned(FOnReceive) then
-          FOnReceive(Self, Msg);
+      RNL_HOST_EVENT_TYPE_PEER_RECEIVE:
+      begin
+        if FEvent.Message = nil then Exit;
+        Bytes := FEvent.Message.AsBytes;
+        FEvent.Message.DecRef;
+        FEvent.Message := nil;
+        if TNetMessage.Unpack(Bytes, Msg) then
+          if Assigned(FOnReceive) then
+            FOnReceive(Self, Msg);
+      end;
     end;
   end;
 end;

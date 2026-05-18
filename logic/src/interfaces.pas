@@ -1,6 +1,8 @@
 unit Interfaces;
 
 {$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
 
 interface
 
@@ -80,6 +82,9 @@ type
     ['{B1C2D3E4-F5A6-7890-BCDE-F0123456789A}']
     procedure Update(const SecondsPassed: Single);
   end;
+
+  { Коллбек попадания пули }
+  TBulletHitEvent = reference to procedure(const HitEntityId: TEntityId; const Damage: TDamageInfo);
 
 implementation
 

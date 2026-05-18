@@ -2,6 +2,8 @@ unit help_types;
 
 {$mode objfpc}{$H+}
 {$modeswitch advancedrecords}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
 
 interface
 
