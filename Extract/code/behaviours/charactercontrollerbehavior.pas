@@ -86,11 +86,14 @@ begin
 end;
 
 function TCharacterControllerBehavior.ForwardDir: TVector3;
+var
+  Angle: Single;
 begin
   if FFirstPersonCam <> nil then
-    Result := Vector3(Sin(FFirstPersonCam.HorizontalAngle), 0, -Cos(FFirstPersonCam.HorizontalAngle))
+    Angle := FFirstPersonCam.TargetAngle
   else
-    Result := Vector3(0, 0, -1);
+    Angle := 0;
+  Result := Vector3(Sin(Angle), 0, -Cos(Angle));
 end;
 
 function TCharacterControllerBehavior.RightDir: TVector3;
@@ -104,7 +107,7 @@ var
   Cont: TCastleContainer;
   RB: TCastleRigidBody;
   MoveDir, Vel: TVector3;
-  Speed, DeltaSpeed, VLength: Single;
+  Speed: Single;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -124,7 +127,6 @@ begin
     FTouchMove := TVector2.Zero;
 
   Speed := FMoveSpeed;
-  DeltaSpeed := Speed * 3 * SecondsPassed;
 
   MoveDir := TVector3.Zero;
   FMoving := false;
@@ -168,14 +170,14 @@ begin
   begin
     if not MoveDir.IsPerfectlyZero then
       MoveDir := MoveDir.Normalize;
-    VLength := Vector2(Vel.X, Vel.Z).Length + DeltaSpeed;
-    if VLength > Speed then VLength := Speed;
-    Vel.X := MoveDir.X * VLength;
-    Vel.Z := MoveDir.Z * VLength;
+    Vel.X := MoveDir.X * Speed;
+    Vel.Z := MoveDir.Z * Speed;
   end else
   begin
-    Vel.X := Vel.X * (1 - FSmoothStop * SecondsPassed);
-    Vel.Z := Vel.Z * (1 - FSmoothStop * SecondsPassed);
+    Vel.X := Vel.X * 0.85;
+    Vel.Z := Vel.Z * 0.85;
+    if Abs(Vel.X) < 0.01 then Vel.X := 0;
+    if Abs(Vel.Z) < 0.01 then Vel.Z := 0;
   end;
 
   FCanJump := Abs(Vel.Y) < 0.01;

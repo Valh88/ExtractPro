@@ -103,7 +103,7 @@ begin
   FPSCam.Camera := HeadCamera;
   FPSCam.CameraMode := cmFirstPerson;
   FPSCam.CursorVisible := False;
-  FPSCam.InvertHorizontalMouseLook := True;
+  FPSCam.InvertHorizontalMouseLook := False;
   Cylinder.AddBehavior(FPSCam);
 
   CharCtrl := TCharacterControllerBehavior.Create(Cylinder);
@@ -114,11 +114,9 @@ begin
   Cylinder.AddBehavior(CharCtrl);
 
   if Cylinder.RigidBody <> nil then
-  begin
-    Cylinder.RigidBody.LockRotation := [0, 2];
-  end;
+    Cylinder.RigidBody.LockRotation := [0, 1, 2];
 
-  Result := TEntityBridge.Create(AEntityId, Cylinder, Design); // Cylinder or Design?
+  Result := TEntityBridge.Create(AEntityId, Cylinder, Design);
 end;
 
 function TEntityManager.CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
