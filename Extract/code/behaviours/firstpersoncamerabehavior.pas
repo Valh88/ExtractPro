@@ -62,6 +62,7 @@ type
     FMouseLookMode: Boolean;
     FAccumulatedMouseDelta: TVector2;
     FCursorVisible: Boolean;
+    FVisualRoot: TCastleTransform;
 
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
@@ -99,6 +100,7 @@ type
     property FocusHeight: Single read FFocusHeight write FFocusHeight;
     property HorizontalAngle: Single read FAngleH;
     property TargetAngle: Single read FSmoothedH;
+    property VisualRoot: TCastleTransform read FVisualRoot write FVisualRoot;
   end;
 
 implementation
@@ -223,6 +225,7 @@ procedure TFirstPersonCameraBehavior.Update(const SecondsPassed: Single;
 var
   Cont: TCastleContainer;
   Delta: TVector2;
+  RB: TCastleRigidBody;
   CH, SH, CP, SP: Single;
   SmoothK: Single;
 begin
@@ -269,6 +272,9 @@ begin
     FSmoothedDelta.Y := FSmoothedDelta.Y * SmoothK;
     Delta := FSmoothedDelta;
   end;
+
+  if FVisualRoot <> nil then
+    FVisualRoot.Rotation := Vector4(0, 1, 0, -FSmoothedH);
 
   FAngleH := FAngleH + Delta.X * FMouseSensitivity;
   FAngleV := FAngleV + Delta.Y * FMouseSensitivity;

@@ -81,6 +81,7 @@ var
   Design: TCastleTransformDesign;
   Cylinder: TCastleTransform;
   HeadCamera: TCastleCamera;
+  VisualRoot: TCastleTransform;
   CharCtrl: TCharacterControllerBehavior;
   FPSCam: TFirstPersonCameraBehavior;
 begin
@@ -98,9 +99,12 @@ begin
     FViewport.Camera := HeadCamera;
   end;
 
+  VisualRoot := Design.DesignedComponent('VisualRoot', False) as TCastleTransform;
+
   FPSCam := TFirstPersonCameraBehavior.Create(Cylinder);
   FPSCam.Viewport := FViewport;
   FPSCam.Camera := HeadCamera;
+  FPSCam.VisualRoot := VisualRoot;
   FPSCam.CameraMode := cmFirstPerson;
   FPSCam.CursorVisible := False;
   FPSCam.InvertHorizontalMouseLook := False;
