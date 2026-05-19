@@ -273,9 +273,6 @@ begin
     Delta := FSmoothedDelta;
   end;
 
-  if FVisualRoot <> nil then
-    FVisualRoot.Rotation := Vector4(0, 1, 0, -FSmoothedH);
-
   FAngleH := FAngleH + Delta.X * FMouseSensitivity;
   FAngleV := FAngleV + Delta.Y * FMouseSensitivity;
   case FCameraMode of
@@ -293,6 +290,9 @@ begin
     FSmoothedH := FAngleH;
     FSmoothedV := FAngleV;
   end;
+
+  if FVisualRoot <> nil then
+    FVisualRoot.Rotation := Vector4(0, 1, 0, -FSmoothedH);
 
   CH := Cos(FSmoothedH); SH := Sin(FSmoothedH);
   CP := Cos(FSmoothedV); SP := Sin(FSmoothedV);

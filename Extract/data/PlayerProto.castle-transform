@@ -16,20 +16,6 @@
       "Name" : "VisualRoot",
       "$Children" : [
         {
-          "$$ClassName" : "TCastleCamera",
-          "Name" : "HeadCamera",
-          "Orthographic" : {
-            "$$ClassName" : "TCastleOrthographic"
-          },
-          "Perspective" : {
-            "$$ClassName" : "TCastlePerspective"
-          },
-          "TranslationPersistent" : {
-            "$$ClassName" : "TCastleVector3Persistent",
-            "Y" : 9.1964840888977051E-001
-          }
-        },
-        {
           "$$ClassName" : "TCastleBox",
           "Name" : "Head",
           "RenderOptions" : {
@@ -52,6 +38,20 @@
           }
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleCamera",
+      "Name" : "HeadCamera",
+      "Orthographic" : {
+        "$$ClassName" : "TCastleOrthographic"
+      },
+      "Perspective" : {
+        "$$ClassName" : "TCastlePerspective"
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : 9.1964840888977051E-001
+      }
     }
   ],
   "$Behaviors" : [

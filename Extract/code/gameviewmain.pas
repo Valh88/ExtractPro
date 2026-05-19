@@ -48,7 +48,7 @@ begin
     'castle-data:/EnemyProto.castle-transform',
     Viewport1
   );
-  FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory);
+  FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
   Entity := Factory.CreateMainPlayerEntity(FGameClient.AllocateEntityId);
   FGameClient.AddPlayer(Entity);

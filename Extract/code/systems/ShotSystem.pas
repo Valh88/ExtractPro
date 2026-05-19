@@ -63,9 +63,8 @@ end;
 function TShotSystem.Press(const Event: TInputPressRelease): Boolean;
 var
   GW: TGameWorldClient;
-  MainPlayer, Bullet: IGameEntity;
-  Cam: TCastleTransform;
-  i: Integer;
+  Bullet: IGameEntity;
+  Cam: TCastleCamera;
   CamPos, Dir: CastleVectors.TVector3;
   B: TBulletBehavior;
 begin
@@ -74,16 +73,8 @@ begin
   if not Event.IsMouseButton(buttonLeft) then Exit;
 
   GW := WorldObj as TGameWorldClient;
-  MainPlayer := GW.FindEntity(GW.MainPlayerId);
-  if MainPlayer = nil then Exit;
-
-  Cam := nil;
-  for i := 0 to MainPlayer.Transform.Count - 1 do
-    if MainPlayer.Transform.Items[i].Name = 'HeadCamera' then
-    begin
-      Cam := MainPlayer.Transform.Items[i];
-      Break;
-    end;
+  if GW.Viewport = nil then Exit;
+  Cam := GW.Viewport.Camera;
   if Cam = nil then Exit;
 
   CamPos := Cam.WorldTranslation;
