@@ -10,12 +10,13 @@ type
   protected
     FPort: Word;
     FMaxPlayers: Integer;
+    FNetSystem: TServerNetSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const APort: Word = 7777;
       const AMaxPlayers: Integer = 8);
-    function NetSystem: TServerNetSystem;
+    property NetSystem: TServerNetSystem read FNetSystem;
   end;
 
 implementation
@@ -38,17 +39,8 @@ end;
 procedure TGameWorldServer.RegisterSystems;
 begin
   inherited;
-  FSystems.Add(TServerNetSystem.Create(Self, FPort, FMaxPlayers));
-end;
-
-function TGameWorldServer.NetSystem: TServerNetSystem;
-var
-  i: Integer;
-begin
-  for i := 0 to FSystems.Count - 1 do
-    if FSystems[i] is TServerNetSystem then
-      Exit(TServerNetSystem(FSystems[i]));
-  Result := nil;
+  FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
+  AddSystem(FNetSystem);
 end;
 
 end.

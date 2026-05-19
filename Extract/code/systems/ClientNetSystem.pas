@@ -7,7 +7,7 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse,
-  RNL, NetMessages, NetClient;
+  RNL, NetMessages, NetClient, GameWorld;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -36,7 +36,7 @@ type
     procedure OnClientReceive(Sender: TObject; const Msg: TNetMessage);
     procedure DoConnect;
   public
-    constructor Create(AWorldObj: TObject; AMaxRetries: Integer = 3; ARetryDelay: Single = 2.0);
+    constructor Create(AWorldObj: TGameWorld; AMaxRetries: Integer = 3; ARetryDelay: Single = 2.0);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     procedure Connect(const AHost: string; APort: Word);
@@ -54,7 +54,7 @@ implementation
 
 { TClientNetSystem }
 
-constructor TClientNetSystem.Create(AWorldObj: TObject; AMaxRetries: Integer; ARetryDelay: Single);
+constructor TClientNetSystem.Create(AWorldObj: TGameWorld; AMaxRetries: Integer; ARetryDelay: Single);
 begin
   inherited Create(AWorldObj);
   FClient := nil;

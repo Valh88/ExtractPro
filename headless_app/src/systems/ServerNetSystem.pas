@@ -7,7 +7,7 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse,
-  RNL, NetMessages, NetServer;
+  RNL, NetMessages, NetServer, GameWorld;
 
 type
   TServerNetSystem = class(TWorldSystemBase)
@@ -20,7 +20,7 @@ type
     function GetOnReceive: TServerReceiveEvent;
     procedure SetOnReceive(const AValue: TServerReceiveEvent);
   public
-    constructor Create(AWorldObj: TObject; APort: Word; AMaxPlayers: Integer);
+    constructor Create(AWorldObj: TGameWorld; APort: Word; AMaxPlayers: Integer);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     procedure StartServer;
@@ -40,7 +40,7 @@ implementation
 
 { TServerNetSystem }
 
-constructor TServerNetSystem.Create(AWorldObj: TObject; APort: Word; AMaxPlayers: Integer);
+constructor TServerNetSystem.Create(AWorldObj: TGameWorld; APort: Word; AMaxPlayers: Integer);
 begin
   inherited Create(AWorldObj);
   FServer := TGameServer.Create(APort, AMaxPlayers);

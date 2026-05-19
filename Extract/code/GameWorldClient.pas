@@ -33,8 +33,8 @@ end;
 procedure TGameWorldClient.RegisterSystems;
 begin
   inherited;
-  FSystems.Add(TShotSystem.Create(Self));
-  FSystems.Add(TClientNetSystem.Create(Self));
+  AddSystem(TShotSystem.Create(Self));
+  AddSystem(TClientNetSystem.Create(Self));
 end;
 
 end.

@@ -5,22 +5,23 @@ unit WorldSystemBase;
 interface
 
 uses
-  SysUtils, Classes, Interfaces, CastleKeysMouse;
+  SysUtils, Classes, Interfaces, CastleKeysMouse,
+  GameWorld;
 
 type
   TWorldSystemBase = class(TInterfacedObject, IWorldSystem)
   private
-    FGameObj: TObject;
+    FGameObj: TGameWorld;
   public
-    constructor Create(AWorldObj: TObject);
-    property WorldObj: TObject read FGameObj;
+    constructor Create(AWorldObj: TGameWorld);
+    property WorldObj: TGameWorld read FGameObj;
     procedure Update(const SecondsPassed: Single); virtual; abstract;
     function Press(const Event: TInputPressRelease): Boolean; virtual;
   end;
 
 implementation
 
-constructor TWorldSystemBase.Create(AWorldObj: TObject);
+constructor TWorldSystemBase.Create(AWorldObj: TGameWorld);
 begin
   inherited Create;
   FGameObj := AWorldObj;

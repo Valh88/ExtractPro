@@ -7,14 +7,14 @@ unit ShotSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, help_types, Interfaces;
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, help_types, Interfaces, GameWorld;
 
 type
   TShotSystem = class(TWorldSystemBase)
   private
     FNextBulletId: TEntityId;
   public
-    constructor Create(AWorldObj: TObject);
+    constructor Create(AWorldObj: TGameWorld);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
@@ -22,11 +22,11 @@ type
 
 implementation
 
-uses GameWorld, BulletTimer, GameWorldClient;
+uses BulletTimer, GameWorldClient;
 
 { TShotSystem }
 
-constructor TShotSystem.Create(AWorldObj: TObject);
+constructor TShotSystem.Create(AWorldObj: TGameWorld);
 begin
   inherited Create(AWorldObj);
   FNextBulletId := 1000;

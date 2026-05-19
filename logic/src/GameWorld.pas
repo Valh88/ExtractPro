@@ -5,13 +5,11 @@ unit GameWorld;
 interface
 
 uses
-  SysUtils, Classes, fgl, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  WorldSystemBase, CastleKeysMouse;
+  SysUtils, Classes, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
+  CastleKeysMouse;
 
 type
   TRaidPhase = (rpExploring, rpExtracting);
-
-  TSystemList = specialize TFPGObjectList<TWorldSystemBase>;
 
   TGameWorld = class
   private
@@ -27,8 +25,9 @@ type
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
     procedure FlushDeadEntities;
   protected
-    FSystems: TSystemList;
+    FSystems: array of IWorldSystem;
     procedure RegisterSystems; virtual;
+    procedure AddSystem(ASystem: IWorldSystem);
   public
     constructor Create(AWorld: IGameWorld; AFactory: IEntityFactory);
     destructor Destroy; override;
@@ -78,14 +77,13 @@ begin
   FPhase := rpExploring;
   FMaxRaidTime := GlobalConfig.RaidTime;
 
-  FSystems := TSystemList.Create(True);
   RegisterSystems;
 end;
 
 destructor TGameWorld.Destroy;
 begin
   FWorld := nil;
-  FSystems.Free;
+  FSystems := nil;
   FData.Free;
   FFactory := nil;
   inherited;
@@ -93,6 +91,12 @@ end;
 
 procedure TGameWorld.RegisterSystems;
 begin
+end;
+
+procedure TGameWorld.AddSystem(ASystem: IWorldSystem);
+begin
+  SetLength(FSystems, Length(FSystems) + 1);
+  FSystems[High(FSystems)] := ASystem;
 end;
 
 function TGameWorld.AllocateEntityId: TEntityId;
@@ -205,7 +209,7 @@ procedure TGameWorld.Update(const SecondsPassed: Single);
 var
   i: Integer;
 begin
-  for i := 0 to FSystems.Count - 1 do
+  for i := 0 to High(FSystems) do
     FSystems[i].Update(SecondsPassed);
 
   GameEventBus.Flush;
@@ -217,7 +221,7 @@ var
   i: Integer;
 begin
   Result := False;
-  for i := 0 to FSystems.Count - 1 do
+  for i := 0 to High(FSystems) do
     if FSystems[i].Press(Event) then Exit(True);
 end;
 

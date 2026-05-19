@@ -81,6 +81,7 @@ type
   IWorldSystem = interface
     ['{B1C2D3E4-F5A6-7890-BCDE-F0123456789A}']
     procedure Update(const SecondsPassed: Single);
+    function Press(const Event: TInputPressRelease): Boolean;
   end;
 
   { Коллбек попадания пули }
