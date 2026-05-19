@@ -367,7 +367,7 @@ function TGameWorld.FindClosestPlayer(const FromPos: TVector2; out Dist: Single)
 var
   i: Integer;
   D: Single;
-  Pos: TVector2;
+  P: TVector3;
 begin
   Result := -1;
   Dist := 1e10;
@@ -377,8 +377,8 @@ begin
       Continue;
     if FData.Players[i].Visual = nil then
       Continue;
-    Pos := FData.Players[i].Visual.Position;
-    D := Sqr(Pos.X - FromPos.X) + Sqr(Pos.Y - FromPos.Y);
+    P := FData.Players[i].Visual.Position3;
+    D := Sqr(P.X - FromPos.X) + Sqr(P.Y - FromPos.Y);
     if D < Dist then
     begin
       Dist := D;
@@ -393,7 +393,7 @@ function TGameWorld.FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityI
 var
   i: Integer;
   D: Single;
-  Pos: TVector2;
+  P: TVector3;
 begin
   Result := -1;
   Dist := 1e10;
@@ -405,8 +405,8 @@ begin
       Continue;
     if FData.Players[i].Visual = nil then
       Continue;
-    Pos := FData.Players[i].Visual.Position;
-    D := Sqr(Pos.X - FromPos.X) + Sqr(Pos.Y - FromPos.Y);
+    P := FData.Players[i].Visual.Position3;
+    D := Sqr(P.X - FromPos.X) + Sqr(P.Y - FromPos.Y);
     if D < Dist then
     begin
       Dist := D;

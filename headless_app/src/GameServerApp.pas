@@ -121,7 +121,11 @@ var
 begin
   FWorldRoot := TCastleRootTransform.Create(nil);
   Design := TCastleTransformDesign.Create(nil);
+  {$ifdef VISUAL}
   Design.Url := 'castle-data:/physics_scene.castle-transform';
+  {$else}
+  Design.Url := 'castle-data:/physics_scene_headless.castle-transform';
+  {$endif}
   FWorldRoot.Add(Design);
   FWorldRoot.UpdateIncreaseTime(0);
 

@@ -30,8 +30,8 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleTransform, CastleScene, CastleVectors,
-  help_types, Interfaces, EntityBridge;
+  CastleTransform, CastleScene, CastleVectors, CastleShapes,
+  help_types, Interfaces, EntityBridge, BehaviorBase, BulletTimer;
 
 type
   { Фабрика для headless-сервера: создаёт сущности с физикой, без визуала, камер и управлений }
@@ -39,6 +39,7 @@ type
   private
     FPlayerUrl: String;
     FEnemyUrl: String;
+    function CreateSimplePhysicsEntity(const AEntityId: TEntityId): IGameEntity;
   public
     constructor Create(const APlayerUrl, AEnemyUrl: String);
     function CreateEntity(const AEntityId: TEntityId;
@@ -60,24 +61,51 @@ begin
   FEnemyUrl := AEnemyUrl;
 end;
 
+function TServerEntityFactory.CreateSimplePhysicsEntity(const AEntityId: TEntityId): IGameEntity;
+var
+  Root: TCastleTransform;
+  RB: TCastleRigidBody;
+  Collider: TCastleCapsuleCollider;
+begin
+  Root := TCastleTransform.Create(nil);
+  RB := TCastleRigidBody.Create(Root);
+  RB.Dynamic := True;
+  Root.AddBehavior(RB);
+  Collider := TCastleCapsuleCollider.Create(Root);
+  Collider.Height := 0.9;
+  Collider.Radius := 0.625;
+  Root.AddBehavior(Collider);
+  Result := TEntityBridge.Create(AEntityId, Root);
+end;
+
 function TServerEntityFactory.CreateEntity(const AEntityId: TEntityId;
   const AUrl: String): IGameEntity;
 var
   Design: TCastleTransformDesign;
+  Root: TCastleTransform;
 begin
   Design := TCastleTransformDesign.Create(nil);
   Design.Url := AUrl;
-  Result := TEntityBridge.Create(AEntityId, Design);
+  Root := Design.DesignRoot;
+  if Root = nil then
+    raise Exception.Create('DesignRoot is nil in ' + AUrl);
+  Result := TEntityBridge.Create(AEntityId, Root, Design);
 end;
 
 function TServerEntityFactory.CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
 begin
+  {$ifdef VISUAL}
   Result := CreateEntity(AEntityId, FPlayerUrl);
+  {$else}
+  Result := CreateSimplePhysicsEntity(AEntityId);
+  {$endif}
+  if Result.Transform.RigidBody <> nil then
+    Result.Transform.RigidBody.LockRotation := [0, 1, 2];
 end;
 
 function TServerEntityFactory.CreateMainPlayerEntity(const AEntityId: TEntityId): IGameEntity;
 begin
-  Result := CreateEntity(AEntityId, FPlayerUrl);
+  Result := CreatePlayerEntity(AEntityId);
 end;
 
 function TServerEntityFactory.CreateEnemyEntity(const AEntityId: TEntityId): IGameEntity;
@@ -90,9 +118,35 @@ begin
 end;
 
 function TServerEntityFactory.CreateBulletEntity(const AEntityId: TEntityId): IGameEntity;
+var
+  BulletRoot: TCastleTransform;
+  RB: TCastleRigidBody;
+  Collider: TCastleSphereCollider;
+  Bullet: TBulletBehavior;
 begin
-  //Заглушка
-  Result := CreateEnemyEntity(AEntityId);
+  {$ifdef VISUAL}
+  BulletRoot := TCastleSphere.Create(nil);
+  TCastleSphere(BulletRoot).Radius := 0.15;
+  TCastleSphere(BulletRoot).Color := Vector4(1, 0.8, 0, 1);
+  {$else}
+  BulletRoot := TCastleTransform.Create(nil);
+  {$endif}
+
+  RB := TCastleRigidBody.Create(BulletRoot);
+  RB.Dynamic := True;
+  RB.Gravity := False;
+
+  Collider := TCastleSphereCollider.Create(BulletRoot);
+  Collider.Radius := 0.15;
+
+  BulletRoot.AddBehavior(RB);
+  BulletRoot.AddBehavior(Collider);
+
+  Bullet := TBulletBehavior.Create(BulletRoot, AEntityId);
+  RB.OnCollisionEnter := @Bullet.OnCollision;
+  BulletRoot.AddBehavior(Bullet);
+
+  Result := TEntityBridge.Create(AEntityId, BulletRoot);
 end;
 
 end.

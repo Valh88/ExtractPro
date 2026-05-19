@@ -5,8 +5,7 @@ interface
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
-  help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient,
-  MouseLookOverlay;
+  help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient;
 
 type
   TViewMain = class(TCastleView)
@@ -21,7 +20,6 @@ type
     function Press(const Event: TInputPressRelease): Boolean; override;
   private
     FGameClient: TGameWorldClient;
-    FMouseLookUi: TMouseLookOverlay;
   end;
 
 var
@@ -40,7 +38,6 @@ end;
 procedure TViewMain.Start;
 var
   Factory: IEntityFactory;
-  Entity: IGameEntity;
 begin
   inherited;
   Factory := TEntityManager.Create(
@@ -50,17 +47,7 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
-  Entity := Factory.CreateMainPlayerEntity(FGameClient.AllocateEntityId);
-  FGameClient.AddPlayer(Entity);
-  FGameClient.MainPlayerId := Entity.EntityId;
-
-  FMouseLookUi := TMouseLookOverlay.Create(Self);
-  FMouseLookUi.FullSize := true;
-  FMouseLookUi.Viewport := Viewport1;
-  FMouseLookUi.Hero := Entity.Transform;
-  InsertBack(FMouseLookUi);
-  Entity := Factory.CreatePlayerEntity(FGameClient.AllocateEntityId);
-  FGameClient.AddPlayer(Entity);
+  FGameClient.SpawnMainPlayer;
 end;
 
 procedure TViewMain.Stop;

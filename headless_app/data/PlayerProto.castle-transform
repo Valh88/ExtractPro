@@ -13,24 +13,41 @@
   },
   "$Children" : [
     {
-      "$$ClassName" : "TCastleCamera",
-      "Name" : "HeadCamera",
-      "Orthographic" : {
-        "$$ClassName" : "TCastleOrthographic"
-      },
-      "Perspective" : {
-        "$$ClassName" : "TCastlePerspective"
-      },
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "Y" : 9.1964840888977051E-001
-      }
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "VisualRoot",
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleBox",
+          "Name" : "Head",
+          "RenderOptions" : {
+            "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+          },
+          "SizePersistent" : {
+            "$$ClassName" : "TCastleVector3Persistent",
+            "X" : 2.0000000298023224E-001,
+            "Y" : 2.0000000298023224E-001,
+            "Z" : 5.0000000000000000E-001
+          },
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector3Persistent",
+            "Y" : 6.9108164310455322E-001,
+            "Z" : -5.0110387802124023E-001
+          }
+        }
+      ]
     }
   ],
   "$Behaviors" : [
     {
       "$$ClassName" : "TCastleCapsuleCollider",
-      "Name" : "CapsuleCollider"
+      "AutoSize" : false,
+      "Height" : 1.0000000000000000E+000,
+      "Name" : "CapsuleCollider",
+      "Radius" : 5.6277596950531006E-001,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Z" : -1.2555193901062012E-001
+      }
     },
     {
       "$$ClassName" : "TCastleRigidBody",

@@ -20,9 +20,13 @@ type
     function GetTransform: TCastleTransform;
     property Transform: TCastleTransform read GetTransform;
 
-    function GetPosition: TVector2;
-    procedure SetPosition(const Value: TVector2);
-    property Position: TVector2 read GetPosition write SetPosition;
+    function GetPosition3: TVector3;
+    procedure SetPosition3(const Value: TVector3);
+    property Position3: TVector3 read GetPosition3 write SetPosition3;
+
+    function GetWorldPosition: TVector3;
+    procedure SetWorldPosition(const Value: TVector3);
+    property WorldPosition: TVector3 read GetWorldPosition write SetWorldPosition;
 
     function GetRotation: Single;
     procedure SetRotation(const Value: Single);

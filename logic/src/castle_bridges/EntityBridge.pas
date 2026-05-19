@@ -5,7 +5,7 @@ unit EntityBridge;
 interface
 
 uses
-  SysUtils, Classes, CastleScene, CastleTransform, CastleVectors, help_types, Interfaces, BehaviorBase;
+  SysUtils, Classes, Math, CastleScene, CastleTransform, CastleVectors, help_types, Interfaces, BehaviorBase;
 
 type
   TEntityBridge = class(TInterfacedObject, IGameEntity)
@@ -16,8 +16,10 @@ type
 
     function GetEntityId: TEntityId;
     function GetTransform: TCastleTransform;
-    function GetPosition: help_types.TVector2;
-    procedure SetPosition(const Value: help_types.TVector2);
+    function GetPosition3: help_types.TVector3;
+    procedure SetPosition3(const Value: help_types.TVector3);
+    function GetWorldPosition: help_types.TVector3;
+    procedure SetWorldPosition(const Value: help_types.TVector3);
     function GetRotation: Single;
     procedure SetRotation(const Value: Single);
     function GetScale: Single;
@@ -32,7 +34,8 @@ type
     { IGameEntity }
     property EntityId: TEntityId read GetEntityId;
     property Transform: TCastleTransform read GetTransform;
-    property Position: help_types.TVector2 read GetPosition write SetPosition;
+    property Position3: help_types.TVector3 read GetPosition3 write SetPosition3;
+    property WorldPosition: help_types.TVector3 read GetWorldPosition write SetWorldPosition;
     property Rotation: Single read GetRotation write SetRotation;
     property Scale: Single read GetScale write SetScale;
     property Visible: Boolean read GetVisible write SetVisible;
@@ -77,25 +80,38 @@ begin
   Result := FTransform;
 end;
 
-function TEntityBridge.GetPosition: help_types.TVector2;
+function TEntityBridge.GetPosition3: help_types.TVector3;
 begin
   Result.X := FTransform.Translation.X;
   Result.Y := FTransform.Translation.Y;
+  Result.Z := FTransform.Translation.Z;
 end;
 
-procedure TEntityBridge.SetPosition(const Value: help_types.TVector2);
+procedure TEntityBridge.SetPosition3(const Value: help_types.TVector3);
 begin
-  FTransform.Translation := CastleVectors.Vector3(Value.X, Value.Y, FTransform.Translation.Z);
+  FTransform.Translation := CastleVectors.Vector3(Value.X, Value.Y, Value.Z);
+end;
+
+function TEntityBridge.GetWorldPosition: help_types.TVector3;
+begin
+  Result.X := FTransform.WorldTranslation.X;
+  Result.Y := FTransform.WorldTranslation.Y;
+  Result.Z := FTransform.WorldTranslation.Z;
+end;
+
+procedure TEntityBridge.SetWorldPosition(const Value: help_types.TVector3);
+begin
+  FTransform.Translation := CastleVectors.Vector3(Value.X, Value.Y, Value.Z);
 end;
 
 function TEntityBridge.GetRotation: Single;
 begin
-  Result := FTransform.Rotation.X;
+  Result := ArcTan2(FTransform.Direction.X, -FTransform.Direction.Z);
 end;
 
 procedure TEntityBridge.SetRotation(const Value: Single);
 begin
-  FTransform.Rotation := CastleVectors.Vector4(0, 0, 1, Value);
+  FTransform.Rotation := CastleVectors.Vector4(0, 1, 0, Value);
 end;
 
 function TEntityBridge.GetScale: Single;

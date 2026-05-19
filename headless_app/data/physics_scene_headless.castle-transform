@@ -1,0 +1,130 @@
+{
+  "$$ClassName" : "TCastleTransform",
+  "Name" : "PhysicsScene",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Ground",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : 0
+      },
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastlePlaneCollider",
+          "Name" : "PlaneCollider"
+        },
+        {
+          "$$ClassName" : "TCastleRigidBody",
+          "Dynamic" : false,
+          "Gravity" : false,
+          "Name" : "RigidBody"
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Wall1",
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 7.0,
+        "Y" : 30.0,
+        "Z" : 7.0
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -2.08,
+        "Y" : 14.94,
+        "Z" : -31.7
+      },
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastleBoxCollider",
+          "Name" : "BoxCollider"
+        },
+        {
+          "$$ClassName" : "TCastleRigidBody",
+          "Name" : "RigidBody"
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Wall2",
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 7.0,
+        "Y" : 30.0,
+        "Z" : 7.0
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 7.27,
+        "Y" : 14.68,
+        "Z" : 11.66
+      },
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastleBoxCollider",
+          "Name" : "BoxCollider"
+        },
+        {
+          "$$ClassName" : "TCastleRigidBody",
+          "Name" : "RigidBody"
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Wall3",
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 7.0,
+        "Y" : 30.0,
+        "Z" : 7.0
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 27.74,
+        "Y" : 14.92,
+        "Z" : -31.7
+      },
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastleBoxCollider",
+          "Name" : "BoxCollider"
+        },
+        {
+          "$$ClassName" : "TCastleRigidBody",
+          "Name" : "RigidBody"
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Wall4",
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 7.0,
+        "Y" : 30.0,
+        "Z" : 7.0
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -37.23,
+        "Y" : 14.83,
+        "Z" : -13.15
+      },
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastleBoxCollider",
+          "Name" : "BoxCollider"
+        },
+        {
+          "$$ClassName" : "TCastleRigidBody",
+          "Name" : "RigidBody"
+        }
+      ]
+    }
+  ]
+}

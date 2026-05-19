@@ -207,6 +207,7 @@
     ]
   },
   "Name" : "Viewport1",
+  "OcclusionCulling" : true,
   "$NonVisualComponents" : [
     {
       "$$ClassName" : "TCastleBackground",
@@ -238,20 +239,20 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.9502221345901489E+000,
-      "X" : -9.9641516804695129E-002,
-      "Y" : 9.8429793119430542E-001,
-      "Z" : 1.4570286870002747E-001
+      "W" : 1.6486157178878784E+000,
+      "X" : -3.3574242144823074E-002,
+      "Y" : 9.9875128269195557E-001,
+      "Z" : 3.6996360868215561E-002
     },
     "ScalePersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "Y" : 1.0000001192092896E+000
+      "X" : 9.9999994039535522E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 4.3535472869873047E+001,
-      "Y" : 1.3059503555297852E+001,
-      "Z" : -7.2339663505554199E+000
+      "X" : 6.8705642700195312E+001,
+      "Y" : 2.1195056915283203E+001,
+      "Z" : -1.6838708877563477E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {
