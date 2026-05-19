@@ -16,7 +16,6 @@ type
       const AFactory: IEntityFactory; const APort: Word = 7777;
       const AMaxPlayers: Integer = 8);
     function NetSystem: TServerNetSystem;
-    procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
   end;
 
 implementation
@@ -34,8 +33,6 @@ begin
   B := TWorldBridge.Create(ARoot);
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
-
-  NetSystem.OnConnect := @OnPlayerConnected;
 end;
 
 procedure TGameWorldServer.RegisterSystems;
@@ -52,11 +49,6 @@ begin
     if FSystems[i] is TServerNetSystem then
       Exit(TServerNetSystem(FSystems[i]));
   Result := nil;
-end;
-
-procedure TGameWorldServer.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
-begin
-  WriteLn('Player connected: ', PlayerId);
 end;
 
 end.

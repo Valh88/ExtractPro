@@ -29,6 +29,7 @@ type
     function SendToPlayer(APlayerId: UInt32; const Msg: TNetMessage): Boolean;
     procedure Broadcast(const Msg: TNetMessage);
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
+    procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
     property Server: TGameServer read FServer;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
@@ -43,6 +44,7 @@ constructor TServerNetSystem.Create(AWorldObj: TObject; APort: Word; AMaxPlayers
 begin
   inherited Create(AWorldObj);
   FServer := TGameServer.Create(APort, AMaxPlayers);
+  OnConnect := @OnPlayerConnected;
 end;
 
 destructor TServerNetSystem.Destroy;
@@ -115,6 +117,11 @@ end;
 procedure TServerNetSystem.BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
 begin
   FServer.BroadcastExcept(Msg, AExcludePlayerId);
+end;
+
+procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+begin
+  WriteLn('Player connected: ', PlayerId);
 end;
 
 end.
