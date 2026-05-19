@@ -224,7 +224,7 @@ var
   Cont: TCastleContainer;
   Delta: TVector2;
   CH, SH, CP, SP: Single;
-  SmoothK, AngleDelta: Single;
+  SmoothK: Single;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -296,7 +296,8 @@ begin
     cmThirdPerson: ApplyThirdPersonCamera(CH, SH, CP, SP, SecondsPassed);
   end;
 
-  { Тело не трогаем — цилиндр симметричен, движение по TargetAngle }
+  { Поворот тела — обратный знак из-за CGE convention }
+  Parent.Rotation := Vector4(0, 1, 0, -FSmoothedH);
 end;
 
 end.

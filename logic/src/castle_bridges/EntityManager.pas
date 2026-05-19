@@ -67,7 +67,7 @@ begin
   Result := CreateEntity(AEntityId, FPlayerUrl);
   if Result.Transform.RigidBody <> nil then
   begin
-    Result.Transform.RigidBody.LockRotation := [0, 2];
+    Result.Transform.RigidBody.LockRotation := [0, 1, 2];
   end;
 end;
 
