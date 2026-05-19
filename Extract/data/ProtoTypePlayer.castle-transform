@@ -1,0 +1,82 @@
+{
+  "$$ClassName" : "TCastleTransform",
+  "Name" : "Transform",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleScene",
+      "ExposeTransforms" : [
+      ],
+      "Name" : "PlayerContainer",
+      "RenderOptions" : {
+        "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+      },
+      "RotationPersistent" : {
+        "$$ClassName" : "TCastleVector4RotationPersistent",
+        "Z" : 1.0000000000000000E+000
+      },
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleCylinder",
+          "Height" : 1.7000000476837158E+000,
+          "Name" : "Player",
+          "Radius" : 5.0000000000000000E-001,
+          "RenderOptions" : {
+            "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+          },
+          "RotationPersistent" : {
+            "$$ClassName" : "TCastleVector4RotationPersistent",
+            "Z" : 1.0000000000000000E+000
+          },
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector3Persistent",
+            "Z" : -5.1741480827331543E-002
+          },
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleCamera",
+              "Name" : "HeadCamera",
+              "Orthographic" : {
+                "$$ClassName" : "TCastleOrthographic"
+              },
+              "Perspective" : {
+                "$$ClassName" : "TCastlePerspective"
+              },
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector3Persistent",
+                "Y" : 1.0123680830001831E+000
+              }
+            },
+            {
+              "$$ClassName" : "TCastleBox",
+              "Name" : "Box1",
+              "RenderOptions" : {
+                "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+              },
+              "SizePersistent" : {
+                "$$ClassName" : "TCastleVector3Persistent",
+                "X" : 2.0000000298023224E-001,
+                "Y" : 2.0000000298023224E-001,
+                "Z" : 4.0000000596046448E-001
+              },
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector3Persistent",
+                "Y" : 7.1126294136047363E-001,
+                "Z" : -6.7086386680603027E-001
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleMeshCollider",
+      "Name" : "MeshCollider1"
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody1"
+    }
+  ]
+}

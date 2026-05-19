@@ -6,9 +6,9 @@
     cmThirdPerson  — камера сзади и выше, смотрит на игрока.
 
   Управление мышью:
-    Горизонталь (влево/вправо) — поворачивает ВСЁ ТЕЛО вместе с камерой.
-      Тело физически вращается через RigidBody.AngularVelocity.
-    Вертикаль (вверх/вниз) — только камера наклоняется, тело остаётся прямым.
+    Горизонталь / вертикаль — только камера (SetWorldView); корень игрока
+      не поворачиваем — так нет конфликта с синхронизацией RigidBody и дёрганья.
+    Движение WASD берёт направление из тех же углов (см. TargetAngle в CharacterController).
 
   Третье лицо — расположение камеры:
     CameraDistance — расстояние сзади игрока.
@@ -20,7 +20,7 @@
 
   Предусловия:
     - Камера дочерняя к игроку (Camera1.Parent = MainPlayer).
-    - TCastleRigidBody с Dynamic=True, LockRotation=[0,2].
+    - TCastleRigidBody с Dynamic=True, LockRotation по желанию (часто [0,1,2]).
 }
 unit FirstPersonCameraBehavior;
 
@@ -295,9 +295,6 @@ begin
     cmFirstPerson: ApplyFirstPersonCamera(CH, SH, CP, SP);
     cmThirdPerson: ApplyThirdPersonCamera(CH, SH, CP, SP, SecondsPassed);
   end;
-
-  { Поворот тела — обратный знак из-за CGE convention }
-  Parent.Rotation := Vector4(0, 1, 0, -FSmoothedH);
 end;
 
 end.
