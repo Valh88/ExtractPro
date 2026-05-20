@@ -6,8 +6,8 @@ unit ClientNetSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse,
-  RNL, NetMessages, NetClient, GameWorld;
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors,
+  RNL, NetMessages, NetClient, GameWorld, help_types;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -199,10 +199,15 @@ begin
 end;
 
 procedure TClientNetSystem.OnClientConnected(Sender: TObject);
+var
+  M: TNetMessage;
 begin
   FRetryCount := 0;
   FRetryTimer := 0;
   FLastError := '';
+
+  M.Init(msgJoinReq, [1]); // version
+  FClient.Send(M);
 end;
 
 procedure TClientNetSystem.OnClientDisconnected(Sender: TObject);
@@ -217,7 +222,16 @@ begin
 end;
 
 procedure TClientNetSystem.OnClientReceive(Sender: TObject; const Msg: TNetMessage);
+var
+  Spawn: TEntitySpawnData;
 begin
+  case Msg.Header.MsgType of
+    msgJoinAccept:
+    begin
+      if TEntitySpawnData.FromBytes(Msg.Payload, Spawn) then
+        WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ);
+    end;
+  end;
 end;
 
 end.

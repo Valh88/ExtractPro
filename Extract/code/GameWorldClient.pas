@@ -3,7 +3,7 @@ unit GameWorldClient;
 interface
 
 uses
-  SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport,
+  SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport, CastleVectors,
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior;
 
@@ -19,6 +19,7 @@ type
       const AFactory: IEntityFactory; const AViewport: TCastleViewport);
     destructor Destroy; override;
     procedure SpawnMainPlayer;
+    procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single); override;
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
     property MainPlayerId: TEntityId read FMainPlayerId write FMainPlayerId;
     property Viewport: TCastleViewport read FViewport write FViewport;
@@ -68,6 +69,17 @@ begin
 
   Entity := Factory.CreatePlayerEntity(AllocateEntityId);
   AddPlayer(Entity);
+end;
+
+procedure TGameWorldClient.HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single);
+var
+  Entity: IGameEntity;
+begin
+  Entity := Factory.CreateMainPlayerEntity(AEntityId);
+  Entity.Transform.Translation := CastleVectors.Vector3(APosX, APosY, APosZ);
+  AddPlayer(Entity);
+  FMainPlayerId := Entity.EntityId;
+  InitMainPlayerOverlay(Entity.Transform);
 end;
 
 procedure TGameWorldClient.RegisterSystems;

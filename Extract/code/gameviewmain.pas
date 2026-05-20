@@ -47,7 +47,7 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
-  FGameClient.SpawnMainPlayer;
+  //FGameClient.SpawnMainPlayer;
 end;
 
 procedure TViewMain.Stop;

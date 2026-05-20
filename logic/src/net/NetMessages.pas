@@ -48,19 +48,27 @@ const
 type
   TNetMsgType = Byte;
 
+  TEntitySpawnData = packed record
+    EntityId: UInt32;
+    PosX, PosY, PosZ: Single;
+    RotY: Single;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TEntitySpawnData): Boolean; static;
+  end;
+
 const
-  msgInvalid    : TNetMsgType = 0;
-  msgJoinReq    : TNetMsgType = 1;
-  msgJoinAccept : TNetMsgType = 2;
-  msgJoinDeny   : TNetMsgType = 3;
-  msgInput      : TNetMsgType = 4;
-  msgSnapshot   : TNetMsgType = 5;
-  msgSpawn      : TNetMsgType = 6;
-  msgDespawn    : TNetMsgType = 7;
-  msgEvent      : TNetMsgType = 8;
-  msgChat       : TNetMsgType = 9;
-  msgPing       : TNetMsgType = 10;
-  msgPong       : TNetMsgType = 11;
+  msgInvalid    = 0;
+  msgJoinReq    = 1;
+  msgJoinAccept = 2;
+  msgJoinDeny   = 3;
+  msgInput      = 4;
+  msgSnapshot   = 5;
+  msgSpawn      = 6;
+  msgDespawn    = 7;
+  msgEvent      = 8;
+  msgChat       = 9;
+  msgPing       = 10;
+  msgPong       = 11;
 
 type
   TNetMsgHeader = packed record
@@ -84,6 +92,21 @@ type
   TNetReceiveEvent = reference to procedure(Sender: TObject; const Msg: TNetMessage);
 
 implementation
+
+{ TEntitySpawnData }
+
+function TEntitySpawnData.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TEntitySpawnData));
+  Move(Self, Result[0], SizeOf(TEntitySpawnData));
+end;
+
+class function TEntitySpawnData.FromBytes(const Data: TBytes; out Value: TEntitySpawnData): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TEntitySpawnData);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TEntitySpawnData));
+end;
 
 { TNetMessage }
 

@@ -6,13 +6,16 @@ unit ServerNetSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse,
-  RNL, NetMessages, NetServer, GameWorld;
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleControls,
+  RNL, NetMessages, NetServer, GameWorld, Interfaces;
 
 type
+  TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
+
   TServerNetSystem = class(TWorldSystemBase)
   private
     FServer: TGameServer;
+    FOnLog: TServerNetLogEvent;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
     function GetOnDisconnect: TServerDisconnectEvent;
@@ -30,10 +33,13 @@ type
     procedure Broadcast(const Msg: TNetMessage);
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
     procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+    procedure OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+    procedure Log(const Msg: String);
     property Server: TGameServer read FServer;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
     property OnReceive: TServerReceiveEvent read GetOnReceive write SetOnReceive;
+    property OnLog: TServerNetLogEvent read FOnLog write FOnLog;
   end;
 
 implementation
@@ -45,6 +51,7 @@ begin
   inherited Create(AWorldObj);
   FServer := TGameServer.Create(APort, AMaxPlayers);
   OnConnect := @OnPlayerConnected;
+  OnDisconnect := @OnPlayerDisconnected;
 end;
 
 destructor TServerNetSystem.Destroy;
@@ -119,9 +126,46 @@ begin
   FServer.BroadcastExcept(Msg, AExcludePlayerId);
 end;
 
-procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+procedure TServerNetSystem.Log(const Msg: String);
 begin
-  WriteLn('Player connected: ', PlayerId);
+  if Assigned(FOnLog) then
+    FOnLog(Self, Msg)
+  else
+    WriteLn(Msg);
+end;
+
+procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+var
+  E: IGameEntity;
+  Spawn: TEntitySpawnData;
+  M: TNetMessage;
+begin
+  Log('Player connected: ' + PlayerId.ToString);
+
+  E := WorldObj.Factory.CreatePlayerEntity(WorldObj.AllocateEntityId);
+  E.Transform.Translation := CastleVectors.Vector3(0, 5, 0);
+  WorldObj.AddPlayer(E);
+
+  FServer.SetPeerEntityId(Peer, E.EntityId);
+
+  Spawn.EntityId := E.EntityId;
+  Spawn.PosX := 0; Spawn.PosY := 5; Spawn.PosZ := 0;
+  Spawn.RotY := 0;
+  M.Init(msgJoinAccept, Spawn.ToBytes);
+  SendTo(Peer, M);
+end;
+
+procedure TServerNetSystem.OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+var
+  EntityId: UInt32;
+begin
+  Log('Player disconnected: ' + PlayerId.ToString);
+  EntityId := FServer.GetPeerEntityId(Peer);
+  if EntityId <> 0 then
+  begin
+    WorldObj.World.UnregisterEntity(EntityId);
+    WorldObj.RemoveEntity(EntityId);
+  end;
 end;
 
 end.

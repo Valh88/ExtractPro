@@ -62,6 +62,7 @@ type
   TServerPeerInfo = record
     Peer: TRNLPeer;
     PlayerId: UInt32;
+    EntityId: UInt32;
     Connected: Boolean;
   end;
 
@@ -95,6 +96,8 @@ type
     function SendToPlayer(APlayerId: UInt32; const Msg: TNetMessage): Boolean;
     procedure Broadcast(const Msg: TNetMessage);
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
+    procedure SetPeerEntityId(APeer: TRNLPeer; AEntityId: UInt32);
+    function GetPeerEntityId(APeer: TRNLPeer): UInt32;
     property Host: TRNLHost read FHost;
     property Port: Word read FPort;
     property Peers: Integer read FMaxPlayers;
@@ -274,6 +277,26 @@ begin
   for i := 0 to High(FPeers) do
     if FPeers[i].Connected and (FPeers[i].PlayerId <> AExcludePlayerId) then
       SendTo(FPeers[i].Peer, Msg);
+end;
+
+procedure TGameServer.SetPeerEntityId(APeer: TRNLPeer; AEntityId: UInt32);
+var
+  Idx: Integer;
+begin
+  Idx := FindPeerIdx(APeer);
+  if Idx <> -1 then
+    FPeers[Idx].EntityId := AEntityId;
+end;
+
+function TGameServer.GetPeerEntityId(APeer: TRNLPeer): UInt32;
+var
+  Idx: Integer;
+begin
+  Idx := FindPeerIdx(APeer);
+  if Idx <> -1 then
+    Result := FPeers[Idx].EntityId
+  else
+    Result := 0;
 end;
 
 end.

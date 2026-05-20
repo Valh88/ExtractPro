@@ -1,12 +1,15 @@
 unit GameViewServerTest;
 
+{$mode objfpc}{$H+}
+{$modeswitch functionreferences}
+
 interface
 
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
   help_types, Interfaces, WorldBridge,
-  ServerEntityFactory, GameWorldServer;
+  ServerEntityFactory, GameWorldServer, ServerNetSystem;
 
 type
   TViewServerTest = class(TCastleView)
@@ -22,6 +25,7 @@ type
     function Press(const Event: TInputPressRelease): Boolean; override;
   private
     FGameServer: TGameWorldServer;
+    procedure OnServerLog(Sender: TObject; const Msg: String);
   end;
 
 var
@@ -48,9 +52,15 @@ begin
   );
   FGameServer := TGameWorldServer.Create(Viewport1.Items, Factory, 7777, 8);
   FGameServer.Start;
+  FGameServer.NetSystem.OnLog := @OnServerLog;
   FGameServer.NetSystem.StartServer;
 
   LabelStatus.Caption := 'Server: starting on port 7777...';
+end;
+
+procedure TViewServerTest.OnServerLog(Sender: TObject; const Msg: String);
+begin
+  LabelStatus.Caption := Msg;
 end;
 
 procedure TViewServerTest.Stop;
