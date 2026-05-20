@@ -146,6 +146,11 @@ begin
 
   E := WorldObj.Factory.CreatePlayerEntity(WorldObj.AllocateEntityId);
   E.Transform.Translation := CastleVectors.Vector3(0, 5, 0);
+  if E.Transform.RigidBody <> nil then
+  begin
+    E.Transform.RigidBody.Dynamic := False;
+    E.Transform.RigidBody.Animated := True;
+  end;
   WorldObj.AddPlayer(E);
 
   FServer.SetPeerEntityId(Peer, E.EntityId);
