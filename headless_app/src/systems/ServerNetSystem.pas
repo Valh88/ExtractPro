@@ -6,7 +6,7 @@ unit ServerNetSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleControls,
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetServer, GameWorld, Interfaces;
 
 type
@@ -174,6 +174,8 @@ procedure TServerNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; Play
 var
   State: TPlayerStateData;
   E: IGameEntity;
+  VisRoot: TCastleTransform;
+  I: Integer;
 begin
   case Msg.Header.MsgType of
     msgPlayerState:
@@ -185,6 +187,15 @@ begin
         begin
           E.Transform.Translation := CastleVectors.Vector3(State.PosX, State.PosY, State.PosZ);
           E.Rotation := State.RotY;
+          VisRoot := nil;
+          for I := 0 to E.Transform.Count - 1 do
+            if E.Transform.Items[I].Name = 'VisualRoot' then
+            begin
+              VisRoot := E.Transform.Items[I];
+              Break;
+            end;
+          if VisRoot <> nil then
+            VisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, 0);
         end;
       end;
     end;

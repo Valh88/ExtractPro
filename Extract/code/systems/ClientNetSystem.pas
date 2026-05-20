@@ -6,7 +6,7 @@ unit ClientNetSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors,
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces;
 
 type
@@ -133,6 +133,8 @@ var
   Entity: IGameEntity;
   PState: TPlayerStateData;
   M: TNetMessage;
+  VisRoot: TCastleTransform;
+  I: Integer;
 begin
   if FClient = nil then Exit;
 
@@ -165,7 +167,17 @@ begin
         PState.PosX := Entity.Position3.X;
         PState.PosY := Entity.Position3.Y;
         PState.PosZ := Entity.Position3.Z;
-        PState.RotY := Entity.Rotation;
+        VisRoot := nil;
+        for I := 0 to Entity.Transform.Count - 1 do
+          if Entity.Transform.Items[I].Name = 'VisualRoot' then
+          begin
+            VisRoot := Entity.Transform.Items[I];
+            Break;
+          end;
+        if VisRoot <> nil then
+          PState.RotY := VisRoot.Rotation.W
+        else
+          PState.RotY := Entity.Rotation;
         M.Init(msgPlayerState, PState.ToBytes);
         FClient.Send(M, NET_CH_UNRELIABLE);
       end;
