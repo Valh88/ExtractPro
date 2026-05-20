@@ -7,7 +7,7 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors,
-  RNL, NetMessages, NetClient, GameWorld, help_types;
+  RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -24,6 +24,8 @@ type
     FWantDisconnect: Boolean;
     FConnected: Boolean;
     FLastError: string;
+    FMyEntityId: TEntityId;
+    FStateTimer: Single;
     function GetState: TClientState;
     function GetOnConnected: TClientConnectEvent;
     procedure SetOnConnected(const AValue: TClientConnectEvent);
@@ -64,6 +66,8 @@ begin
   FRetryTimer := 0;
   FConnectTimer := 0;
   FNetTimer := 0;
+  FStateTimer := 0;
+  FMyEntityId := 0;
   FWantDisconnect := False;
   FConnected := False;
 
@@ -125,6 +129,10 @@ begin
 end;
 
 procedure TClientNetSystem.Update(const SecondsPassed: Single);
+var
+  Entity: IGameEntity;
+  PState: TPlayerStateData;
+  M: TNetMessage;
 begin
   if FClient = nil then Exit;
 
@@ -132,10 +140,9 @@ begin
   if FNetTimer >= 0.06 then
   begin
     if FClient.State <> csDisconnected then
-      FClient.Service(0);
+      FClient.Service();
     FNetTimer := 0;
   end;
-
   if (FClient.State = csDisconnected) and FConnected and (FRetryCount < FMaxRetries) then
   begin
     FRetryTimer := FRetryTimer + SecondsPassed;
@@ -144,6 +151,25 @@ begin
       Inc(FRetryCount);
       FRetryTimer := 0;
       DoConnect;
+    end;
+  end;
+  if FMyEntityId <> 0 then
+  begin
+    FStateTimer := FStateTimer + SecondsPassed;
+    if FStateTimer >= 0.05 then
+    begin
+      Entity := WorldObj.FindEntity(FMyEntityId);
+      if Entity <> nil then
+      begin
+        PState.EntityId := Entity.EntityId;
+        PState.PosX := Entity.Position3.X;
+        PState.PosY := Entity.Position3.Y;
+        PState.PosZ := Entity.Position3.Z;
+        PState.RotY := Entity.Rotation;
+        M.Init(msgPlayerState, PState.ToBytes);
+        FClient.Send(M, NET_CH_UNRELIABLE);
+      end;
+      FStateTimer := 0;
     end;
   end;
 end;
@@ -212,6 +238,7 @@ end;
 
 procedure TClientNetSystem.OnClientDisconnected(Sender: TObject);
 begin
+  FMyEntityId := 0;
   if not FWantDisconnect then
   begin
     if FRetryCount < FMaxRetries then
@@ -229,7 +256,10 @@ begin
     msgJoinAccept:
     begin
       if TEntitySpawnData.FromBytes(Msg.Payload, Spawn) then
+      begin
+        FMyEntityId := Spawn.EntityId;
         WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ, Spawn.RotY);
+      end;
     end;
   end;
 end;

@@ -74,7 +74,8 @@ type
     procedure Connect(const AHost: String; APort: Word);
     procedure Disconnect;
     procedure Service(ATimeoutMs: Integer = 0);
-    function Send(const Msg: TNetMessage): Boolean;
+    function Send(const Msg: TNetMessage): Boolean; overload;
+    function Send(const Msg: TNetMessage; AChannel: Integer): Boolean; overload;
     property Peer: TRNLPeer read FPeer;
     property State: TClientState read FState;
     property OnConnected: TClientConnectEvent read FOnConnected write FOnConnected;
@@ -187,16 +188,21 @@ begin
 end;
 
 function TGameClient.Send(const Msg: TNetMessage): Boolean;
+begin
+  Result := Send(Msg, NET_CH_RELIABLE);
+end;
+
+function TGameClient.Send(const Msg: TNetMessage; AChannel: Integer): Boolean;
 var
   Data: TBytes;
   RNLMsg: TRNLMessage;
 begin
   Result := False;
-  if (FPeer = nil) or (FState <> csConnected) then Exit;
+  if (FPeer = nil) or (FState = csDisconnected) then Exit;
   Data := Msg.Pack;
   RNLMsg := TRNLMessage.CreateFromBytes(Data);
   try
-    FPeer.Channels[NET_CH_RELIABLE].SendMessage(RNLMsg);
+    FPeer.Channels[AChannel].SendMessage(RNLMsg);
     Result := True;
   finally
     RNLMsg.DecRef;

@@ -129,7 +129,7 @@ begin
   FWorldRoot.Add(Design);
   FWorldRoot.UpdateIncreaseTime(0);
 
-  Factory := TServerEntityFactory.Create('', '');
+  Factory := TServerEntityFactory.Create('castle-data:/PlayerProto.castle-transform', '');
   FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers);
   FGameWorld.Start;
 end;

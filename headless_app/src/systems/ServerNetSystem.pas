@@ -34,6 +34,7 @@ type
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
     procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
     procedure OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+    procedure OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
     procedure Log(const Msg: String);
     property Server: TGameServer read FServer;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
@@ -52,6 +53,7 @@ begin
   FServer := TGameServer.Create(APort, AMaxPlayers);
   OnConnect := @OnPlayerConnected;
   OnDisconnect := @OnPlayerDisconnected;
+  OnReceive := @OnPlayerReceive;
 end;
 
 destructor TServerNetSystem.Destroy;
@@ -165,6 +167,27 @@ begin
   begin
     WorldObj.World.UnregisterEntity(EntityId);
     WorldObj.RemoveEntity(EntityId);
+  end;
+end;
+
+procedure TServerNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
+var
+  State: TPlayerStateData;
+  E: IGameEntity;
+begin
+  case Msg.Header.MsgType of
+    msgPlayerState:
+    begin
+      if TPlayerStateData.FromBytes(Msg.Payload, State) then
+      begin
+        E := WorldObj.FindEntity(State.EntityId);
+        if E <> nil then
+        begin
+          E.Transform.Translation := CastleVectors.Vector3(State.PosX, State.PosY, State.PosZ);
+          E.Rotation := State.RotY;
+        end;
+      end;
+    end;
   end;
 end;
 

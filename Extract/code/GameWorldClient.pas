@@ -77,7 +77,7 @@ var
 begin
   Entity := Factory.CreateMainPlayerEntity(AEntityId);
   Entity.Transform.Translation := CastleVectors.Vector3(APosX, APosY, APosZ);
-  Entity.Rotation := ARotY;
+  Entity.Rotation := ARotY;  //пока закомичено, вращает тело  без камеры
   AddPlayer(Entity);
   FMainPlayerId := Entity.EntityId;
   InitMainPlayerOverlay(Entity.Transform);

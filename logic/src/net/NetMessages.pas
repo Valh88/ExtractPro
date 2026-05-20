@@ -56,6 +56,14 @@ type
     class function FromBytes(const Data: TBytes; out Value: TEntitySpawnData): Boolean; static;
   end;
 
+  TPlayerStateData = packed record
+    EntityId: UInt32;
+    PosX, PosY, PosZ: Single;
+    RotY: Single;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TPlayerStateData): Boolean; static;
+  end;
+
 const
   msgInvalid    = 0;
   msgJoinReq    = 1;
@@ -69,6 +77,7 @@ const
   msgChat       = 9;
   msgPing       = 10;
   msgPong       = 11;
+  msgPlayerState = 12;
 
 type
   TNetMsgHeader = packed record
@@ -106,6 +115,21 @@ begin
   Result := Length(Data) >= SizeOf(TEntitySpawnData);
   if not Result then Exit;
   Move(Data[0], Value, SizeOf(TEntitySpawnData));
+end;
+
+{ TPlayerStateData }
+
+function TPlayerStateData.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TPlayerStateData));
+  Move(Self, Result[0], SizeOf(TPlayerStateData));
+end;
+
+class function TPlayerStateData.FromBytes(const Data: TBytes; out Value: TPlayerStateData): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TPlayerStateData);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TPlayerStateData));
 end;
 
 { TNetMessage }
