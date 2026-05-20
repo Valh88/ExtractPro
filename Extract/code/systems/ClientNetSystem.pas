@@ -229,7 +229,7 @@ begin
     msgJoinAccept:
     begin
       if TEntitySpawnData.FromBytes(Msg.Payload, Spawn) then
-        WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ);
+        WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ, Spawn.RotY);
     end;
   end;
 end;

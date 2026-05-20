@@ -19,7 +19,7 @@ type
       const AFactory: IEntityFactory; const AViewport: TCastleViewport);
     destructor Destroy; override;
     procedure SpawnMainPlayer;
-    procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single); override;
+    procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single); override;
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
     property MainPlayerId: TEntityId read FMainPlayerId write FMainPlayerId;
     property Viewport: TCastleViewport read FViewport write FViewport;
@@ -71,12 +71,13 @@ begin
   AddPlayer(Entity);
 end;
 
-procedure TGameWorldClient.HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single);
+procedure TGameWorldClient.HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single);
 var
   Entity: IGameEntity;
 begin
   Entity := Factory.CreateMainPlayerEntity(AEntityId);
   Entity.Transform.Translation := CastleVectors.Vector3(APosX, APosY, APosZ);
+  Entity.Rotation := ARotY;
   AddPlayer(Entity);
   FMainPlayerId := Entity.EntityId;
   InitMainPlayerOverlay(Entity.Transform);

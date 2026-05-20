@@ -150,7 +150,7 @@ begin
 
   Spawn.EntityId := E.EntityId;
   Spawn.PosX := 0; Spawn.PosY := 5; Spawn.PosZ := 0;
-  Spawn.RotY := 0;
+  Spawn.RotY := E.Rotation;
   M.Init(msgJoinAccept, Spawn.ToBytes);
   SendTo(Peer, M);
 end;

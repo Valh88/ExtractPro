@@ -34,7 +34,7 @@ type
 
     function AllocateEntityId: TEntityId;
     function Press(const Event: TInputPressRelease): Boolean; virtual;
-    procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single); virtual;
+    procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single); virtual;
     procedure Start; virtual;
     procedure Stop; virtual;
     procedure Update(const SecondsPassed: Single); virtual;
@@ -226,7 +226,7 @@ begin
     if FSystems[i].Press(Event) then Exit(True);
 end;
 
-procedure TGameWorld.HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ: Single);
+procedure TGameWorld.HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single);
 begin
 end;
 
