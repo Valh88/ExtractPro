@@ -29,7 +29,7 @@ implementation
 constructor TPlayerInterpolation.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FSmoothFactor := 15.0;
+  FSmoothFactor := 20.0;
 end;
 
 procedure TPlayerInterpolation.SetTarget(const AX, AY, AZ, ARotY: Single);

@@ -10,19 +10,22 @@ uses
   help_types, Interfaces,
   PlayerInterpolationBehavior;
 
+const
+  SNAP_BUFFER_SIZE = 5;
+
 type
   TSnapshotFrame = record
-    Time: Single;
+    ServerTime: Double;
+    LocalTime: Single;
     Entries: array of TSnapshotEntry;
   end;
 
   TClientSnapshotSystem = class(TWorldSystemBase)
   private
-    FPrevSnap: TSnapshotFrame;
-    FCurrSnap: TSnapshotFrame;
-    FHavePrev: Boolean;
-    FPrevTime: Single;
-    FInterpStart: Single;
+    FBuffer: array[0..SNAP_BUFFER_SIZE - 1] of TSnapshotFrame;
+    FHead: Integer;
+    FTail: Integer;
+    FCount: Integer;
     FTime: Single;
     FLocalPlayerId: TEntityId;
     function FindEntry(const Entries: array of TSnapshotEntry; EntityId: UInt32): Integer;
@@ -65,15 +68,19 @@ var
   Entry: TSnapshotEntry;
   Entity: IGameEntity;
   Interp: TPlayerInterpolation;
-  InitPos: help_types.TVector3;
 begin
-  FPrevSnap := FCurrSnap;
-  FPrevTime := FCurrSnap.Time;
-  FHavePrev := FCurrSnap.Entries <> nil;
+  if FCount = SNAP_BUFFER_SIZE then
+    FTail := (FTail + 1) mod SNAP_BUFFER_SIZE
+  else
+    Inc(FCount);
 
-  FCurrSnap.Time := FTime;
-  FCurrSnap.Entries := Copy(Data.Entries, 0, Length(Data.Entries));
-  FInterpStart := FTime;
+  FHead := (FHead + 1) mod SNAP_BUFFER_SIZE;
+  FBuffer[FHead].ServerTime := Data.ServerTime;
+  FBuffer[FHead].LocalTime := FTime;
+  FBuffer[FHead].Entries := Copy(Data.Entries, 0, Length(Data.Entries));
+
+  if FCount = 2 then
+    FBuffer[FTail].LocalTime := FTime;
 
   for I := 0 to High(Data.Entries) do
   begin
@@ -102,54 +109,57 @@ begin
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
     end;
-
-    if not FHavePrev then
-    begin
-      Interp.SetTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
-      InitPos.X := Entry.PosX; InitPos.Y := Entry.PosY; InitPos.Z := Entry.PosZ;
-      Entity.Position3 := InitPos;
-    end;
   end;
 end;
 
 procedure TClientSnapshotSystem.Update(const SecondsPassed: Single);
 var
+  PrevIdx, CurrIdx: Integer;
+  Duration, T: Single;
   I, J: Integer;
   Entry, PrevEntry: TSnapshotEntry;
   Entity: IGameEntity;
   Interp: TPlayerInterpolation;
-  Duration, T: Single;
   LerpX, LerpY, LerpZ, LerpRot: Single;
 begin
   FTime := FTime + SecondsPassed;
 
-  if FCurrSnap.Entries = nil then Exit;
+  if FCount < 2 then Exit;
 
-  if not FHavePrev then
+  while FCount >= 2 do
   begin
-    for I := 0 to High(FCurrSnap.Entries) do
+    PrevIdx := FTail;
+    CurrIdx := (FTail + 1) mod SNAP_BUFFER_SIZE;
+    Duration := FBuffer[CurrIdx].ServerTime - FBuffer[PrevIdx].ServerTime;
+
+    if Duration <= 0 then
     begin
-      Entry := FCurrSnap.Entries[I];
-      if Entry.EntityId = FLocalPlayerId then Continue;
-      Entity := WorldObj.FindEntity(Entry.EntityId);
-      if Entity = nil then Continue;
-      Interp := Entity.Transform.FindBehavior(TPlayerInterpolation) as TPlayerInterpolation;
-      if Interp <> nil then
-        Interp.SetTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      FTail := (FTail + 1) mod SNAP_BUFFER_SIZE;
+      Dec(FCount);
+      Continue;
     end;
-    Exit;
+
+    T := (FTime - FBuffer[PrevIdx].LocalTime) / Duration;
+    if T >= 1.0 then
+    begin
+      FTail := (FTail + 1) mod SNAP_BUFFER_SIZE;
+      Dec(FCount);
+      Continue;
+    end;
+
+    Break;
   end;
 
-  Duration := FCurrSnap.Time - FPrevTime;
-  if Duration > 0 then
-    T := (FTime - FInterpStart) / Duration
-  else
-    T := 1.0;
+  if FCount < 2 then Exit;
+
+  PrevIdx := FTail;
+  CurrIdx := (FTail + 1) mod SNAP_BUFFER_SIZE;
+  T := (FTime - FBuffer[PrevIdx].LocalTime) / Duration;
   T := EnsureRange(T, 0.0, 1.0);
 
-  for I := 0 to High(FCurrSnap.Entries) do
+  for I := 0 to High(FBuffer[CurrIdx].Entries) do
   begin
-    Entry := FCurrSnap.Entries[I];
+    Entry := FBuffer[CurrIdx].Entries[I];
     if Entry.EntityId = FLocalPlayerId then Continue;
 
     Entity := WorldObj.FindEntity(Entry.EntityId);
@@ -158,10 +168,10 @@ begin
     Interp := Entity.Transform.FindBehavior(TPlayerInterpolation) as TPlayerInterpolation;
     if Interp = nil then Continue;
 
-    J := FindEntry(FPrevSnap.Entries, Entry.EntityId);
+    J := FindEntry(FBuffer[PrevIdx].Entries, Entry.EntityId);
     if J >= 0 then
     begin
-      PrevEntry := FPrevSnap.Entries[J];
+      PrevEntry := FBuffer[PrevIdx].Entries[J];
       LerpX := PrevEntry.PosX + (Entry.PosX - PrevEntry.PosX) * T;
       LerpY := PrevEntry.PosY + (Entry.PosY - PrevEntry.PosY) * T;
       LerpZ := PrevEntry.PosZ + (Entry.PosZ - PrevEntry.PosZ) * T;

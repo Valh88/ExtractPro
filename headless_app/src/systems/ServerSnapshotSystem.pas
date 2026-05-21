@@ -7,7 +7,8 @@ interface
 uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages, NetServer,
-  EntityTypes;
+  EntityTypes,
+  CastleTransform, CastleVectors;
 
 type
   TServerSnapshotSystem = class(TWorldSystemBase)
@@ -15,6 +16,7 @@ type
     FServer: TGameServer;
     FTimer: Single;
     FSeq: UInt32;
+    FServerTime: Double;
   public
     constructor Create(AWorldObj: TGameWorld; AServer: TGameServer);
     procedure Update(const SecondsPassed: Single); override;
@@ -30,6 +32,7 @@ begin
   FServer := AServer;
   FTimer := 0;
   FSeq := 0;
+  FServerTime := 0;
 end;
 
 procedure TServerSnapshotSystem.Update(const SecondsPassed: Single);
@@ -41,11 +44,15 @@ var
   E: TEnemyData;
   B: TBulletData;
   Entry: TSnapshotEntry;
+  VisRoot: TCastleTransform;
+  TmpI: Integer;
 begin
+  FServerTime := FServerTime + SecondsPassed;
   FTimer := FTimer + SecondsPassed;
   if FTimer < 0.1 then Exit;
   FTimer := 0;
 
+  Snap.ServerTime := FServerTime;
   Snap.Seq := FSeq;
   Inc(FSeq);
 
@@ -73,6 +80,15 @@ begin
     Entry.PosY := P.Visual.Position3.Y;
     Entry.PosZ := P.Visual.Position3.Z;
     Entry.RotY := P.Visual.Rotation;
+    VisRoot := nil;
+    for TmpI := 0 to P.Visual.Transform.Count - 1 do
+      if P.Visual.Transform.Items[TmpI].Name = 'VisualRoot' then
+      begin
+        VisRoot := P.Visual.Transform.Items[TmpI];
+        Break;
+      end;
+    if VisRoot <> nil then
+      Entry.RotY := VisRoot.Rotation.W;
     Snap.Entries[Cnt] := Entry;
     Inc(Cnt);
   end;

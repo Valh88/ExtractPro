@@ -87,6 +87,7 @@ type
   end;
 
   TSnapshotData = record
+    ServerTime: Double;
     Seq: UInt32;
     Entries: array of TSnapshotEntry;
     function ToBytes: TBytes;
@@ -151,38 +152,40 @@ end;
 function TSnapshotData.ToBytes: TBytes;
 var
   Count: UInt16;
-  EntrySize, I: Integer;
+  EntrySize, I, Off: Integer;
 begin
   Count := Length(Entries);
   EntrySize := SizeOf(TSnapshotEntry);
-  SetLength(Result, SizeOf(Seq) + SizeOf(Count) + Count * EntrySize);
-  Move(Seq, Result[0], SizeOf(Seq));
-  Move(Count, Result[SizeOf(Seq)], SizeOf(Count));
+  Off := SizeOf(ServerTime) + SizeOf(Seq) + SizeOf(Count);
+  SetLength(Result, Off + Count * EntrySize);
+  Move(ServerTime, Result[0], SizeOf(ServerTime));
+  Move(Seq, Result[SizeOf(ServerTime)], SizeOf(Seq));
+  Move(Count, Result[SizeOf(ServerTime) + SizeOf(Seq)], SizeOf(Count));
   for I := 0 to Count - 1 do
-    Move(Entries[I], Result[SizeOf(Seq) + SizeOf(Count) + I * EntrySize], EntrySize);
+    Move(Entries[I], Result[Off + I * EntrySize], EntrySize);
 end;
 
 class function TSnapshotData.FromBytes(const Data: TBytes; out Value: TSnapshotData): Boolean;
 var
   Count: UInt16;
-  I, EntrySize, Offset: Integer;
+  I, EntrySize, Off: Integer;
 begin
   EntrySize := SizeOf(TSnapshotEntry);
-  Result := Length(Data) >= SizeOf(Value.Seq) + SizeOf(Count);
+  Off := SizeOf(Value.ServerTime) + SizeOf(Value.Seq) + SizeOf(Count);
+  Result := Length(Data) >= Off;
   if not Result then Exit;
-  Move(Data[0], Value.Seq, SizeOf(Value.Seq));
-  Move(Data[SizeOf(Value.Seq)], Count, SizeOf(Count));
-  Offset := SizeOf(Value.Seq) + SizeOf(Count);
+  Move(Data[0], Value.ServerTime, SizeOf(Value.ServerTime));
+  Move(Data[SizeOf(Value.ServerTime)], Value.Seq, SizeOf(Value.Seq));
+  Move(Data[SizeOf(Value.ServerTime) + SizeOf(Value.Seq)], Count, SizeOf(Count));
   SetLength(Value.Entries, Count);
   for I := 0 to Count - 1 do
   begin
-    if Offset + EntrySize > Length(Data) then
+    if Off + EntrySize > Length(Data) then
     begin
       SetLength(Value.Entries, I);
       Exit(False);
     end;
-    Move(Data[Offset], Value.Entries[I], EntrySize);
-    Inc(Offset, EntrySize);
+    Move(Data[Off + I * EntrySize], Value.Entries[I], EntrySize);
   end;
 end;
 
