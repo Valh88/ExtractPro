@@ -247,7 +247,7 @@ begin
               FClient.Send(M, AChannel);
           end;
           Entity.Transform.AddBehavior(
-            TClientPlayerSync.Create(nil, Spawn.EntityId, SendProc));
+            TClientPlayerSync.Create(Entity.Transform, Spawn.EntityId, SendProc));
         end;
       end;
     end;

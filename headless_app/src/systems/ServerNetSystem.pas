@@ -153,7 +153,7 @@ begin
     E.Transform.RigidBody.Animated := True;
   end;
   WorldObj.AddPlayer(E);
-  E.Transform.AddBehavior(TServerPlayerSync.Create(nil, E.EntityId));
+  E.Transform.AddBehavior(TServerPlayerSync.Create(E.Transform, E.EntityId));
 
   FServer.SetPeerEntityId(Peer, E.EntityId);
 
