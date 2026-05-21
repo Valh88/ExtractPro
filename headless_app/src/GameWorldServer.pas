@@ -3,7 +3,8 @@ unit GameWorldServer;
 interface
 
 uses
-  GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages;
+  GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
+  ServerSnapshotSystem;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -41,6 +42,7 @@ begin
   inherited;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
   AddSystem(FNetSystem);
+  AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
 end;
 
 end.

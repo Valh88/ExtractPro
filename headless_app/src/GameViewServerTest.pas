@@ -47,7 +47,7 @@ var
 begin
   inherited;
   Factory := TServerEntityFactory.Create(
-    'castle-data:/PlayerProto.castle-transform',
+    'castle-data:/PlayerProtoNoCamera.castle-transform',
     ''
   );
   FGameServer := TGameWorldServer.Create(Viewport1.Items, Factory, 7777, 8);

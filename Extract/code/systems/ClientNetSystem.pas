@@ -230,6 +230,9 @@ var
   Spawn: TEntitySpawnData;
   Entity: IGameEntity;
   SendProc: TSendMessageProc;
+  Snap: TSnapshotData;
+  I: Integer;
+  Pos: help_types.TVector3;
 begin
   case Msg.Header.MsgType of
     msgJoinAccept:
@@ -248,6 +251,31 @@ begin
           end;
           Entity.Transform.AddBehavior(
             TClientPlayerSync.Create(Entity.Transform, Spawn.EntityId, SendProc));
+        end;
+      end;
+    end;
+    msgSnapshot:
+    begin
+      if TSnapshotData.FromBytes(Msg.Payload, Snap) then
+      begin
+        for I := 0 to High(Snap.Entries) do
+        begin
+          if Snap.Entries[I].EntityId = FMyEntityId then Continue;
+          Entity := WorldObj.FindEntity(Snap.Entries[I].EntityId);
+          if Entity = nil then
+          begin
+            if Snap.Entries[I].EntityType = 0 then
+            begin
+              Entity := WorldObj.Factory.CreatePlayerEntity(Snap.Entries[I].EntityId);
+              WorldObj.AddPlayer(Entity);
+            end;
+            if Entity = nil then Continue;
+          end;
+          Pos.X := Snap.Entries[I].PosX;
+          Pos.Y := Snap.Entries[I].PosY;
+          Pos.Z := Snap.Entries[I].PosZ;
+          Entity.Position3 := Pos;
+          Entity.Rotation := Snap.Entries[I].RotY;
         end;
       end;
     end;

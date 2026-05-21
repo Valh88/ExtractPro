@@ -80,6 +80,20 @@ const
   msgPlayerState = 12;
 
 type
+  TSnapshotEntry = packed record
+    EntityId: UInt32;
+    EntityType: Byte;
+    PosX, PosY, PosZ, RotY: Single;
+  end;
+
+  TSnapshotData = record
+    Seq: UInt32;
+    Entries: array of TSnapshotEntry;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TSnapshotData): Boolean; static;
+  end;
+
+type
   TNetMsgHeader = packed record
     MsgType: TNetMsgType;
     Sequence: UInt32;
@@ -130,6 +144,46 @@ begin
   Result := Length(Data) >= SizeOf(TPlayerStateData);
   if not Result then Exit;
   Move(Data[0], Value, SizeOf(TPlayerStateData));
+end;
+
+{ TSnapshotData }
+
+function TSnapshotData.ToBytes: TBytes;
+var
+  Count: UInt16;
+  EntrySize, I: Integer;
+begin
+  Count := Length(Entries);
+  EntrySize := SizeOf(TSnapshotEntry);
+  SetLength(Result, SizeOf(Seq) + SizeOf(Count) + Count * EntrySize);
+  Move(Seq, Result[0], SizeOf(Seq));
+  Move(Count, Result[SizeOf(Seq)], SizeOf(Count));
+  for I := 0 to Count - 1 do
+    Move(Entries[I], Result[SizeOf(Seq) + SizeOf(Count) + I * EntrySize], EntrySize);
+end;
+
+class function TSnapshotData.FromBytes(const Data: TBytes; out Value: TSnapshotData): Boolean;
+var
+  Count: UInt16;
+  I, EntrySize, Offset: Integer;
+begin
+  EntrySize := SizeOf(TSnapshotEntry);
+  Result := Length(Data) >= SizeOf(Value.Seq) + SizeOf(Count);
+  if not Result then Exit;
+  Move(Data[0], Value.Seq, SizeOf(Value.Seq));
+  Move(Data[SizeOf(Value.Seq)], Count, SizeOf(Count));
+  Offset := SizeOf(Value.Seq) + SizeOf(Count);
+  SetLength(Value.Entries, Count);
+  for I := 0 to Count - 1 do
+  begin
+    if Offset + EntrySize > Length(Data) then
+    begin
+      SetLength(Value.Entries, I);
+      Exit(False);
+    end;
+    Move(Data[Offset], Value.Entries[I], EntrySize);
+    Inc(Offset, EntrySize);
+  end;
 end;
 
 { TNetMessage }
