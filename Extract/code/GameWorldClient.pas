@@ -5,7 +5,8 @@ interface
 uses
   SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport, CastleVectors,
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
-  MouseLookOverlay, FirstPersonCameraBehavior;
+  MouseLookOverlay, FirstPersonCameraBehavior,
+  ClientSnapshotSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -13,6 +14,7 @@ type
     FMainPlayerId: TEntityId;
     FViewport: TCastleViewport;
     FMouseLookUi: TMouseLookOverlay;
+    FSnapSystem: TClientSnapshotSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -84,10 +86,16 @@ begin
 end;
 
 procedure TGameWorldClient.RegisterSystems;
+var
+  NetSys: TClientNetSystem;
 begin
   inherited;
   AddSystem(TShotSystem.Create(Self));
-  AddSystem(TClientNetSystem.Create(Self));
+  NetSys := TClientNetSystem.Create(Self);
+  FSnapSystem := TClientSnapshotSystem.Create(Self);
+  NetSys.SnapSystem := FSnapSystem;
+  AddSystem(NetSys);
+  AddSystem(FSnapSystem);
 end;
 
 end.

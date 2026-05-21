@@ -42,6 +42,7 @@ begin
   inherited;
   Factory := TEntityManager.Create(
     'castle-data:/PlayerProto.castle-transform',
+    'castle-data:/PlayerProtoNoCamera.castle-transform',
     'castle-data:/EnemyProto.castle-transform',
     Viewport1
   );

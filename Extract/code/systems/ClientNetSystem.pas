@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
-  ClientPlayerSyncBehavior;
+  ClientPlayerSyncBehavior, ClientSnapshotSystem;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -27,6 +27,7 @@ type
     FConnected: Boolean;
     FLastError: string;
     FMyEntityId: TEntityId;
+    FSnapSystem: TClientSnapshotSystem;
     function GetState: TClientState;
     function GetOnConnected: TClientConnectEvent;
     procedure SetOnConnected(const AValue: TClientConnectEvent);
@@ -51,6 +52,7 @@ type
     property OnConnected: TClientConnectEvent read GetOnConnected write SetOnConnected;
     property OnDisconnected: TClientDisconnectEvent read GetOnDisconnected write SetOnDisconnected;
     property OnReceive: TClientReceiveEvent read GetOnReceive write SetOnReceive;
+    property SnapSystem: TClientSnapshotSystem read FSnapSystem write FSnapSystem;
   end;
 
 implementation
@@ -231,8 +233,6 @@ var
   Entity: IGameEntity;
   SendProc: TSendMessageProc;
   Snap: TSnapshotData;
-  I: Integer;
-  Pos: help_types.TVector3;
 begin
   case Msg.Header.MsgType of
     msgJoinAccept:
@@ -240,6 +240,8 @@ begin
       if TEntitySpawnData.FromBytes(Msg.Payload, Spawn) then
       begin
         FMyEntityId := Spawn.EntityId;
+        if FSnapSystem <> nil then
+          FSnapSystem.SetLocalPlayerId(FMyEntityId);
         WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ, Spawn.RotY);
         Entity := WorldObj.FindEntity(Spawn.EntityId);
         if Entity <> nil then
@@ -257,27 +259,8 @@ begin
     msgSnapshot:
     begin
       if TSnapshotData.FromBytes(Msg.Payload, Snap) then
-      begin
-        for I := 0 to High(Snap.Entries) do
-        begin
-          if Snap.Entries[I].EntityId = FMyEntityId then Continue;
-          Entity := WorldObj.FindEntity(Snap.Entries[I].EntityId);
-          if Entity = nil then
-          begin
-            if Snap.Entries[I].EntityType = 0 then
-            begin
-              Entity := WorldObj.Factory.CreatePlayerEntity(Snap.Entries[I].EntityId);
-              WorldObj.AddPlayer(Entity);
-            end;
-            if Entity = nil then Continue;
-          end;
-          Pos.X := Snap.Entries[I].PosX;
-          Pos.Y := Snap.Entries[I].PosY;
-          Pos.Z := Snap.Entries[I].PosZ;
-          Entity.Position3 := Pos;
-          Entity.Rotation := Snap.Entries[I].RotY;
-        end;
-      end;
+        if FSnapSystem <> nil then
+          FSnapSystem.HandleSnapshot(Snap);
     end;
   end;
 end;

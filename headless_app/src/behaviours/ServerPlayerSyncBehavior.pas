@@ -13,6 +13,7 @@ type
   TServerPlayerSync = class(TBehaviorBase)
   private
     FMyEntityId: UInt32;
+    FVisRoot: TCastleTransform;
   public
     constructor Create(AOwner: TComponent; AMyEntityId: UInt32); reintroduce;
     procedure ApplyState(const State: TPlayerStateData);
@@ -31,22 +32,22 @@ end;
 
 procedure TServerPlayerSync.ApplyState(const State: TPlayerStateData);
 var
-  VisRoot: TCastleTransform;
   I: Integer;
 begin
   if Parent = nil then Exit;
 
   Parent.Translation := CastleVectors.Vector3(State.PosX, State.PosY, State.PosZ);
-  Parent.Rotation := CastleVectors.Vector4(0, 1, 0, State.RotY);
-  VisRoot := nil;
-  for I := 0 to Parent.Count - 1 do
-    if Parent.Items[I].Name = 'VisualRoot' then
-    begin
-      VisRoot := Parent.Items[I];
-      Break;
-    end;
-  if VisRoot <> nil then
-    VisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, 0);
+
+  if FVisRoot = nil then
+    for I := 0 to Parent.Count - 1 do
+      if Parent.Items[I].Name = 'VisualRoot' then
+      begin
+        FVisRoot := Parent.Items[I];
+        Break;
+      end;
+
+  if FVisRoot <> nil then
+    FVisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, State.RotY);
 end;
 
 end.

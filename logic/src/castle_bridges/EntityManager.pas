@@ -14,10 +14,11 @@ type
   TEntityManager = class(TInterfacedObject, IEntityFactory)
   private
     FPlayerUrl: String;
+    FConnectedPlayerUrl: String;
     FEnemyUrl: String;
     FViewport: TCastleViewport;
   public
-    constructor Create(const APlayerUrl, AEnemyUrl: String; const AViewport: TCastleViewport);
+    constructor Create(const APlayerUrl, AConnectedPlayerUrl, AEnemyUrl: String; const AViewport: TCastleViewport);
     function CreateEntity(const AEntityId: TEntityId;
       const AUrl: String): IGameEntity;
     function CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
@@ -30,10 +31,11 @@ implementation
 
 { TEntityManager }
 
-constructor TEntityManager.Create(const APlayerUrl, AEnemyUrl: String; const AViewport: TCastleViewport);
+constructor TEntityManager.Create(const APlayerUrl, AConnectedPlayerUrl, AEnemyUrl: String; const AViewport: TCastleViewport);
 begin
   inherited Create;
   FPlayerUrl := APlayerUrl;
+  FConnectedPlayerUrl := AConnectedPlayerUrl;
   FEnemyUrl := AEnemyUrl;
   FViewport := AViewport;
 end;
@@ -64,7 +66,7 @@ end;
 
 function TEntityManager.CreatePlayerEntity(const AEntityId: TEntityId): IGameEntity;
 begin
-  Result := CreateEntity(AEntityId, FPlayerUrl);
+  Result := CreateEntity(AEntityId, FConnectedPlayerUrl);
   if Result.Transform.RigidBody <> nil then
   begin
     Result.Transform.RigidBody.LockRotation := [0, 1, 2];
