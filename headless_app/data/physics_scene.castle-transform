@@ -70,6 +70,8 @@
         },
         {
           "$$ClassName" : "TCastleRigidBody",
+          "Dynamic" : false,
+          "Gravity" : false,
           "Name" : "RigidBody2"
         }
       ]
@@ -103,6 +105,8 @@
         },
         {
           "$$ClassName" : "TCastleRigidBody",
+          "Dynamic" : false,
+          "Gravity" : false,
           "Name" : "RigidBody3"
         }
       ]
@@ -132,6 +136,8 @@
         },
         {
           "$$ClassName" : "TCastleRigidBody",
+          "Dynamic" : false,
+          "Gravity" : false,
           "Name" : "RigidBody4"
         }
       ]
@@ -165,6 +171,8 @@
         },
         {
           "$$ClassName" : "TCastleRigidBody",
+          "Dynamic" : false,
+          "Gravity" : false,
           "Name" : "RigidBody5"
         }
       ]

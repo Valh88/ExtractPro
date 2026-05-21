@@ -1,13 +1,15 @@
 unit ClientNetSystem;
 
 {$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
 {$modeswitch functionreferences}
 
 interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
-  RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces;
+  RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
+  ClientPlayerSyncBehavior;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -25,7 +27,6 @@ type
     FConnected: Boolean;
     FLastError: string;
     FMyEntityId: TEntityId;
-    FStateTimer: Single;
     function GetState: TClientState;
     function GetOnConnected: TClientConnectEvent;
     procedure SetOnConnected(const AValue: TClientConnectEvent);
@@ -66,7 +67,6 @@ begin
   FRetryTimer := 0;
   FConnectTimer := 0;
   FNetTimer := 0;
-  FStateTimer := 0;
   FMyEntityId := 0;
   FWantDisconnect := False;
   FConnected := False;
@@ -129,12 +129,6 @@ begin
 end;
 
 procedure TClientNetSystem.Update(const SecondsPassed: Single);
-var
-  Entity: IGameEntity;
-  PState: TPlayerStateData;
-  M: TNetMessage;
-  VisRoot: TCastleTransform;
-  I: Integer;
 begin
   if FClient = nil then Exit;
 
@@ -153,35 +147,6 @@ begin
       Inc(FRetryCount);
       FRetryTimer := 0;
       DoConnect;
-    end;
-  end;
-  if FMyEntityId <> 0 then
-  begin
-    FStateTimer := FStateTimer + SecondsPassed;
-    if FStateTimer >= 0.05 then
-    begin
-      Entity := WorldObj.FindEntity(FMyEntityId);
-      if Entity <> nil then
-      begin
-        PState.EntityId := Entity.EntityId;
-        PState.PosX := Entity.Position3.X;
-        PState.PosY := Entity.Position3.Y;
-        PState.PosZ := Entity.Position3.Z;
-        VisRoot := nil;
-        for I := 0 to Entity.Transform.Count - 1 do
-          if Entity.Transform.Items[I].Name = 'VisualRoot' then
-          begin
-            VisRoot := Entity.Transform.Items[I];
-            Break;
-          end;
-        if VisRoot <> nil then
-          PState.RotY := VisRoot.Rotation.W
-        else
-          PState.RotY := Entity.Rotation;
-        M.Init(msgPlayerState, PState.ToBytes);
-        FClient.Send(M, NET_CH_UNRELIABLE);
-      end;
-      FStateTimer := 0;
     end;
   end;
 end;
@@ -263,6 +228,8 @@ end;
 procedure TClientNetSystem.OnClientReceive(Sender: TObject; const Msg: TNetMessage);
 var
   Spawn: TEntitySpawnData;
+  Entity: IGameEntity;
+  SendProc: TSendMessageProc;
 begin
   case Msg.Header.MsgType of
     msgJoinAccept:
@@ -271,6 +238,17 @@ begin
       begin
         FMyEntityId := Spawn.EntityId;
         WorldObj.HandleJoinAccept(Spawn.EntityId, Spawn.PosX, Spawn.PosY, Spawn.PosZ, Spawn.RotY);
+        Entity := WorldObj.FindEntity(Spawn.EntityId);
+        if Entity <> nil then
+        begin
+          SendProc := procedure(const M: TNetMessage; const AChannel: Integer)
+          begin
+            if FClient <> nil then
+              FClient.Send(M, AChannel);
+          end;
+          Entity.Transform.AddBehavior(
+            TClientPlayerSync.Create(nil, Spawn.EntityId, SendProc));
+        end;
       end;
     end;
   end;

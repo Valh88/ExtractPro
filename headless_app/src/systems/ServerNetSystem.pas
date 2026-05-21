@@ -7,7 +7,8 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
-  RNL, NetMessages, NetServer, GameWorld, Interfaces;
+  RNL, NetMessages, NetServer, GameWorld, Interfaces,
+  ServerPlayerSyncBehavior;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
@@ -152,6 +153,7 @@ begin
     E.Transform.RigidBody.Animated := True;
   end;
   WorldObj.AddPlayer(E);
+  E.Transform.AddBehavior(TServerPlayerSync.Create(nil, E.EntityId));
 
   FServer.SetPeerEntityId(Peer, E.EntityId);
 
@@ -179,8 +181,7 @@ procedure TServerNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; Play
 var
   State: TPlayerStateData;
   E: IGameEntity;
-  VisRoot: TCastleTransform;
-  I: Integer;
+  Sync: TServerPlayerSync;
 begin
   case Msg.Header.MsgType of
     msgPlayerState:
@@ -190,17 +191,9 @@ begin
         E := WorldObj.FindEntity(State.EntityId);
         if E <> nil then
         begin
-          E.Transform.Translation := CastleVectors.Vector3(State.PosX, State.PosY, State.PosZ);
-          E.Rotation := State.RotY;
-          VisRoot := nil;
-          for I := 0 to E.Transform.Count - 1 do
-            if E.Transform.Items[I].Name = 'VisualRoot' then
-            begin
-              VisRoot := E.Transform.Items[I];
-              Break;
-            end;
-          if VisRoot <> nil then
-            VisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, 0);
+          Sync := E.Transform.FindBehavior(TServerPlayerSync) as TServerPlayerSync;
+          if Sync <> nil then
+            Sync.ApplyState(State);
         end;
       end;
     end;
