@@ -130,9 +130,9 @@ begin
   FWorldRoot.UpdateIncreaseTime(0);
 
   {$ifdef VISUAL}
-  Factory := TServerEntityFactory.Create('castle-data:/PlayerProto.castle-transform', '');
+  Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
   {$else}
-  Factory := TServerEntityFactory.Create('', ''); // заглушка
+  Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
   {$endif}
   FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers);
   FGameWorld.Start;
