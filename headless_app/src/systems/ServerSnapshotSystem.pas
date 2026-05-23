@@ -49,7 +49,7 @@ var
 begin
   FServerTime := FServerTime + SecondsPassed;
   FTimer := FTimer + SecondsPassed;
-  if FTimer < 0.1 then Exit;
+  if FTimer < 1 / 30 then Exit;
   FTimer := 0;
 
   Snap.ServerTime := FServerTime;

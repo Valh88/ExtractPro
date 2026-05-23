@@ -22,7 +22,6 @@ type
     FRetryCount: Integer;
     FRetryTimer: Single;
     FConnectTimer: Single;
-    FNetTimer: Single;
     FWantDisconnect: Boolean;
     FConnected: Boolean;
     FLastError: string;
@@ -72,7 +71,6 @@ begin
   FRetryCount := 0;
   FRetryTimer := 0;
   FConnectTimer := 0;
-  FNetTimer := 0;
   FMyEntityId := 0;
   FWantDisconnect := False;
   FConnected := False;
@@ -107,7 +105,6 @@ begin
   FRetryCount := FMaxRetries;
   FRetryTimer := 0;
   FConnectTimer := 0;
-  FNetTimer := 0;
   FreeAndNil(FClient);
 end;
 
@@ -146,13 +143,8 @@ procedure TClientNetSystem.Update(const SecondsPassed: Single);
 begin
   if FClient = nil then Exit;
 
-  FNetTimer := FNetTimer + SecondsPassed;
-  if FNetTimer >= 0.06 then
-  begin
-    if FClient.State <> csDisconnected then
-      FClient.Service();
-    FNetTimer := 0;
-  end;
+  if FClient.State <> csDisconnected then
+    FClient.Service();
   if (FClient.State = csDisconnected) and FConnected and (FRetryCount < FMaxRetries) then
   begin
     FRetryTimer := FRetryTimer + SecondsPassed;
