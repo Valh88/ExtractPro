@@ -283,7 +283,8 @@ begin
         begin
           Bullet := WorldObj.Factory.CreateBulletEntity(WorldObj.AllocateEntityId);
           Bullet.Transform.Translation := Vector3(Shot.OriginX, Shot.OriginY, Shot.OriginZ)
-            + Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 1.0;
+            + Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 1.5
+            + Vector3(0, 0.5, 0);
           Bullet.Transform.RigidBody.LinearVelocity := Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 20;
           B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
           if B <> nil then
