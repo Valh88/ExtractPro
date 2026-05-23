@@ -100,7 +100,12 @@ begin
   Result := CreateSimplePhysicsEntity(AEntityId);
   {$endif}
   if Result.Transform.RigidBody <> nil then
+  begin
     Result.Transform.RigidBody.LockRotation := [0, 1, 2];
+    {$ifndef VISUAL}
+    Result.Transform.RigidBody.LockRotation := [0, 1, 2];
+    {$endif}
+  end;
 end;
 
 function TServerEntityFactory.CreateMainPlayerEntity(const AEntityId: TEntityId): IGameEntity;
