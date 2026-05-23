@@ -47,7 +47,9 @@ begin
       end;
 
   if FVisRoot <> nil then
-    FVisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, State.RotY);
+    FVisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, State.RotY)
+  else
+    Parent.Rotation := CastleVectors.Vector4(0, 1, 0, State.RotY);
 end;
 
 end.

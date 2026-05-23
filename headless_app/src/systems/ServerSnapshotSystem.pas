@@ -88,7 +88,9 @@ begin
         Break;
       end;
     if VisRoot <> nil then
-      Entry.RotY := VisRoot.Rotation.W;
+      Entry.RotY := VisRoot.Rotation.W
+    else
+      Entry.RotY := P.Visual.Transform.Rotation.W;
     Snap.Entries[Cnt] := Entry;
     Inc(Cnt);
   end;
