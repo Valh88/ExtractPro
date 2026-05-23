@@ -203,8 +203,11 @@ begin
     msgShot:
     begin
       if TShotData.FromBytes(Msg.Payload, ShotData) then
+      begin
         if Assigned(FShotSystem) then
           FShotSystem.QueueShot(ShotData, PlayerId);
+        BroadcastExcept(Msg, PlayerId);
+      end;
     end;
   end;
 end;

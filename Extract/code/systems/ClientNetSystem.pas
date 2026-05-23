@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
-  ClientPlayerSyncBehavior, ClientSnapshotSystem;
+  ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer;
 
 type
   TClientNetSystem = class(TWorldSystemBase)
@@ -248,6 +248,9 @@ var
   Entity: IGameEntity;
   SendProc: TSendMessageProc;
   Snap: TSnapshotData;
+  Shot: TShotData;
+  Bullet: IGameEntity;
+  B: TBulletBehavior;
   Hit: THitData;
 begin
   case Msg.Header.MsgType of
@@ -279,6 +282,22 @@ begin
       if TSnapshotData.FromBytes(Msg.Payload, Snap) then
         if FSnapSystem <> nil then
           FSnapSystem.HandleSnapshot(Snap);
+    end;
+    msgShot:
+    begin
+      if TShotData.FromBytes(Msg.Payload, Shot) then
+      begin
+        if Shot.OwnerEntityId <> FMyEntityId then
+        begin
+          Bullet := WorldObj.Factory.CreateBulletEntity(WorldObj.AllocateEntityId);
+          Bullet.Transform.Translation := Vector3(Shot.OriginX, Shot.OriginY, Shot.OriginZ);
+          Bullet.Transform.RigidBody.LinearVelocity := Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 20;
+          B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
+          if B <> nil then
+            B.GameWorld := nil;
+          WorldObj.AddBullet(Bullet, Shot.OwnerEntityId);
+        end;
+      end;
     end;
     msgHit:
     begin

@@ -53,7 +53,7 @@ begin
     M: TNetMessage;
   begin
     M.Init(msgHit, HitData.ToBytes);
-    FNetSystem.SendToPlayer(APlayerId, M);
+    FNetSystem.Broadcast(M);
   end;
   AddSystem(FNetSystem);
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
