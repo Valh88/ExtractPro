@@ -1,12 +1,16 @@
 unit GameWorldClient;
 
+{$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
+
 interface
 
 uses
   SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport, CastleVectors,
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior,
-  ClientSnapshotSystem;
+  ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -15,6 +19,7 @@ type
     FViewport: TCastleViewport;
     FMouseLookUi: TMouseLookOverlay;
     FSnapSystem: TClientSnapshotSystem;
+    FOutbox: TClientOutbox;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -91,11 +96,26 @@ var
 begin
   inherited;
   AddSystem(TShotSystem.Create(Self));
+
+  FOutbox := TClientOutbox.Create(Self);
+
   NetSys := TClientNetSystem.Create(Self);
   FSnapSystem := TClientSnapshotSystem.Create(Self);
   NetSys.SnapSystem := FSnapSystem;
+
+  FOutbox.SendToProc := procedure(const M: TNetMessage; const AChannel: Integer)
+  begin
+    NetSys.SendToChannel(M, AChannel);
+  end;
+
+  NetSys.DefaultSendProc := procedure(const M: TNetMessage; const AChannel: Integer)
+  begin
+    FOutbox.Add(M, AChannel);
+  end;
+
   AddSystem(NetSys);
   AddSystem(FSnapSystem);
+  AddSystem(FOutbox);
 end;
 
 end.

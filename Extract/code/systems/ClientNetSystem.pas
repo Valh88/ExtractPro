@@ -28,6 +28,7 @@ type
     FLastError: string;
     FMyEntityId: TEntityId;
     FSnapSystem: TClientSnapshotSystem;
+    FDefaultSendProc: TSendMessageProc;
     function GetState: TClientState;
     function GetOnConnected: TClientConnectEvent;
     procedure SetOnConnected(const AValue: TClientConnectEvent);
@@ -46,6 +47,7 @@ type
     procedure Connect(const AHost: string; APort: Word);
     procedure Disconnect;
     function Send(const Msg: TNetMessage): Boolean;
+    function SendToChannel(const Msg: TNetMessage; AChannel: Integer): Boolean;
     property Client: TGameClient read FClient;
     property State: TClientState read GetState;
     property LastError: string read FLastError;
@@ -53,6 +55,8 @@ type
     property OnDisconnected: TClientDisconnectEvent read GetOnDisconnected write SetOnDisconnected;
     property OnReceive: TClientReceiveEvent read GetOnReceive write SetOnReceive;
     property SnapSystem: TClientSnapshotSystem read FSnapSystem write FSnapSystem;
+    property DefaultSendProc: TSendMessageProc read FDefaultSendProc write FDefaultSendProc;
+    property MyEntityId: TEntityId read FMyEntityId;
   end;
 
 implementation
@@ -126,6 +130,14 @@ function TClientNetSystem.Send(const Msg: TNetMessage): Boolean;
 begin
   if FClient <> nil then
     Result := FClient.Send(Msg)
+  else
+    Result := False;
+end;
+
+function TClientNetSystem.SendToChannel(const Msg: TNetMessage; AChannel: Integer): Boolean;
+begin
+  if FClient <> nil then
+    Result := FClient.Send(Msg, AChannel)
   else
     Result := False;
 end;
@@ -212,7 +224,10 @@ begin
   FLastError := '';
 
   M.Init(msgJoinReq, [1]); // version
-  FClient.Send(M);
+  if Assigned(FDefaultSendProc) then
+    FDefaultSendProc(M, NET_CH_RELIABLE)
+  else
+    FClient.Send(M);
 end;
 
 procedure TClientNetSystem.OnClientDisconnected(Sender: TObject);
@@ -246,11 +261,13 @@ begin
         Entity := WorldObj.FindEntity(Spawn.EntityId);
         if Entity <> nil then
         begin
-          SendProc := procedure(const M: TNetMessage; const AChannel: Integer)
-          begin
-            if FClient <> nil then
-              FClient.Send(M, AChannel);
-          end;
+          SendProc := FDefaultSendProc;
+          if not Assigned(SendProc) then
+            SendProc := procedure(const M: TNetMessage; const AChannel: Integer)
+            begin
+              if FClient <> nil then
+                FClient.Send(M, AChannel);
+            end;
           Entity.Transform.AddBehavior(
             TClientPlayerSync.Create(Entity.Transform, Spawn.EntityId, SendProc));
         end;
