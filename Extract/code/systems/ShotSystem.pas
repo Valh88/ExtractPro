@@ -7,17 +7,20 @@ unit ShotSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, help_types, Interfaces, GameWorld;
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, help_types, Interfaces, GameWorld,
+  ClientOutbox, NetMessages;
 
 type
   TShotSystem = class(TWorldSystemBase)
   private
     FNextBulletId: TEntityId;
+    FOutbox: TClientOutbox;
   public
     constructor Create(AWorldObj: TGameWorld);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
+    property Outbox: TClientOutbox read FOutbox write FOutbox;
   end;
 
 implementation
@@ -67,6 +70,8 @@ var
   Cam: TCastleCamera;
   CamPos, Dir: CastleVectors.TVector3;
   B: TBulletBehavior;
+  ShotData: TShotData;
+  M: TNetMessage;
 begin
   Result := False;
   if Event.EventType <> itMouseButton then Exit;
@@ -97,6 +102,17 @@ begin
 
   GW.AddBullet(Bullet, GW.MainPlayerId);
   Result := True;
+
+  ShotData.OwnerEntityId := GW.MainPlayerId;
+  ShotData.OriginX := CamPos.X;
+  ShotData.OriginY := CamPos.Y;
+  ShotData.OriginZ := CamPos.Z;
+  ShotData.DirX := Dir.X;
+  ShotData.DirY := Dir.Y;
+  ShotData.DirZ := Dir.Z;
+  M.Init(msgShot, ShotData.ToBytes);
+  if Assigned(FOutbox) then
+    FOutbox.Add(M, NET_CH_UNRELIABLE);
 end;
 
 end.

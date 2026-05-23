@@ -1,10 +1,14 @@
 unit GameWorldServer;
 
+{$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
+
 interface
 
 uses
   GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
-  ServerSnapshotSystem;
+  ServerSnapshotSystem, ServerShotSystem;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -12,6 +16,7 @@ type
     FPort: Word;
     FMaxPlayers: Integer;
     FNetSystem: TServerNetSystem;
+    FShotSystem: TServerShotSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -41,8 +46,18 @@ procedure TGameWorldServer.RegisterSystems;
 begin
   inherited;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
+  FShotSystem := TServerShotSystem.Create(Self);
+  FNetSystem.ShotSystem := FShotSystem;
+  FShotSystem.SendHitProc := procedure(const APlayerId: UInt32; const HitData: THitData)
+  var
+    M: TNetMessage;
+  begin
+    M.Init(msgHit, HitData.ToBytes);
+    FNetSystem.SendToPlayer(APlayerId, M);
+  end;
   AddSystem(FNetSystem);
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
+  AddSystem(FShotSystem);
 end;
 
 end.

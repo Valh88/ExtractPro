@@ -248,6 +248,7 @@ var
   Entity: IGameEntity;
   SendProc: TSendMessageProc;
   Snap: TSnapshotData;
+  Hit: THitData;
 begin
   case Msg.Header.MsgType of
     msgJoinAccept:
@@ -278,6 +279,13 @@ begin
       if TSnapshotData.FromBytes(Msg.Payload, Snap) then
         if FSnapSystem <> nil then
           FSnapSystem.HandleSnapshot(Snap);
+    end;
+    msgHit:
+    begin
+      if THitData.FromBytes(Msg.Payload, Hit) then
+        WriteLn('[Hit] target:', Hit.TargetEntityId,
+          ' damage:', Hit.DamageAmount:0:0,
+          ' source:', Hit.SourceEntityId);
     end;
   end;
 end;

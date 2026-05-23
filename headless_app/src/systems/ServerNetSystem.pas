@@ -8,7 +8,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetServer, GameWorld, Interfaces,
-  ServerPlayerSyncBehavior;
+  ServerPlayerSyncBehavior, ServerShotSystem;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
@@ -16,6 +16,7 @@ type
   TServerNetSystem = class(TWorldSystemBase)
   private
     FServer: TGameServer;
+    FShotSystem: TServerShotSystem;
     FOnLog: TServerNetLogEvent;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
@@ -38,6 +39,7 @@ type
     procedure OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
     procedure Log(const Msg: String);
     property Server: TGameServer read FServer;
+    property ShotSystem: TServerShotSystem read FShotSystem write FShotSystem;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
     property OnReceive: TServerReceiveEvent read GetOnReceive write SetOnReceive;
@@ -180,6 +182,7 @@ end;
 procedure TServerNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
 var
   State: TPlayerStateData;
+  ShotData: TShotData;
   E: IGameEntity;
   Sync: TServerPlayerSync;
 begin
@@ -196,6 +199,12 @@ begin
             Sync.ApplyState(State);
         end;
       end;
+    end;
+    msgShot:
+    begin
+      if TShotData.FromBytes(Msg.Payload, ShotData) then
+        if Assigned(FShotSystem) then
+          FShotSystem.QueueShot(ShotData, PlayerId);
     end;
   end;
 end;

@@ -78,6 +78,25 @@ const
   msgPing       = 10;
   msgPong       = 11;
   msgPlayerState = 12;
+  msgShot = 13;
+  msgHit = 14;
+
+type
+  TShotData = packed record
+    OwnerEntityId: UInt32;
+    OriginX, OriginY, OriginZ: Single;
+    DirX, DirY, DirZ: Single;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TShotData): Boolean; static;
+  end;
+
+  THitData = packed record
+    TargetEntityId: UInt32;
+    DamageAmount: Single;
+    SourceEntityId: UInt32;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: THitData): Boolean; static;
+  end;
 
 type
   TSnapshotEntry = packed record
@@ -145,6 +164,36 @@ begin
   Result := Length(Data) >= SizeOf(TPlayerStateData);
   if not Result then Exit;
   Move(Data[0], Value, SizeOf(TPlayerStateData));
+end;
+
+{ TShotData }
+
+function TShotData.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TShotData));
+  Move(Self, Result[0], SizeOf(TShotData));
+end;
+
+class function TShotData.FromBytes(const Data: TBytes; out Value: TShotData): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TShotData);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TShotData));
+end;
+
+{ THitData }
+
+function THitData.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(THitData));
+  Move(Self, Result[0], SizeOf(THitData));
+end;
+
+class function THitData.FromBytes(const Data: TBytes; out Value: THitData): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(THitData);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(THitData));
 end;
 
 { TSnapshotData }

@@ -93,11 +93,15 @@ end;
 procedure TGameWorldClient.RegisterSystems;
 var
   NetSys: TClientNetSystem;
+  ShotSys: TShotSystem;
 begin
   inherited;
-  AddSystem(TShotSystem.Create(Self));
 
   FOutbox := TClientOutbox.Create(Self);
+
+  ShotSys := TShotSystem.Create(Self);
+  ShotSys.Outbox := FOutbox;
+  AddSystem(ShotSys);
 
   NetSys := TClientNetSystem.Create(Self);
   FSnapSystem := TClientSnapshotSystem.Create(Self);
