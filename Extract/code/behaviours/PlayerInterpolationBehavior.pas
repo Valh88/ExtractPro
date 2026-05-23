@@ -71,6 +71,8 @@ begin
   begin
     if FVisRoot <> nil then
       FVisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, CurrRot + Diff * K)
+    else
+      Parent.Rotation := CastleVectors.Vector4(0, 1, 0, CurrRot + Diff * K);
   end;
 end;
 

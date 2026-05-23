@@ -101,9 +101,10 @@ begin
   {$endif}
   if Result.Transform.RigidBody <> nil then
   begin
+    {$ifdef VISUAL}
     Result.Transform.RigidBody.LockRotation := [0, 1, 2];
-    {$ifndef VISUAL}
-    Result.Transform.RigidBody.LockRotation := [0, 1, 2];
+    {$else}
+    Result.Transform.RigidBody.LockRotation := [0, 2];
     {$endif}
   end;
 end;
