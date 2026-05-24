@@ -12,6 +12,8 @@ uses
   ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer;
 
 type
+  TSendMessageProc = reference to procedure(const M: TNetMessage; const AChannel: Integer);
+
   TClientNetSystem = class(TWorldSystemBase)
   private
     FClient: TGameClient;
@@ -28,6 +30,9 @@ type
     FMyEntityId: TEntityId;
     FSnapSystem: TClientSnapshotSystem;
     FDefaultSendProc: TSendMessageProc;
+    FOnDeny: TNotifyEvent;
+    FDenyReason: string;
+    FAuthToken: string;
     function GetState: TClientState;
     function GetOnConnected: TClientConnectEvent;
     procedure SetOnConnected(const AValue: TClientConnectEvent);
@@ -56,6 +61,9 @@ type
     property SnapSystem: TClientSnapshotSystem read FSnapSystem write FSnapSystem;
     property DefaultSendProc: TSendMessageProc read FDefaultSendProc write FDefaultSendProc;
     property MyEntityId: TEntityId read FMyEntityId;
+    property AuthToken: string read FAuthToken write FAuthToken;
+    property OnDeny: TNotifyEvent read FOnDeny write FOnDeny;
+    property DenyReason: string read FDenyReason;
   end;
 
 implementation
@@ -74,6 +82,9 @@ begin
   FMyEntityId := 0;
   FWantDisconnect := False;
   FConnected := False;
+  FAuthToken := '';
+  FDenyReason := '';
+  FOnDeny := nil;
 
   Connect('127.0.0.1', 7777);
 end;
@@ -210,16 +221,33 @@ end;
 procedure TClientNetSystem.OnClientConnected(Sender: TObject);
 var
   M: TNetMessage;
+  AuthData: TAuthPayload;
+  i: Integer;
 begin
   FRetryCount := 0;
   FRetryTimer := 0;
   FLastError := '';
 
-  M.Init(msgJoinReq, [1]); // version
-  if Assigned(FDefaultSendProc) then
-    FDefaultSendProc(M, NET_CH_RELIABLE)
+  if FAuthToken <> '' then
+  begin
+    FillChar(AuthData, SizeOf(AuthData), 0);
+    for i := 1 to Length(FAuthToken) do
+      if i <= 64 then
+        AuthData.Token[i - 1] := AnsiChar(FAuthToken[i]);
+    M.Init(msgAuth, AuthData.ToBytes);
+    if Assigned(FDefaultSendProc) then
+      FDefaultSendProc(M, NET_CH_RELIABLE)
+    else
+      FClient.Send(M);
+  end
   else
-    FClient.Send(M);
+  begin
+    M.Init(msgJoinReq, [1]); // version
+    if Assigned(FDefaultSendProc) then
+      FDefaultSendProc(M, NET_CH_RELIABLE)
+    else
+      FClient.Send(M);
+  end;
 end;
 
 procedure TClientNetSystem.OnClientDisconnected(Sender: TObject);
@@ -244,8 +272,20 @@ var
   Bullet: IGameEntity;
   B: TBulletBehavior;
   Hit: THitData;
+  DenyCode: string;
 begin
   case Msg.Header.MsgType of
+    msgJoinDeny:
+    begin
+      if Length(Msg.Payload) >= 3 then
+        DenyCode := Chr(Msg.Payload[0]) + Chr(Msg.Payload[1]) + Chr(Msg.Payload[2])
+      else
+        DenyCode := '?';
+      FDenyReason := 'Join denied: ' + DenyCode;
+      FLastError := FDenyReason;
+      if Assigned(FOnDeny) then
+        FOnDeny(Self);
+    end;
     msgJoinAccept:
     begin
       if TEntitySpawnData.FromBytes(Msg.Payload, Spawn) then

@@ -80,6 +80,14 @@ const
   msgPlayerState = 12;
   msgShot = 13;
   msgHit = 14;
+  msgAuth = 15;
+
+type
+  TAuthPayload = packed record
+    Token: array[0..63] of AnsiChar;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TAuthPayload): Boolean; static;
+  end;
 
 type
   TShotData = packed record
@@ -282,6 +290,21 @@ begin
   SetLength(Msg.Payload, Msg.Header.PayloadLen);
   if Msg.Header.PayloadLen > 0 then
     Move(Data[SizeOf(TNetMsgHeader)], Msg.Payload[0], Msg.Header.PayloadLen);
+end;
+
+{ TAuthPayload }
+
+function TAuthPayload.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TAuthPayload));
+  Move(Self, Result[0], SizeOf(TAuthPayload));
+end;
+
+class function TAuthPayload.FromBytes(const Data: TBytes; out Value: TAuthPayload): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TAuthPayload);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TAuthPayload));
 end;
 
 end.

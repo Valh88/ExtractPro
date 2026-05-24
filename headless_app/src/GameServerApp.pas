@@ -1,23 +1,3 @@
-{
-  GameServerApp.pas — головной цикл headless-сервера ExtractPro.
-
-  Загружает физическую сцену из gameviewmain.castle-user-interface,
-  редактируемой в редакторе CGE. Сцена работает в headless режиме
-  (физика, raycasts) без окна.
-
-  ── Использование ───────────────────────────────────────────────────
-    TGameServerApp.RunApp;
-
-  ── Команды ─────────────────────────────────────────────────────────
-    --port=N           порт (по умолчанию 7777)
-    --max-players=N    макс игроков (по умолчанию 8)
-    --auth-port=N      порт auth-сервера (по умолчанию 8081)
-    --no-auth          отключить auth-сервер
-
-  ── Зависимости ────────────────────────────────────────────────────
-    SysUtils, CastleTransform, CastleScene, CastleComponentSerialize,
-    NetServer, GameWorld, WorldBridge
-}
 unit GameServerApp;
 
 {$mode objfpc}{$H+}
@@ -29,13 +9,11 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  ServerEntityFactory, GameWorldServer, AuthTypes, AuthServer;
+  ServerEntityFactory, GameWorldServer, AuthTypes;
 
 type
   TGameServerApp = class;
-
   TGameServerAppProc = reference to procedure(const App: TGameServerApp);
-
   TTickEvent = reference to procedure(Sender: TObject; const SecondsPassed: Single);
   TLogEvent = reference to procedure(Sender: TObject; const Msg: String);
 
@@ -43,10 +21,10 @@ type
   private
     FWorldRoot: TCastleAbstractRootTransform;
     FGameWorld: TGameWorldServer;
-    FAuth: TAuthServer;
     FPort: Word;
     FMaxPlayers: Integer;
     FAuthPort: Word;
+    FRequireAuth: Boolean;
     FRunning: Boolean;
     FTickCount: Int64;
     FOnTick: TTickEvent;
@@ -64,6 +42,7 @@ type
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
     property AuthPort: Word read FAuthPort write FAuthPort;
+    property RequireAuth: Boolean read FRequireAuth write FRequireAuth;
     property Running: Boolean read FRunning;
     property OnTick: TTickEvent read FOnTick write FOnTick;
     property OnLog: TLogEvent read FOnLog write FOnLog;
@@ -82,6 +61,7 @@ begin
   FPort := 7777;
   FMaxPlayers := 8;
   FAuthPort := AUTH_SERVER_DEFAULT_PORT;
+  FRequireAuth := False;
   FRunning := False;
   FTickCount := 0;
 end;
@@ -89,7 +69,6 @@ end;
 destructor TGameServerApp.Destroy;
 begin
   Stop;
-  FAuth.Free;
   FGameWorld.Free;
   FWorldRoot.Free;
   inherited;
@@ -121,7 +100,9 @@ begin
     else if S.StartsWith('--auth-port=') then
       FAuthPort := StrToIntDef(S.SubString(12), AUTH_SERVER_DEFAULT_PORT)
     else if S = '--no-auth' then
-      FAuthPort := 0;
+      FAuthPort := 0
+    else if S = '--require-auth' then
+      FRequireAuth := True;
   end;
 end;
 
@@ -145,7 +126,7 @@ begin
   {$else}
   Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
   {$endif}
-  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers);
+  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers, FAuthPort, FRequireAuth);
   FGameWorld.Start;
 end;
 
@@ -158,12 +139,14 @@ begin
 
   LoadScene;
 
+  if FGameWorld.NetSystem <> nil then
+    FGameWorld.NetSystem.StartServer;
+
   if FAuthPort > 0 then
-  begin
-    FAuth := TAuthServer.Create(FAuthPort);
-    FAuth.Start;
-    Log(Format('Auth Server starting on port %d', [FAuthPort]));
-  end;
+    Log(Format('Auth Server on port %d', [FAuthPort]));
+
+  if FRequireAuth then
+    Log('Auth required for all connections');
 
   Log(Format('ExtractPro Server starting on port %d (max %d players)',
     [FPort, FMaxPlayers]));

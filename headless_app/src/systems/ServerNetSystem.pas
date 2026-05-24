@@ -8,29 +8,41 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetServer, GameWorld, Interfaces,
-  ServerPlayerSyncBehavior, ServerShotSystem;
+  ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
+
+  TPendingAuth = record
+    Peer: TRNLPeer;
+    PlayerId: UInt32;
+    Timeout: Single;
+  end;
 
   TServerNetSystem = class(TWorldSystemBase)
   private
     FServer: TGameServer;
     FShotSystem: TServerShotSystem;
     FOnLog: TServerNetLogEvent;
+    FPendingAuth: array of TPendingAuth;
+    FRequireAuth: Boolean;
+    FValidator: IAuthValidator;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
     function GetOnDisconnect: TServerDisconnectEvent;
     procedure SetOnDisconnect(const AValue: TServerDisconnectEvent);
     function GetOnReceive: TServerReceiveEvent;
     procedure SetOnReceive(const AValue: TServerReceiveEvent);
+    procedure CleanPendingAuth;
+    function FindPendingAuth(Peer: TRNLPeer): Integer;
+    procedure SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32);
   public
     constructor Create(AWorldObj: TGameWorld; APort: Word; AMaxPlayers: Integer);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     procedure StartServer;
     procedure StopServer;
-    function SendTo(APeer: TRNLPeer; const Msg: TNetMessage): Boolean;
+    function SendTo(Peer: TRNLPeer; const Msg: TNetMessage): Boolean;
     function SendToPlayer(APlayerId: UInt32; const Msg: TNetMessage): Boolean;
     procedure Broadcast(const Msg: TNetMessage);
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
@@ -44,6 +56,8 @@ type
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
     property OnReceive: TServerReceiveEvent read GetOnReceive write SetOnReceive;
     property OnLog: TServerNetLogEvent read FOnLog write FOnLog;
+    property RequireAuth: Boolean read FRequireAuth write FRequireAuth;
+    property AuthValidator: IAuthValidator read FValidator write FValidator;
   end;
 
 implementation
@@ -57,6 +71,8 @@ begin
   OnConnect := @OnPlayerConnected;
   OnDisconnect := @OnPlayerDisconnected;
   OnReceive := @OnPlayerReceive;
+  FRequireAuth := False;
+  FValidator := nil;
 end;
 
 destructor TServerNetSystem.Destroy;
@@ -107,13 +123,35 @@ begin
 end;
 
 procedure TServerNetSystem.Update(const SecondsPassed: Single);
+var
+  i: Integer;
+  M: TNetMessage;
 begin
   FServer.Service(0);
+  if FRequireAuth then
+  begin
+    i := 0;
+    while i < Length(FPendingAuth) do
+    begin
+      FPendingAuth[i].Timeout := FPendingAuth[i].Timeout - SecondsPassed;
+      if FPendingAuth[i].Timeout <= 0 then
+      begin
+        Log('Auth timeout for player ' + FPendingAuth[i].PlayerId.ToString);
+        M.Init(msgJoinDeny, [Byte(Ord('T')), Byte(Ord('O'))]);
+        SendTo(FPendingAuth[i].Peer, M);
+        FPendingAuth[i].Peer.Disconnect;
+        FPendingAuth[i] := FPendingAuth[High(FPendingAuth)];
+        SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+      end
+      else
+        Inc(i);
+    end;
+  end;
 end;
 
-function TServerNetSystem.SendTo(APeer: TRNLPeer; const Msg: TNetMessage): Boolean;
+function TServerNetSystem.SendTo(Peer: TRNLPeer; const Msg: TNetMessage): Boolean;
 begin
-  Result := FServer.SendTo(APeer, Msg);
+  Result := FServer.SendTo(Peer, Msg);
 end;
 
 function TServerNetSystem.SendToPlayer(APlayerId: UInt32; const Msg: TNetMessage): Boolean;
@@ -139,14 +177,32 @@ begin
     WriteLn(Msg);
 end;
 
-procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+function TServerNetSystem.FindPendingAuth(Peer: TRNLPeer): Integer;
+begin
+  for Result := 0 to High(FPendingAuth) do
+    if FPendingAuth[Result].Peer = Peer then
+      Exit;
+  Result := -1;
+end;
+
+procedure TServerNetSystem.CleanPendingAuth;
+var
+  i: Integer;
+begin
+  for i := High(FPendingAuth) downto 0 do
+    if FPendingAuth[i].Peer = nil then
+    begin
+      FPendingAuth[i] := FPendingAuth[High(FPendingAuth)];
+      SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+    end;
+end;
+
+procedure TServerNetSystem.SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32);
 var
   E: IGameEntity;
   Spawn: TEntitySpawnData;
   M: TNetMessage;
 begin
-  Log('Player connected: ' + PlayerId.ToString);
-
   E := WorldObj.Factory.CreatePlayerEntity(WorldObj.AllocateEntityId);
   E.Transform.Translation := CastleVectors.Vector3(0, 5, 0);
   if E.Transform.RigidBody <> nil then
@@ -156,9 +212,7 @@ begin
   end;
   WorldObj.AddPlayer(E);
   E.Transform.AddBehavior(TServerPlayerSync.Create(E.Transform, E.EntityId));
-
   FServer.SetPeerEntityId(Peer, E.EntityId);
-
   Spawn.EntityId := E.EntityId;
   Spawn.PosX := 0; Spawn.PosY := 5; Spawn.PosZ := 0;
   Spawn.RotY := E.Rotation;
@@ -166,11 +220,36 @@ begin
   SendTo(Peer, M);
 end;
 
+procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
+var
+  L: Integer;
+begin
+  Log('Player connected: ' + PlayerId.ToString);
+  if FRequireAuth and (FValidator <> nil) then
+  begin
+    L := Length(FPendingAuth);
+    SetLength(FPendingAuth, L + 1);
+    FPendingAuth[L].Peer := Peer;
+    FPendingAuth[L].PlayerId := PlayerId;
+    FPendingAuth[L].Timeout := 10;
+  end
+  else
+    SpawnPlayer(Peer, PlayerId);
+end;
+
 procedure TServerNetSystem.OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
 var
+  Idx: Integer;
   EntityId: UInt32;
 begin
   Log('Player disconnected: ' + PlayerId.ToString);
+  Idx := FindPendingAuth(Peer);
+  if Idx <> -1 then
+  begin
+    FPendingAuth[Idx] := FPendingAuth[High(FPendingAuth)];
+    SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+    Exit;
+  end;
   EntityId := FServer.GetPeerEntityId(Peer);
   if EntityId <> 0 then
   begin
@@ -185,8 +264,41 @@ var
   ShotData: TShotData;
   E: IGameEntity;
   Sync: TServerPlayerSync;
+  AuthData: TAuthPayload;
+  AuthToken: string;
+  AuthResult: TAuthResult;
+  M: TNetMessage;
+  Idx: Integer;
 begin
   case Msg.Header.MsgType of
+    msgAuth:
+    begin
+      if not (FRequireAuth and (FValidator <> nil)) then
+        Exit;
+      if TAuthPayload.FromBytes(Msg.Payload, AuthData) then
+      begin
+        AuthToken := TrimRight(string(AuthData.Token));
+        AuthResult := FValidator.ValidateToken(AuthToken);
+        if AuthResult.Valid then
+        begin
+          Idx := FindPendingAuth(Peer);
+          if Idx <> -1 then
+          begin
+            FPendingAuth[Idx] := FPendingAuth[High(FPendingAuth)];
+            SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+          end;
+          Log('Player ' + PlayerId.ToString + ' authenticated as ' + AuthResult.Login);
+SpawnPlayer(Peer, PlayerId);
+        end
+        else
+        begin
+          Log('Auth failed for player ' + PlayerId.ToString);
+          M.Init(msgJoinDeny, [Byte(Ord('A')), Byte(Ord('U')), Byte(Ord('T'))]);
+          SendTo(Peer, M);
+          Peer.Disconnect;
+        end;
+      end;
+    end;
     msgPlayerState:
     begin
       if TPlayerStateData.FromBytes(Msg.Payload, State) then
