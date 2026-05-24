@@ -22,8 +22,8 @@ type
   public
     constructor Create(const AServerUrl: string = '');
     destructor Destroy; override;
-    function Login(const Login, Password: string): TAuthResponse;
-    function Register(const Login, Password, Email: string): TAuthResponse;
+    function Login(const aLogin, aPassword: string): TAuthResponse;
+    function Register(const aLogin, aPassword, aEmail: string): TAuthResponse;
     function ValidateToken(const Token: string): TAuthResult;
     property ServerUrl: string read FServerUrl write FServerUrl;
   end;
@@ -45,18 +45,18 @@ begin
   inherited;
 end;
 
-function TAuthClient.Login(const Login, Password: string): TAuthResponse;
+function TAuthClient.Login(const aLogin, aPassword: string): TAuthResponse;
 var
   Resp: RawUtf8;
   Json: variant;
 begin
   Result.Success := False;
   FHttp.Request(
-    StringToUtf8(FServerUrl + '/auth/login'),
+    RawUtf8(FServerUrl + '/auth/login'),
     'POST', '',
     VariantToUtf8(_Obj([
-      'UserName', StringToUtf8(Login),
-      'PassWord', StringToUtf8(Password)
+      'UserName', RawUtf8(aLogin),
+      'PassWord', RawUtf8(aPassword)
     ])), 'application/json');
   Resp := FHttp.Body;
   if FHttp.Status = 0 then
@@ -72,19 +72,19 @@ begin
   Result.ErrorMsg := string(VariantToUtf8(Json.error));
 end;
 
-function TAuthClient.Register(const Login, Password, Email: string): TAuthResponse;
+function TAuthClient.Register(const aLogin, aPassword, aEmail: string): TAuthResponse;
 var
   Resp: RawUtf8;
   Json: variant;
 begin
   Result.Success := False;
   FHttp.Request(
-    StringToUtf8(FServerUrl + '/auth/register'),
+    RawUtf8(FServerUrl + '/auth/register'),
     'POST', '',
     VariantToUtf8(_Obj([
-      'UserName', StringToUtf8(Login),
-      'PassWord', StringToUtf8(Password),
-      'Email', StringToUtf8(Email)
+      'UserName', RawUtf8(aLogin),
+      'PassWord', RawUtf8(aPassword),
+      'Email', RawUtf8(aEmail)
     ])), 'application/json');
   Resp := FHttp.Body;
   if FHttp.Status = 0 then
@@ -106,10 +106,10 @@ var
 begin
   Result.Valid := False;
   FHttp.Request(
-    StringToUtf8(FServerUrl + '/auth/validate'),
+    RawUtf8(FServerUrl + '/auth/validate'),
     'POST', '',
     VariantToUtf8(_Obj([
-      'Token', StringToUtf8(Token)
+      'Token', RawUtf8(Token)
     ])), 'application/json');
   Resp := FHttp.Body;
   if FHttp.Status = 0 then

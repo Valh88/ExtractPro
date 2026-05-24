@@ -12,7 +12,8 @@ uses
   WorldBridge, EventBus, help_types, EntityManager, 
   CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
   TouchMoveControl, WorldSystemBase, RNL, NetMessages, NetServer, NetClient, 
-  BulletTimer, GameWorldClient, LazarusPackageIntf;
+  AuthTypes, AuthServer, AuthClient, BulletTimer, GameWorldClient, 
+  LazarusPackageIntf;
 
 implementation
 
