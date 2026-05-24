@@ -10,7 +10,8 @@ uses
   SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport, CastleVectors,
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior,
-  ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior;
+  ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
+  ClientAuthSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -20,6 +21,8 @@ type
     FMouseLookUi: TMouseLookOverlay;
     FSnapSystem: TClientSnapshotSystem;
     FOutbox: TClientOutbox;
+    FNetSystem: TClientNetSystem;
+    FAuthSystem: TClientAuthSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -30,6 +33,8 @@ type
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
     property MainPlayerId: TEntityId read FMainPlayerId write FMainPlayerId;
     property Viewport: TCastleViewport read FViewport write FViewport;
+    property NetSystem: TClientNetSystem read FNetSystem;
+    property AuthSystem: TClientAuthSystem read FAuthSystem;
   end;
 
 implementation
@@ -92,10 +97,12 @@ end;
 
 procedure TGameWorldClient.RegisterSystems;
 var
-  NetSys: TClientNetSystem;
   ShotSys: TShotSystem;
 begin
   inherited;
+
+  FAuthSystem := TClientAuthSystem.Create(Self);
+  AddSystem(FAuthSystem);
 
   FOutbox := TClientOutbox.Create(Self);
 
@@ -103,21 +110,27 @@ begin
   ShotSys.Outbox := FOutbox;
   AddSystem(ShotSys);
 
-  NetSys := TClientNetSystem.Create(Self);
+  FNetSystem := TClientNetSystem.Create(Self);
   FSnapSystem := TClientSnapshotSystem.Create(Self);
-  NetSys.SnapSystem := FSnapSystem;
+  FNetSystem.SnapSystem := FSnapSystem;
+
+  FAuthSystem.OnAuthResult := procedure(Sender: TObject; const Result: TAuthRequestResult)
+  begin
+    if Result.Success then
+      FNetSystem.AuthToken := Result.Token;
+  end;
 
   FOutbox.SendToProc := procedure(const M: TNetMessage; const AChannel: Integer)
   begin
-    NetSys.SendToChannel(M, AChannel);
+    FNetSystem.SendToChannel(M, AChannel);
   end;
 
-  NetSys.DefaultSendProc := procedure(const M: TNetMessage; const AChannel: Integer)
+  FNetSystem.DefaultSendProc := procedure(const M: TNetMessage; const AChannel: Integer)
   begin
     FOutbox.Add(M, AChannel);
   end;
 
-  AddSystem(NetSys);
+  AddSystem(FNetSystem);
   AddSystem(FSnapSystem);
   AddSystem(FOutbox);
 end;
