@@ -53,7 +53,8 @@ program headless_app;
 
 uses
   {$IFDEF UNIX} CThreads, {$ENDIF}
-  SysUtils, Classes
+  SysUtils, Classes,
+  mormot.db.raw.sqlite3.static
   {$ifdef VISUAL}
   , CastleVectors, CastleTransform, CastleScene, CastleUtils, CastleParameters,
   CastleWindow, CastleViewport, CastleUIControls, CastleControls,

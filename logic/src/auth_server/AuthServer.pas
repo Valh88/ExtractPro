@@ -7,53 +7,34 @@ unit AuthServer;
 interface
 
 uses
-  SysUtils, Classes,
+  SysUtils, Classes, variants,
   mormot.core.base,
   mormot.core.os,
   mormot.core.text,
-  mormot.core.log,
+  mormot.core.unicode,
+  mormot.core.variants,
   mormot.crypt.core,
-  mormot.orm.core,
-  mormot.rest.core,
-  mormot.rest.server,
-  mormot.rest.sqlite3,
-  mormot.rest.http.server,
+  mormot.db.raw.sqlite3,
+  mormot.net.http,
+  mormot.net.server,
   AuthTypes;
 
 type
-  TSQLAuthUser = class(TAuthUser)
-  private
-    fEmail: RawUtf8;
-  published
-    property Email: RawUtf8 index 100 read fEmail write fEmail;
-  end;
-
-  TSQLSession = class(TOrm)
-  private
-    fUserId: TID;
-    fToken: RawUtf8;
-    fCreatedAt: TTimeLog;
-    fExpiresAt: TTimeLog;
-  published
-    property UserId: TID read fUserId write fUserId;
-    property Token: RawUtf8 index 128 read fToken write fToken stored AS_UNIQUE;
-    property CreatedAt: TTimeLog read fCreatedAt write fCreatedAt;
-    property ExpiresAt: TTimeLog read fExpiresAt write fExpiresAt;
-  end;
-
-  TAuthRestServer = class(TRestServerDB)
-  public
-    procedure Login(Ctxt: TRestServerUriContext);
-    procedure RegisterUser(Ctxt: TRestServerUriContext);
-    procedure ValidateToken(Ctxt: TRestServerUriContext);
-  end;
-
   TAuthServer = class
   private
+    FServer: THttpServer;
     FPort: Word;
-    FRest: TAuthRestServer;
-    FHttp: TRestHttpServer;
+    FDB: TSqlDataBase;
     FValidator: IAuthValidator;
+    function OnRequest(Ctxt: THttpServerRequestAbstract): cardinal;
+    function HandleLogin(Ctxt: THttpServerRequestAbstract): cardinal;
+    function HandleRegister(Ctxt: THttpServerRequestAbstract): cardinal;
+    function HandleValidate(Ctxt: THttpServerRequestAbstract): cardinal;
+    procedure InitDB;
+    function CreateUser(const Login, Password, Email: string): TAuthResponse;
+    function AuthenticateUser(const Login, Password: string): TAuthResponse;
+    function ValidateSession(const Token: string): TAuthResult;
+    procedure CleanExpiredSessions;
   public
     constructor Create(const APort: Word = AUTH_SERVER_DEFAULT_PORT);
     destructor Destroy; override;
@@ -64,9 +45,9 @@ type
 
   TAuthServerValidator = class(TInterfacedObject, IAuthValidator)
   private
-    FServer: TAuthRestServer;
+    FServer: TAuthServer;
   public
-    constructor Create(AServer: TAuthRestServer);
+    constructor Create(AServer: TAuthServer);
     function ValidateToken(const Token: string): TAuthResult;
   end;
 
@@ -74,148 +55,15 @@ implementation
 
 { TAuthServerValidator }
 
-constructor TAuthServerValidator.Create(AServer: TAuthRestServer);
+constructor TAuthServerValidator.Create(AServer: TAuthServer);
 begin
   inherited Create;
   FServer := AServer;
 end;
 
 function TAuthServerValidator.ValidateToken(const Token: string): TAuthResult;
-var
-  Session: TSQLSession;
 begin
-  Result.Valid := False;
-  Session := TSQLSession.Create(FServer.OrmInstance, 'Token=?', [StringToUtf8(Token)]);
-  try
-    if (Session.ID = 0) or (Session.ExpiresAt < NowUtc * SecsPerDay) then
-      Exit;
-    Result.UserId := Session.UserId;
-    Result.Valid := True;
-  finally
-    Session.Free;
-  end;
-end;
-
-{ TAuthRestServer }
-
-procedure TAuthRestServer.Login(Ctxt: TRestServerUriContext);
-var
-  Login, Password: RawUtf8;
-  User: TSQLAuthUser;
-  HashHex: RawUtf8;
-  TokenRaw: TBytes;
-  Session: TSQLSession;
-begin
-  Login := Ctxt.InputUtf8['UserName'];
-  Password := Ctxt.InputUtf8['PassWord'];
-  if (Login = '') or (Password = '') then
-  begin
-    Ctxt.Error('Login and password required', 400);
-    Exit;
-  end;
-  User := TSQLAuthUser.Create(OrmInstance, 'LogonName=?', [Login]);
-  try
-    if User.ID = 0 then
-    begin
-      Ctxt.Error('Invalid login or password', 401);
-      Exit;
-    end;
-    HashHex := BinToHex(
-      Pbkdf2HmacSha256(RawByteString(Password), HexToBin(User.PasswordHashHexa),
-      60000, 32));
-    if HashHex <> User.PasswordHashHexa then
-    begin
-      Ctxt.Error('Invalid login or password', 401);
-      Exit;
-    end;
-    SetLength(TokenRaw, AUTH_TOKEN_SIZE);
-    TAesPrng.Main.FillRandom(TokenRaw[0], AUTH_TOKEN_SIZE);
-    Session := TSQLSession.Create;
-    try
-      Session.UserId := User.ID;
-      Session.Token := BinToHex(RawByteString(TokenRaw));
-      Session.CreatedAt := Int64(NowUtc * SecsPerDay);
-      Session.ExpiresAt := Int64((NowUtc + AUTH_SESSION_EXPIRE_HOURS / 24) * SecsPerDay);
-      if OrmInstance.Add(Session, True) = 0 then
-      begin
-        Ctxt.Error('Failed to create session', 500);
-        Exit;
-      end;
-      Ctxt.Returns([
-        'success', True,
-        'token', Session.Token,
-        'user_id', User.ID,
-        'login', User.LogonName]);
-    finally
-      Session.Free;
-    end;
-  finally
-    User.Free;
-  end;
-end;
-
-procedure TAuthRestServer.RegisterUser(Ctxt: TRestServerUriContext);
-var
-  Login, Password, Email: RawUtf8;
-  User: TSQLAuthUser;
-begin
-  Login := Ctxt.InputUtf8['UserName'];
-  Password := Ctxt.InputUtf8['PassWord'];
-  Email := Ctxt.InputUtf8['Email'];
-  if (Login = '') or (Password = '') then
-  begin
-    Ctxt.Error('Login and password required', 400);
-    Exit;
-  end;
-  if Length(Password) < 4 then
-  begin
-    Ctxt.Error('Password too short (min 4 chars)', 400);
-    Exit;
-  end;
-  User := TSQLAuthUser.Create;
-  try
-    User.LogonName := Login;
-    User.PasswordHashHexa := BinToHex(
-      Pbkdf2HmacSha256(RawByteString(Password),
-        TAesPrng.Main.FillRandom(16), 60000, 32));
-    User.Email := Email;
-    User.DisplayName := Login;
-    if OrmInstance.Add(User, True) = 0 then
-    begin
-      Ctxt.Error('User already exists', 409);
-      Exit;
-    end;
-    Ctxt.Returns(['success', True, 'user_id', User.ID, 'login', Login]);
-  finally
-    User.Free;
-  end;
-end;
-
-procedure TAuthRestServer.ValidateToken(Ctxt: TRestServerUriContext);
-var
-  Tkn: RawUtf8;
-  Session: TSQLSession;
-  UserLogin: RawUtf8;
-begin
-  Tkn := Ctxt.InputUtf8['Token'];
-  if Tkn = '' then
-  begin
-    Ctxt.Error('Token required', 400);
-    Exit;
-  end;
-  Session := TSQLSession.Create(OrmInstance, 'Token=?', [Tkn]);
-  try
-    if (Session.ID = 0) or (Session.ExpiresAt < Int64(NowUtc * SecsPerDay)) then
-    begin
-      Ctxt.Returns(['valid', False, 'error', 'Invalid or expired token']);
-      Exit;
-    end;
-    UserLogin := '';
-    UserLogin := OrmInstance.OneFieldValue(TSQLAuthUser, 'LogonName', 'ID=?', [Session.UserId]);
-    Ctxt.Returns(['valid', True, 'user_id', Session.UserId, 'login', UserLogin]);
-  finally
-    Session.Free;
-  end;
+  Result := FServer.ValidateSession(Token);
 end;
 
 { TAuthServer }
@@ -224,8 +72,8 @@ constructor TAuthServer.Create(const APort: Word);
 begin
   inherited Create;
   FPort := APort;
-  FRest := nil;
-  FHttp := nil;
+  FDB := nil;
+  FServer := nil;
 end;
 
 destructor TAuthServer.Destroy;
@@ -234,26 +82,265 @@ begin
   inherited;
 end;
 
+procedure TAuthServer.InitDB;
+begin
+  FDB := TSqlDataBase.Create(FPort.ToString + '.db');
+  FDB.Execute('CREATE TABLE IF NOT EXISTS users(' +
+    'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
+    'login TEXT UNIQUE NOT NULL,' +
+    'password_hash TEXT NOT NULL,' +
+    'email TEXT,' +
+    'created_at INTEGER NOT NULL)');
+  FDB.Execute('CREATE TABLE IF NOT EXISTS sessions(' +
+    'token TEXT PRIMARY KEY,' +
+    'user_id INTEGER NOT NULL,' +
+    'created_at INTEGER NOT NULL,' +
+    'expires_at INTEGER NOT NULL)');
+end;
+
+function TAuthServer.CreateUser(const Login, Password, Email: string): TAuthResponse;
+var
+  Salt, Hash: RawByteString;
+  Req: TSqlRequest;
+begin
+  Result.Success := False;
+  Salt := TAesPrng.Main.FillRandom(16);
+  Hash := Pbkdf2HmacSha256(RawByteString(Password), Salt, 60000, 32);
+  Req.Prepare(FDB.DB,
+    'INSERT INTO users(login, password_hash, email, created_at) VALUES(?,?,?,?)');
+  try
+    Req.Bind(1, RawUtf8(Login));
+    Req.Bind(2, BinToHex(Salt) + ':' + BinToHex(Hash));
+    if Email <> '' then
+      Req.Bind(3, RawUtf8(Email))
+    else
+      Req.BindNull(3);
+    Req.Bind(4, Int64(NowUtc * SecsPerDay));
+    if Req.Step <> SQLITE_DONE then
+    begin
+      Result.ErrorMsg := 'User already exists';
+      Exit;
+    end;
+  except
+    on E: ESqlite3Exception do
+    begin
+      Result.ErrorMsg := 'User already exists';
+      Exit;
+    end;
+  end;
+  Result.UserId := FDB.LastInsertRowID;
+  Result.Login := Login;
+  Result.Success := True;
+end;
+
+function TAuthServer.AuthenticateUser(const Login, Password: string): TAuthResponse;
+var
+  Req, TokenReq: TSqlRequest;
+  DbHash, SaltHex, HashHex, TokenHex: RawUtf8;
+  UserId: Int64;
+  TokenRaw: TBytes;
+begin
+  Result.Success := False;
+  Req.Prepare(FDB.DB, 'SELECT id, password_hash FROM users WHERE login = ?');
+  try
+    Req.Bind(1, RawUtf8(Login));
+    if Req.Step <> SQLITE_ROW then
+    begin
+      Result.ErrorMsg := 'Invalid login or password';
+      Exit;
+    end;
+    UserId := Req.FieldInt(0);
+    DbHash := Req.FieldPUtf8(1);
+  finally
+    Req.Close;
+  end;
+  SaltHex := Copy(DbHash, 1, Pos(':', DbHash) - 1);
+  HashHex := Copy(DbHash, Pos(':', DbHash) + 1, MaxInt);
+  if HashHex <> BinToHex(
+    Pbkdf2HmacSha256(RawByteString(Password), HexToBin(SaltHex), 60000, 32)) then
+  begin
+    Result.ErrorMsg := 'Invalid login or password';
+    Exit;
+  end;
+  SetLength(TokenRaw, AUTH_TOKEN_SIZE);
+  TAesPrng.Main.FillRandom(@TokenRaw[0], AUTH_TOKEN_SIZE);
+  TokenHex := BinToHex(RawByteString(TokenRaw));
+  TokenReq.Prepare(FDB.DB,
+    'INSERT INTO sessions(token, user_id, created_at, expires_at) VALUES(?,?,?,?)');
+  try
+    TokenReq.Bind(1, TokenHex);
+    TokenReq.Bind(2, UserId);
+    TokenReq.Bind(3, Int64(NowUtc * SecsPerDay));
+    TokenReq.Bind(4, Int64((NowUtc + AUTH_SESSION_EXPIRE_HOURS / 24) * SecsPerDay));
+    if TokenReq.Step <> SQLITE_DONE then
+    begin
+      Result.ErrorMsg := 'Failed to create session';
+      Exit;
+    end;
+  finally
+    TokenReq.Close;
+  end;
+  Result.Success := True;
+  Result.SessionToken := Utf8ToString(TokenHex);
+  Result.UserId := UserId;
+  Result.Login := Login;
+end;
+
+function TAuthServer.ValidateSession(const Token: string): TAuthResult;
+var
+  Req: TSqlRequest;
+begin
+  Result.Valid := False;
+  CleanExpiredSessions;
+  Req.Prepare(FDB.DB,
+    'SELECT u.id, u.login FROM sessions s ' +
+    'JOIN users u ON u.id = s.user_id ' +
+    'WHERE s.token = ? AND s.expires_at > ?');
+  try
+    Req.Bind(1, RawUtf8(Token));
+    Req.Bind(2, Int64(NowUtc * SecsPerDay));
+    if Req.Step <> SQLITE_ROW then
+      Exit;
+    Result.UserId := Req.FieldInt(0);
+    Result.Login := Req.FieldPUtf8(1);
+    Result.Valid := True;
+  finally
+    Req.Close;
+  end;
+end;
+
+procedure TAuthServer.CleanExpiredSessions;
+begin
+  FDB.Execute(RawUtf8('DELETE FROM sessions WHERE expires_at <= ' +
+    IntToStr(Int64(NowUtc * SecsPerDay))));
+end;
+
+function TAuthServer.OnRequest(Ctxt: THttpServerRequestAbstract): cardinal;
+var
+  Url: RawUtf8;
+begin
+  Url := Ctxt.Url;
+  if Ctxt.Method = 'POST' then
+  begin
+    if Url = '/api/auth/login' then
+      Exit(HandleLogin(Ctxt));
+    if Url = '/api/auth/register' then
+      Exit(HandleRegister(Ctxt));
+    if Url = '/api/auth/validate' then
+      Exit(HandleValidate(Ctxt));
+  end;
+  Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Not found']));
+  Ctxt.OutContentType := 'application/json';
+  Result := 404;
+end;
+
+function TAuthServer.HandleLogin(Ctxt: THttpServerRequestAbstract): cardinal;
+var
+  Json: variant;
+  Login, Password: string;
+  Resp: TAuthResponse;
+begin
+  Json := _JsonFast(Ctxt.InContent);
+  Login := string(VariantToUtf8(Json.UserName));
+  Password := string(VariantToUtf8(Json.PassWord));
+  if (Login = '') or (Password = '') then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Login and password required']));
+    Ctxt.OutContentType := 'application/json';
+    Exit(400);
+  end;
+  Resp := AuthenticateUser(Login, Password);
+  Ctxt.OutContentType := 'application/json';
+  if Resp.Success then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj([
+      'success', True, 'token', RawUtf8(Resp.SessionToken),
+      'user_id', Resp.UserId, 'login', RawUtf8(Resp.Login)]));
+    Result := 200;
+  end
+  else
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['success', False, 'error', RawUtf8(Resp.ErrorMsg)]));
+    Result := 401;
+  end;
+end;
+
+function TAuthServer.HandleRegister(Ctxt: THttpServerRequestAbstract): cardinal;
+var
+  Json: variant;
+  Login, Password, Email: string;
+  Resp: TAuthResponse;
+begin
+  Json := _JsonFast(Ctxt.InContent);
+  Login := string(VariantToUtf8(Json.UserName));
+  Password := string(VariantToUtf8(Json.PassWord));
+  Email := string(VariantToUtf8(Json.Email));
+  if (Login = '') or (Password = '') then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Login and password required']));
+    Ctxt.OutContentType := 'application/json';
+    Exit(400);
+  end;
+  if Length(Password) < 4 then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Password too short (min 4 chars)']));
+    Ctxt.OutContentType := 'application/json';
+    Exit(400);
+  end;
+  Resp := CreateUser(Login, Password, Email);
+  Ctxt.OutContentType := 'application/json';
+  if Resp.Success then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['success', True, 'user_id', Resp.UserId, 'login', RawUtf8(Resp.Login)]));
+    Result := 201;
+  end
+  else
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['success', False, 'error', RawUtf8(Resp.ErrorMsg)]));
+    Result := 409;
+  end;
+end;
+
+function TAuthServer.HandleValidate(Ctxt: THttpServerRequestAbstract): cardinal;
+var
+  Json: variant;
+  Token: string;
+  AuthResult: TAuthResult;
+begin
+  Json := _JsonFast(Ctxt.InContent);
+  Token := string(VariantToUtf8(Json.Token));
+  if Token = '' then
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['valid', False, 'error', 'Token required']));
+    Ctxt.OutContentType := 'application/json';
+    Exit(400);
+  end;
+  AuthResult := ValidateSession(Token);
+  Ctxt.OutContentType := 'application/json';
+  if AuthResult.Valid then
+    Ctxt.OutContent := VariantToUtf8(_Obj(['valid', True, 'user_id', AuthResult.UserId, 'login', RawUtf8(AuthResult.Login)]))
+  else
+    Ctxt.OutContent := VariantToUtf8(_Obj(['valid', False, 'error', 'Invalid or expired token']));
+  Result := 200;
+end;
+
 procedure TAuthServer.Start;
 begin
-  if FRest <> nil then
+  if FServer <> nil then
     Exit;
-  FRest := TAuthRestServer.CreateWithOwnModel(
-    [TSQLAuthUser, TSQLSession], FPort.ToString + '.db', False, 'auth');
-  FRest.ServiceMethodRegister('login', @FRest.Login, True, [mPOST]);
-  FRest.ServiceMethodRegister('register', @FRest.RegisterUser, True, [mPOST]);
-  FRest.ServiceMethodRegister('validate', @FRest.ValidateToken, True, [mPOST]);
-  FHttp := TRestHttpServer.Create([FRest], RawUtf8(FPort.ToString), 4);
-  FValidator := TAuthServerValidator.Create(FRest);
+  InitDB;
+  FServer := THttpServer.Create(RawUtf8(FPort.ToString), nil, nil, 'AuthServer', 4);
+  FServer.OnRequest := @OnRequest;
+  FValidator := TAuthServerValidator.Create(Self);
 end;
 
 procedure TAuthServer.Stop;
 begin
   FValidator := nil;
-  FHttp.Free;
-  FHttp := nil;
-  FRest.Free;
-  FRest := nil;
+  FServer.Free;
+  FServer := nil;
+  FDB.Free;
+  FDB := nil;
 end;
 
 end.

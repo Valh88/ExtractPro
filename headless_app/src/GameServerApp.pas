@@ -11,6 +11,8 @@
   ── Команды ─────────────────────────────────────────────────────────
     --port=N           порт (по умолчанию 7777)
     --max-players=N    макс игроков (по умолчанию 8)
+    --auth-port=N      порт auth-сервера (по умолчанию 8081)
+    --no-auth          отключить auth-сервер
 
   ── Зависимости ────────────────────────────────────────────────────
     SysUtils, CastleTransform, CastleScene, CastleComponentSerialize,
@@ -27,7 +29,7 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  ServerEntityFactory, GameWorldServer;
+  ServerEntityFactory, GameWorldServer, AuthTypes, AuthServer;
 
 type
   TGameServerApp = class;
@@ -41,8 +43,10 @@ type
   private
     FWorldRoot: TCastleAbstractRootTransform;
     FGameWorld: TGameWorldServer;
+    FAuth: TAuthServer;
     FPort: Word;
     FMaxPlayers: Integer;
+    FAuthPort: Word;
     FRunning: Boolean;
     FTickCount: Int64;
     FOnTick: TTickEvent;
@@ -59,6 +63,7 @@ type
     property GameWorld: TGameWorldServer read FGameWorld;
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
+    property AuthPort: Word read FAuthPort write FAuthPort;
     property Running: Boolean read FRunning;
     property OnTick: TTickEvent read FOnTick write FOnTick;
     property OnLog: TLogEvent read FOnLog write FOnLog;
@@ -76,6 +81,7 @@ begin
   inherited Create;
   FPort := 7777;
   FMaxPlayers := 8;
+  FAuthPort := AUTH_SERVER_DEFAULT_PORT;
   FRunning := False;
   FTickCount := 0;
 end;
@@ -83,6 +89,7 @@ end;
 destructor TGameServerApp.Destroy;
 begin
   Stop;
+  FAuth.Free;
   FGameWorld.Free;
   FWorldRoot.Free;
   inherited;
@@ -110,7 +117,11 @@ begin
     if S.StartsWith('--port=') then
       FPort := Word(StrToIntDef(S.SubString(7), 7777))
     else if S.StartsWith('--max-players=') then
-      FMaxPlayers := StrToIntDef(S.SubString(14), 8);
+      FMaxPlayers := StrToIntDef(S.SubString(14), 8)
+    else if S.StartsWith('--auth-port=') then
+      FAuthPort := StrToIntDef(S.SubString(12), AUTH_SERVER_DEFAULT_PORT)
+    else if S = '--no-auth' then
+      FAuthPort := 0;
   end;
 end;
 
@@ -147,8 +158,12 @@ begin
 
   LoadScene;
 
-  if FGameWorld.NetSystem <> nil then
-    FGameWorld.NetSystem.StartServer;
+  if FAuthPort > 0 then
+  begin
+    FAuth := TAuthServer.Create(FAuthPort);
+    FAuth.Start;
+    Log(Format('Auth Server starting on port %d', [FAuthPort]));
+  end;
 
   Log(Format('ExtractPro Server starting on port %d (max %d players)',
     [FPort, FMaxPlayers]));

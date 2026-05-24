@@ -8,7 +8,7 @@ interface
 
 uses
   GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
-  ServerSnapshotSystem, ServerShotSystem;
+  ServerSnapshotSystem, ServerShotSystem, AuthTypes;
 
 type
   TGameWorldServer = class(TGameWorld)
