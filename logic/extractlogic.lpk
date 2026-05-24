@@ -6,6 +6,7 @@
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
+        <IncludeFiles Value="../../../mORMot2/packages/lazarus"/>
         <OtherUnitFiles Value="src;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;../Extract/code/systems;../Extract/code"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
@@ -84,19 +85,38 @@
         <UnitName Value="NetServer"/>
       </Item>
       <Item>
-        <Filename Value="src/net/NetClient.pas"/>
-        <UnitName Value="NetClient"/>
+<Filename Value="src/net/NetClient.pas"/>
+      <UnitName Value="NetClient"/>
       </Item>
       <Item>
-        <Filename Value="src/behaviors/BulletTimer.pas"/>
+      <Filename Value="src/auth_server/AuthTypes.pas"/>
+      <UnitName Value="AuthTypes"/>
+      </Item>
+      <Item>
+      <Filename Value="src/auth_server/AuthServer.pas"/>
+      <UnitName Value="AuthServer"/>
+      </Item>
+      <Item>
+      <Filename Value="src/auth_server/AuthClient.pas"/>
+      <UnitName Value="AuthClient"/>
+      </Item>
+      <Item>
+      <Filename Value="src/behaviors/BulletTimer.pas"/>
         <UnitName Value="BulletTimer"/>
       </Item>
       <Item>
         <Filename Value="../Extract/code/GameWorldClient.pas"/>
         <UnitName Value="GameWorldClient"/>
       </Item>
+      <Item>
+        <Filename Value="../../../mORMot2/packages/lazarus/mormot2.lpk"/>
+        <Type Value="Text"/>
+      </Item>
     </Files>
     <RequiredPkgs>
+      <Item>
+        <PackageName Value="mormot2"/>
+      </Item>
       <Item>
         <PackageName Value="castle_engine_base"/>
       </Item>
