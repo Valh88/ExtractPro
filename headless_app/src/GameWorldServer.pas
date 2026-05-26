@@ -8,7 +8,8 @@ interface
 
 uses
   GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
-  ServerSnapshotSystem, ServerShotSystem, ServerAuthSystem, ServerDbSystem, AuthTypes;
+  ServerSnapshotSystem, ServerShotSystem, ServerAuthSystem, ServerDbSystem,
+  JobQueueSystem, AuthTypes;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -90,6 +91,7 @@ begin
   AddSystem(FNetSystem);
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
   AddSystem(FShotSystem);
+  AddSystem(TJobQueueSystem.Create(Self));
 end;
 
 end.

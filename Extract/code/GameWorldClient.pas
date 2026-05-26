@@ -11,7 +11,8 @@ uses
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
-  ClientAuthSystem;
+  ClientAuthSystem,
+  JobQueueSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -133,6 +134,7 @@ begin
   AddSystem(FNetSystem);
   AddSystem(FSnapSystem);
   AddSystem(FOutbox);
+  AddSystem(TJobQueueSystem.Create(Self));
 end;
 
 end.

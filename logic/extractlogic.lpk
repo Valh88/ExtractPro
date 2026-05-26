@@ -73,6 +73,14 @@
         <UnitName Value="WorldSystemBase"/>
       </Item>
       <Item>
+        <Filename Value="src/world_systems/JobQueueSystem.pas"/>
+        <UnitName Value="JobQueueSystem"/>
+      </Item>
+      <Item>
+        <Filename Value="src/JobQueue.pas"/>
+        <UnitName Value="JobQueue"/>
+      </Item>
+      <Item>
         <Filename Value="src/net/RNL.pas"/>
         <UnitName Value="RNL"/>
       </Item>
