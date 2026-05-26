@@ -17,7 +17,6 @@ type
   public
     Job: TJobProc;
     OnResult: TJobResult;
-    Background: Boolean;
     Started: Boolean;
     Done: Boolean;
     ResultSuccess: Boolean;
@@ -34,11 +33,15 @@ type
   TJobQueue = class
   private
     class var FQueue: TList;
-    class var FBackgroundQueue: TList;
     class var FCallbackQueue: TList;
     class var FLock: TCriticalSection;
+    class var FWorker: TThread;
+    class var FWorkerEvent: TEvent;
+    class var FWorkerQueue: TList;
+    class var FWorkerLock: TCriticalSection;
     class var FInitialized: Boolean;
     class procedure Initialize;
+    class procedure WorkerProc;
     class procedure ProcessMainQueue;
   public
     class procedure Post(const Job: TJobProc;
@@ -49,66 +52,81 @@ type
 
 implementation
 
-type
-  TBackgroundThread = class(TThread)
-  private
-    FTask: TJobTask;
-    procedure QueueCallback(Success: Boolean; const Data: Variant);
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(Task: TJobTask);
-  end;
-
-constructor TBackgroundThread.Create(Task: TJobTask);
-begin
-  inherited Create(False);
-  FreeOnTerminate := True;
-  FTask := Task;
-end;
-
-procedure TBackgroundThread.QueueCallback(Success: Boolean; const Data: Variant);
-var
-  cb: TJobCallback;
-begin
-  cb := TJobCallback.Create;
-  cb.OnResult := FTask.OnResult;
-  cb.Success := Success;
-  cb.Data := Data;
-  TJobQueue.FLock.Enter;
-  try
-    TJobQueue.FCallbackQueue.Add(cb);
-  finally
-    TJobQueue.FLock.Leave;
-  end;
-  FTask.Free;
-end;
-
-procedure TBackgroundThread.Execute;
-begin
-  try
-    FTask.Job(
-      procedure (const Success: Boolean; const Data: Variant)
-      begin
-        QueueCallback(Success, Data);
-      end
-    );
-  except
-    QueueCallback(False, Null);
-  end;
-end;
-
-{ TJobQueue }
-
 class procedure TJobQueue.Initialize;
 begin
   if not FInitialized then
   begin
     FQueue := TList.Create;
-    FBackgroundQueue := TList.Create;
     FCallbackQueue := TList.Create;
     FLock := TCriticalSection.Create;
+    FWorkerQueue := TList.Create;
+    FWorkerLock := TCriticalSection.Create;
+    FWorkerEvent := TEvent.Create(nil, False, False, '');
+    FWorker := TThread.CreateAnonymousThread(@WorkerProc);
+    FWorker.FreeOnTerminate := False;
+    FWorker.Start;
     FInitialized := True;
+  end;
+end;
+
+class procedure TJobQueue.WorkerProc;
+var
+  Task: TJobTask;
+  cb: TJobCallback;
+begin
+  while True do
+  begin
+    FWorkerEvent.WaitFor(INFINITE);
+    FWorkerEvent.ResetEvent;
+
+    while True do
+    begin
+      Task := nil;
+      FWorkerLock.Enter;
+      try
+        if FWorkerQueue.Count > 0 then
+        begin
+          Task := TJobTask(FWorkerQueue[0]);
+          FWorkerQueue.Delete(0);
+        end;
+      finally
+        FWorkerLock.Leave;
+      end;
+
+      if Task = nil then
+        Break;
+
+      try
+        Task.Job(
+          procedure (const Success: Boolean; const Data: Variant)
+          begin
+            cb := TJobCallback.Create;
+            cb.OnResult := Task.OnResult;
+            cb.Success := Success;
+            cb.Data := Data;
+            FLock.Enter;
+            try
+              FCallbackQueue.Add(cb);
+            finally
+              FLock.Leave;
+            end;
+            Task.Free;
+          end
+        );
+      except
+        cb := TJobCallback.Create;
+        cb.OnResult := Task.OnResult;
+        cb.Success := False;
+        cb.Data := Null;
+        FLock.Enter;
+        try
+          FCallbackQueue.Add(cb);
+        finally
+          FLock.Leave;
+        end;
+        Task.Free;
+      end;
+    end;
   end;
 end;
 
@@ -121,16 +139,25 @@ begin
   Task := TJobTask.Create;
   Task.Job := Job;
   Task.OnResult := OnResult;
-  Task.Background := Background;
 
-  FLock.Enter;
-  try
-    if Background then
-      FBackgroundQueue.Add(Task)
-    else
+  if Background then
+  begin
+    FWorkerLock.Enter;
+    try
+      FWorkerQueue.Add(Task);
+    finally
+      FWorkerLock.Leave;
+    end;
+    FWorkerEvent.SetEvent;
+  end
+  else
+  begin
+    FLock.Enter;
+    try
       FQueue.Add(Task);
-  finally
-    FLock.Leave;
+    finally
+      FLock.Leave;
+    end;
   end;
 end;
 
@@ -179,26 +206,12 @@ begin
 end;
 
 class procedure TJobQueue.Update;
-var
-  i: Integer;
-  Task: TJobTask;
 begin
   if not FInitialized then Exit;
 
   FLock.Enter;
   try
     ProcessMainQueue;
-
-    for i := 0 to FBackgroundQueue.Count - 1 do
-    begin
-      Task := TJobTask(FBackgroundQueue[i]);
-      if not Task.Started then
-      begin
-        Task.Started := True;
-        TBackgroundThread.Create(Task);
-      end;
-    end;
-    FBackgroundQueue.Clear;
   finally
     FLock.Leave;
   end;
