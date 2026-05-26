@@ -34,6 +34,7 @@ type
 
     function FindAccountByAuthId(AuthUserId: Int64): TOrmGameAccount;
     function EnsureAccount(AuthUserId: Int64; const Login: RawUtf8): TID;
+    function Retrieve(Table: TOrmClass; ID: TID): TOrm;
     function GetConfig(const Key, Default: RawUtf8): RawUtf8;
     procedure SetConfig(const Key, Value: RawUtf8);
 
@@ -112,6 +113,17 @@ begin
     Result := FServer.Orm.Add(acc, True);
   finally
     acc.Free;
+  end;
+end;
+
+function TGameDatabase.Retrieve(Table: TOrmClass; ID: TID): TOrm;
+begin
+  Result := Table.Create;
+  try
+    if not FServer.Orm.Retrieve(ID, Result) then
+      FreeAndNil(Result);
+  except
+    FreeAndNil(Result);
   end;
 end;
 
