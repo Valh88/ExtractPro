@@ -48,7 +48,7 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
-  // FGameClient.SpawnMainPlayer;
+  FGameClient.NetSystem.Connect('127.0.0.1', 7777, FGameClient.LobbyId);
 end;
 
 procedure TViewMain.Stop;

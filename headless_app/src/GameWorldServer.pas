@@ -6,10 +6,10 @@ unit GameWorldServer;
 
 interface
 
-uses
-  GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
-  ServerSnapshotSystem, ServerShotSystem, ServerAuthSystem, ServerDbSystem,
-  JobQueueSystem, AuthTypes;
+  uses
+    GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
+    ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
+    JobQueueSystem;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -17,23 +17,18 @@ type
     FWorldRoot: TCastleAbstractRootTransform;
     FPort: Word;
     FMaxPlayers: Integer;
-    FAuthPort: Word;
-    FRequireAuth: Boolean;
     FNetSystem: TServerNetSystem;
     FShotSystem: TServerShotSystem;
-    FAuthSystem: TServerAuthSystem;
     FDbSystem: TServerDbSystem;
     procedure RegisterSystems; override;
-    procedure Update(const SecondsPassed: Single); override;
   public
+    procedure Update(const SecondsPassed: Single); override;
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const APort: Word = 7777;
-      const AMaxPlayers: Integer = 8; const AAuthPort: Word = 0;
-      const ARequireAuth: Boolean = False);
+      const AMaxPlayers: Integer = 8);
     destructor Destroy; override;
     procedure SetDbSystem(aDbSystem: TServerDbSystem);
     property NetSystem: TServerNetSystem read FNetSystem;
-    property AuthSystem: TServerAuthSystem read FAuthSystem;
     property DbSystem: TServerDbSystem read FDbSystem;
   end;
 
@@ -43,16 +38,13 @@ implementation
 
 constructor TGameWorldServer.Create(const ARoot: TCastleAbstractRootTransform;
   const AFactory: IEntityFactory; const APort: Word;
-  const AMaxPlayers: Integer; const AAuthPort: Word;
-  const ARequireAuth: Boolean);
+  const AMaxPlayers: Integer);
 var
   B: TWorldBridge;
 begin
   FWorldRoot := ARoot;
   FPort := APort;
   FMaxPlayers := AMaxPlayers;
-  FAuthPort := AAuthPort;
-  FRequireAuth := ARequireAuth;
   B := TWorldBridge.Create(ARoot);
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
@@ -73,17 +65,9 @@ end;
 procedure TGameWorldServer.RegisterSystems;
 begin
   inherited;
-  if FAuthPort > 0 then
-  begin
-    FAuthSystem := TServerAuthSystem.Create(Self, FAuthPort);
-    AddSystem(FAuthSystem);
-  end;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
   FShotSystem := TServerShotSystem.Create(Self);
   FNetSystem.ShotSystem := FShotSystem;
-  FNetSystem.RequireAuth := FRequireAuth;
-  if FAuthSystem <> nil then
-    FNetSystem.AuthValidator := FAuthSystem.Validator;
   FShotSystem.SendHitProc := procedure(const APlayerId: UInt32; const HitData: THitData)
   var
     M: TNetMessage;

@@ -15,8 +15,10 @@ type
   private
     FDatabase: TGameDatabase;
     FDBFileName: TFileName;
+    FOwnsDatabase: Boolean;
   public
     constructor Create(AWorldObj: TGameWorld; const aDBFileName: TFileName); reintroduce;
+    constructor CreateWithDB(AWorldObj: TGameWorld; const ADatabase: TGameDatabase);
     destructor Destroy; override;
 
     property Database: TGameDatabase read FDatabase;
@@ -110,11 +112,20 @@ begin
   inherited Create(AWorldObj);
   FDBFileName := aDBFileName;
   FDatabase := TGameDatabase.Create(aDBFileName);
+  FOwnsDatabase := True;
   SeedDefaults;
   FDatabase.AsyncStartBatch(TOrmPlayerStats, 5, 500);
   FDatabase.AsyncStartBatch(TOrmSessionPlayer, 5, 500);
   FDatabase.AsyncStartBatch(TOrmGameSession, 5, 50);
   FDatabase.AsyncStartBatch(TOrmPlayerItem, 5, 500);
+end;
+
+constructor TServerDbSystem.CreateWithDB(AWorldObj: TGameWorld; const ADatabase: TGameDatabase);
+begin
+  inherited Create(AWorldObj);
+  FDBFileName := '';
+  FDatabase := ADatabase;
+  FOwnsDatabase := False;
 end;
 
 destructor TServerDbSystem.Destroy;
@@ -123,7 +134,8 @@ begin
   FDatabase.AsyncStopBatch(TOrmSessionPlayer);
   FDatabase.AsyncStopBatch(TOrmGameSession);
   FDatabase.AsyncStopBatch(TOrmPlayerItem);
-  FDatabase.Free;
+  if FOwnsDatabase then
+    FDatabase.Free;
   inherited;
 end;
 

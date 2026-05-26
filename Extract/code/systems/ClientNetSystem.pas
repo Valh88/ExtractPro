@@ -19,6 +19,7 @@ type
     FClient: TGameClient;
     FHost: string;
     FPort: Word;
+    FLobbyId: UInt32;
     FMaxRetries: Integer;
     FRetryDelay: Single;
     FRetryCount: Integer;
@@ -48,7 +49,7 @@ type
     constructor Create(AWorldObj: TGameWorld; AMaxRetries: Integer = 3; ARetryDelay: Single = 2.0);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
-    procedure Connect(const AHost: string; APort: Word);
+    procedure Connect(const AHost: string; APort: Word; const ALobbyId: UInt32 = 1);
     procedure Disconnect;
     function Send(const Msg: TNetMessage): Boolean;
     function SendToChannel(const Msg: TNetMessage; AChannel: Integer): Boolean;
@@ -85,8 +86,7 @@ begin
   FAuthToken := '';
   FDenyReason := '';
   FOnDeny := nil;
-
-  Connect('127.0.0.1', 7777);
+  FLobbyId := 1;
 end;
 
 destructor TClientNetSystem.Destroy;
@@ -96,10 +96,11 @@ begin
   inherited;
 end;
 
-procedure TClientNetSystem.Connect(const AHost: string; APort: Word);
+procedure TClientNetSystem.Connect(const AHost: string; APort: Word; const ALobbyId: UInt32);
 begin
   FHost := AHost;
   FPort := APort;
+  FLobbyId := ALobbyId;
   FRetryCount := 0;
   FRetryTimer := 0;
   FConnectTimer := 0;
@@ -222,6 +223,7 @@ procedure TClientNetSystem.OnClientConnected(Sender: TObject);
 var
   M: TNetMessage;
   AuthData: TAuthPayload;
+  JoinData: TJoinReqData;
   i: Integer;
 begin
   FRetryCount := 0;
@@ -239,15 +241,13 @@ begin
       FDefaultSendProc(M, NET_CH_RELIABLE)
     else
       FClient.Send(M);
-  end
-  else
-  begin
-    M.Init(msgJoinReq, [1]); // version
-    if Assigned(FDefaultSendProc) then
-      FDefaultSendProc(M, NET_CH_RELIABLE)
-    else
-      FClient.Send(M);
   end;
+
+  JoinData.LobbyId := FLobbyId;
+  JoinData.Version := 1;
+  M.Init(msgJoinReq, JoinData.ToBytes);
+  if FClient <> nil then
+    FClient.Send(M, NET_CH_RELIABLE);
 end;
 
 procedure TClientNetSystem.OnClientDisconnected(Sender: TObject);

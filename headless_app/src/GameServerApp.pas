@@ -9,7 +9,8 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  ServerEntityFactory, GameWorldServer, ServerDbSystem, AuthTypes;
+  ServerEntityFactory, GameWorldServer, ServerDbSystem, AuthTypes,
+  LobbyManager, AuthServer, DbCore;
 
 type
   TGameServerApp = class;
@@ -19,8 +20,10 @@ type
 
   TGameServerApp = class
   private
-    FWorldRoot: TCastleAbstractRootTransform;
-    FGameWorld: TGameWorldServer;
+    FLobbyManager: TLobbyManager;
+    FFactory: IEntityFactory;
+    FDatabase: TGameDatabase;
+    FAuthServer: TAuthServer;
     FPort: Word;
     FMaxPlayers: Integer;
     FAuthPort: Word;
@@ -31,7 +34,7 @@ type
     FOnTick: TTickEvent;
     FOnLog: TLogEvent;
     procedure Log(const Msg: String);
-    procedure LoadScene;
+    procedure SetupShared;
   public
     constructor Create;
     destructor Destroy; override;
@@ -39,7 +42,7 @@ type
     procedure Run;
     procedure Stop;
     class procedure RunApp(const ASetup: TGameServerAppProc = nil);
-    property GameWorld: TGameWorldServer read FGameWorld;
+    property LobbyManager: TLobbyManager read FLobbyManager;
     property Port: Word read FPort write FPort;
     property MaxPlayers: Integer read FMaxPlayers write FMaxPlayers;
     property AuthPort: Word read FAuthPort write FAuthPort;
@@ -61,18 +64,24 @@ begin
   inherited Create;
   FPort := 7777;
   FMaxPlayers := 8;
-  FAuthPort := AUTH_SERVER_DEFAULT_PORT;
+  FAuthPort := 0;
   FRequireAuth := False;
   FDBFileName := 'server.db';
   FRunning := False;
   FTickCount := 0;
+  FLobbyManager := nil;
+  FFactory := nil;
+  FDatabase := nil;
+  FAuthServer := nil;
 end;
 
 destructor TGameServerApp.Destroy;
 begin
   Stop;
-  FGameWorld.Free;
-  FWorldRoot.Free;
+  FLobbyManager.Free;
+  FAuthServer.Free;
+  FDatabase.Free;
+  FFactory := nil;
   inherited;
 end;
 
@@ -110,56 +119,49 @@ begin
   end;
 end;
 
-procedure TGameServerApp.LoadScene;
-var
-  Design: TCastleTransformDesign;
-  Factory: IEntityFactory;
-  DbSys: TServerDbSystem;
+procedure TGameServerApp.SetupShared;
 begin
-  FWorldRoot := TCastleRootTransform.Create(nil);
-  Design := TCastleTransformDesign.Create(nil);
-  {$ifdef VISUAL}
-  Design.Url := 'castle-data:/physics_scene.castle-transform';
-  {$else}
-  Design.Url := 'castle-data:/physics_scene_headless.castle-transform';
-  {$endif}
-  FWorldRoot.Add(Design);
-  FWorldRoot.UpdateIncreaseTime(0);
-
-  {$ifdef VISUAL}
-  Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
-  {$else}
-  Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
-  {$endif}
-  FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers, FAuthPort, FRequireAuth);
+  FFactory := TServerEntityFactory.Create(
+    'castle-data:/PlayerProtoNoCamera.castle-transform', '');
 
   if FDBFileName <> '' then
   begin
-    DbSys := TServerDbSystem.Create(FGameWorld, FDBFileName);
-    FGameWorld.SetDbSystem(DbSys);
+    FDatabase := TGameDatabase.Create(FDBFileName);
     Log(Format('Database: %s', [FDBFileName]));
   end;
 
-  FGameWorld.Start;
+  if FAuthPort > 0 then
+  begin
+    FAuthServer := TAuthServer.Create(FAuthPort);
+    FAuthServer.Start;
+    Log(Format('Auth Server on port %d', [FAuthPort]));
+  end;
+
+  FLobbyManager := TLobbyManager.Create(FFactory);
+  FLobbyManager.Database := FDatabase;
+  if FAuthServer <> nil then
+    FLobbyManager.AuthValidator := FAuthServer.Validator;
+
+  if FRequireAuth then
+    Log('Auth required for all connections');
+
+  FLobbyManager.AddLobby(FPort, FMaxPlayers, FRequireAuth);
 end;
 
 procedure TGameServerApp.Run;
 const
   DT = 1 / 60;
+var
+  i: Integer;
+  TotalPlayers: Integer;
 begin
   if FRunning then Exit;
   FRunning := True;
 
-  LoadScene;
+  SetupShared;
 
-  if FGameWorld.NetSystem <> nil then
-    FGameWorld.NetSystem.StartServer;
-
-  if FAuthPort > 0 then
-    Log(Format('Auth Server on port %d', [FAuthPort]));
-
-  if FRequireAuth then
-    Log('Auth required for all connections');
+  for i := 0 to FLobbyManager.Count - 1 do
+    FLobbyManager.Lobbies[i].World.NetSystem.StartServer;
 
   Log(Format('ExtractPro Server starting on port %d (max %d players)',
     [FPort, FMaxPlayers]));
@@ -168,14 +170,18 @@ begin
   try
     while FRunning do
     begin
-      FGameWorld.Update(DT);
+      FLobbyManager.UpdateAll(DT);
       if Assigned(FOnTick) then
         FOnTick(Self, DT);
 
       Inc(FTickCount);
       if (FTickCount mod 3600) = 0 then
-        Log(Format('[%d] Players: %d', [FTickCount div 60,
-          FGameWorld.NetSystem.Server.Peers]));
+      begin
+        TotalPlayers := 0;
+        for i := 0 to FLobbyManager.Count - 1 do
+          TotalPlayers := TotalPlayers + FLobbyManager.Lobbies[i].World.NetSystem.Server.Peers;
+        Log(Format('[%d] Players: %d', [FTickCount div 60, TotalPlayers]));
+      end;
 
       Sleep(Round(DT * 1000));
     end;

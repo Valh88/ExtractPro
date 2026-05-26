@@ -24,6 +24,7 @@ type
     FOutbox: TClientOutbox;
     FNetSystem: TClientNetSystem;
     FAuthSystem: TClientAuthSystem;
+    FLobbyId: UInt32;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -36,6 +37,7 @@ type
     property Viewport: TCastleViewport read FViewport write FViewport;
     property NetSystem: TClientNetSystem read FNetSystem;
     property AuthSystem: TClientAuthSystem read FAuthSystem;
+    property LobbyId: UInt32 read FLobbyId write FLobbyId;
   end;
 
 implementation
@@ -52,6 +54,7 @@ begin
   B.GameLogic := Self;
   FViewport := AViewport;
   FMouseLookUi := nil;
+  FLobbyId := 1;
 end;
 
 destructor TGameWorldClient.Destroy;

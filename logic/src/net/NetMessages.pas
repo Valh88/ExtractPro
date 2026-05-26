@@ -83,6 +83,13 @@ const
   msgAuth = 15;
 
 type
+  TJoinReqData = packed record
+    LobbyId: UInt32;
+    Version: Byte;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TJoinReqData): Boolean; static;
+  end;
+
   TAuthPayload = packed record
     Token: array[0..63] of AnsiChar;
     function ToBytes: TBytes;
@@ -290,6 +297,21 @@ begin
   SetLength(Msg.Payload, Msg.Header.PayloadLen);
   if Msg.Header.PayloadLen > 0 then
     Move(Data[SizeOf(TNetMsgHeader)], Msg.Payload[0], Msg.Header.PayloadLen);
+end;
+
+{ TJoinReqData }
+
+function TJoinReqData.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TJoinReqData));
+  Move(Self, Result[0], SizeOf(TJoinReqData));
+end;
+
+class function TJoinReqData.FromBytes(const Data: TBytes; out Value: TJoinReqData): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TJoinReqData);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TJoinReqData));
 end;
 
 { TAuthPayload }

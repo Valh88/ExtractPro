@@ -13,9 +13,11 @@ uses
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
 
-  TPendingAuth = record
+  TPendingJoin = record
     Peer: TRNLPeer;
     PlayerId: UInt32;
+    LobbyId: UInt32;
+    Authenticated: Boolean;
     Timeout: Single;
   end;
 
@@ -24,7 +26,7 @@ type
     FServer: TGameServer;
     FShotSystem: TServerShotSystem;
     FOnLog: TServerNetLogEvent;
-    FPendingAuth: array of TPendingAuth;
+    FPendingJoin: array of TPendingJoin;
     FRequireAuth: Boolean;
     FValidator: IAuthValidator;
     function GetOnConnect: TServerConnectEvent;
@@ -33,8 +35,8 @@ type
     procedure SetOnDisconnect(const AValue: TServerDisconnectEvent);
     function GetOnReceive: TServerReceiveEvent;
     procedure SetOnReceive(const AValue: TServerReceiveEvent);
-    procedure CleanPendingAuth;
-    function FindPendingAuth(Peer: TRNLPeer): Integer;
+    procedure CleanPendingJoin;
+    function FindPendingJoin(Peer: TRNLPeer): Integer;
     procedure SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32);
   public
     constructor Create(AWorldObj: TGameWorld; APort: Word; AMaxPlayers: Integer);
@@ -73,6 +75,7 @@ begin
   OnReceive := @OnPlayerReceive;
   FRequireAuth := False;
   FValidator := nil;
+  FPendingJoin := nil;
 end;
 
 destructor TServerNetSystem.Destroy;
@@ -128,24 +131,21 @@ var
   M: TNetMessage;
 begin
   FServer.Service(0);
-  if FRequireAuth then
+  i := 0;
+  while i < Length(FPendingJoin) do
   begin
-    i := 0;
-    while i < Length(FPendingAuth) do
+    FPendingJoin[i].Timeout := FPendingJoin[i].Timeout - SecondsPassed;
+    if FPendingJoin[i].Timeout <= 0 then
     begin
-      FPendingAuth[i].Timeout := FPendingAuth[i].Timeout - SecondsPassed;
-      if FPendingAuth[i].Timeout <= 0 then
-      begin
-        Log('Auth timeout for player ' + FPendingAuth[i].PlayerId.ToString);
-        M.Init(msgJoinDeny, [Byte(Ord('T')), Byte(Ord('O'))]);
-        SendTo(FPendingAuth[i].Peer, M);
-        FPendingAuth[i].Peer.Disconnect;
-        FPendingAuth[i] := FPendingAuth[High(FPendingAuth)];
-        SetLength(FPendingAuth, Length(FPendingAuth) - 1);
-      end
-      else
-        Inc(i);
-    end;
+      Log('Join timeout for player ' + FPendingJoin[i].PlayerId.ToString);
+      M.Init(msgJoinDeny, [Byte(Ord('T')), Byte(Ord('O'))]);
+      SendTo(FPendingJoin[i].Peer, M);
+      FPendingJoin[i].Peer.Disconnect;
+      FPendingJoin[i] := FPendingJoin[High(FPendingJoin)];
+      SetLength(FPendingJoin, Length(FPendingJoin) - 1);
+    end
+    else
+      Inc(i);
   end;
 end;
 
@@ -177,23 +177,23 @@ begin
     WriteLn(Msg);
 end;
 
-function TServerNetSystem.FindPendingAuth(Peer: TRNLPeer): Integer;
+function TServerNetSystem.FindPendingJoin(Peer: TRNLPeer): Integer;
 begin
-  for Result := 0 to High(FPendingAuth) do
-    if FPendingAuth[Result].Peer = Peer then
+  for Result := 0 to High(FPendingJoin) do
+    if FPendingJoin[Result].Peer = Peer then
       Exit;
   Result := -1;
 end;
 
-procedure TServerNetSystem.CleanPendingAuth;
+procedure TServerNetSystem.CleanPendingJoin;
 var
   i: Integer;
 begin
-  for i := High(FPendingAuth) downto 0 do
-    if FPendingAuth[i].Peer = nil then
+  for i := High(FPendingJoin) downto 0 do
+    if FPendingJoin[i].Peer = nil then
     begin
-      FPendingAuth[i] := FPendingAuth[High(FPendingAuth)];
-      SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+      FPendingJoin[i] := FPendingJoin[High(FPendingJoin)];
+      SetLength(FPendingJoin, Length(FPendingJoin) - 1);
     end;
 end;
 
@@ -225,16 +225,18 @@ var
   L: Integer;
 begin
   Log('Player connected: ' + PlayerId.ToString);
-  if FRequireAuth and (FValidator <> nil) then
-  begin
-    L := Length(FPendingAuth);
-    SetLength(FPendingAuth, L + 1);
-    FPendingAuth[L].Peer := Peer;
-    FPendingAuth[L].PlayerId := PlayerId;
-    FPendingAuth[L].Timeout := 10;
-  end
+  if not FRequireAuth then
+    SpawnPlayer(Peer, PlayerId)
   else
-    SpawnPlayer(Peer, PlayerId);
+  begin
+    L := Length(FPendingJoin);
+    SetLength(FPendingJoin, L + 1);
+    FPendingJoin[L].Peer := Peer;
+    FPendingJoin[L].PlayerId := PlayerId;
+    FPendingJoin[L].LobbyId := 0;
+    FPendingJoin[L].Authenticated := False;
+    FPendingJoin[L].Timeout := 10;
+  end;
 end;
 
 procedure TServerNetSystem.OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
@@ -243,11 +245,11 @@ var
   EntityId: UInt32;
 begin
   Log('Player disconnected: ' + PlayerId.ToString);
-  Idx := FindPendingAuth(Peer);
+  Idx := FindPendingJoin(Peer);
   if Idx <> -1 then
   begin
-    FPendingAuth[Idx] := FPendingAuth[High(FPendingAuth)];
-    SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+    FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
+    SetLength(FPendingJoin, Length(FPendingJoin) - 1);
     Exit;
   end;
   EntityId := FServer.GetPeerEntityId(Peer);
@@ -265,12 +267,32 @@ var
   E: IGameEntity;
   Sync: TServerPlayerSync;
   AuthData: TAuthPayload;
+  JoinData: TJoinReqData;
   AuthToken: string;
   AuthResult: TAuthResult;
   M: TNetMessage;
   Idx: Integer;
 begin
   case Msg.Header.MsgType of
+    msgJoinReq:
+    begin
+      if not FRequireAuth then Exit;
+      if TJoinReqData.FromBytes(Msg.Payload, JoinData) then
+      begin
+        Idx := FindPendingJoin(Peer);
+        if Idx = -1 then Exit;
+        FPendingJoin[Idx].LobbyId := JoinData.LobbyId;
+        if FPendingJoin[Idx].Authenticated then
+        begin
+          FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
+          SetLength(FPendingJoin, Length(FPendingJoin) - 1);
+          Log('Player ' + PlayerId.ToString + ' joined lobby ' + JoinData.LobbyId.ToString);
+          SpawnPlayer(Peer, PlayerId);
+        end
+        else
+          Log('Player ' + PlayerId.ToString + ' waiting for auth (lobby ' + JoinData.LobbyId.ToString + ')');
+      end;
+    end;
     msgAuth:
     begin
       if not (FRequireAuth and (FValidator <> nil)) then
@@ -281,14 +303,19 @@ begin
         AuthResult := FValidator.ValidateToken(AuthToken);
         if AuthResult.Valid then
         begin
-          Idx := FindPendingAuth(Peer);
+          Idx := FindPendingJoin(Peer);
           if Idx <> -1 then
           begin
-            FPendingAuth[Idx] := FPendingAuth[High(FPendingAuth)];
-            SetLength(FPendingAuth, Length(FPendingAuth) - 1);
+            FPendingJoin[Idx].Authenticated := True;
+            if FPendingJoin[Idx].LobbyId <> 0 then
+            begin
+              FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
+              SetLength(FPendingJoin, Length(FPendingJoin) - 1);
+              Log('Player ' + PlayerId.ToString + ' authenticated and joined');
+              SpawnPlayer(Peer, PlayerId);
+            end;
           end;
           Log('Player ' + PlayerId.ToString + ' authenticated as ' + AuthResult.Login);
-          SpawnPlayer(Peer, PlayerId);
         end
         else
         begin

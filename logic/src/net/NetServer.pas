@@ -98,6 +98,7 @@ type
     procedure BroadcastExcept(const Msg: TNetMessage; AExcludePlayerId: UInt32);
     procedure SetPeerEntityId(APeer: TRNLPeer; AEntityId: UInt32);
     function GetPeerEntityId(APeer: TRNLPeer): UInt32;
+    function GetPeerEntityIdByPlayerId(APlayerId: UInt32): UInt32;
     property Host: TRNLHost read FHost;
     property Port: Word read FPort;
     property Peers: Integer read FMaxPlayers;
@@ -297,6 +298,16 @@ begin
     Result := FPeers[Idx].EntityId
   else
     Result := 0;
+end;
+
+function TGameServer.GetPeerEntityIdByPlayerId(APlayerId: UInt32): UInt32;
+var
+  i: Integer;
+begin
+  for i := 0 to High(FPeers) do
+    if FPeers[i].PlayerId = APlayerId then
+      Exit(FPeers[i].EntityId);
+  Result := 0;
 end;
 
 end.
