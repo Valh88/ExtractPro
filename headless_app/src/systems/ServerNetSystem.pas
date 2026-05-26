@@ -8,7 +8,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetServer, GameWorld, Interfaces,
-  ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes;
+  ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes, RpcServer, RpcTypes;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
@@ -25,6 +25,7 @@ type
   private
     FServer: TGameServer;
     FShotSystem: TServerShotSystem;
+    FRpc: TRpcServer;
     FOnLog: TServerNetLogEvent;
     FPendingJoin: array of TPendingJoin;
     FRequireAuth: Boolean;
@@ -51,8 +52,10 @@ type
     procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
     procedure OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
     procedure OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
+    procedure HandleRpcRequest(Peer: TRNLPeer; const Msg: TNetMessage);
     procedure Log(const Msg: String);
     property Server: TGameServer read FServer;
+    property Rpc: TRpcServer read FRpc;
     property ShotSystem: TServerShotSystem read FShotSystem write FShotSystem;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
@@ -63,6 +66,26 @@ type
   end;
 
 implementation
+
+type
+  TRpcReplyCtx = class
+    Peer: TRNLPeer;
+    CorrelationId: TGuid;
+    Net: TServerNetSystem;
+    procedure Reply(const RespPayload: TBytes);
+  end;
+
+{ TRpcReplyCtx }
+
+procedure TRpcReplyCtx.Reply(const RespPayload: TBytes);
+var
+  Resp: TNetMessage;
+begin
+  Resp.Init(msgRpcResponse, RespPayload);
+  Resp.Header.CorrelationId := CorrelationId;
+  Net.SendTo(Peer, Resp);
+  Free;
+end;
 
 { TServerNetSystem }
 
@@ -76,11 +99,13 @@ begin
   FRequireAuth := False;
   FValidator := nil;
   FPendingJoin := nil;
+  FRpc := TRpcServer.Create;
 end;
 
 destructor TServerNetSystem.Destroy;
 begin
   StopServer;
+  FRpc.Free;
   FServer.Free;
   inherited;
 end;
@@ -260,6 +285,21 @@ begin
   end;
 end;
 
+procedure TServerNetSystem.HandleRpcRequest(Peer: TRNLPeer; const Msg: TNetMessage);
+var
+  Ctx: TRpcReplyCtx;
+begin
+  if Length(Msg.Payload) < 1 then Exit;
+  Ctx := TRpcReplyCtx.Create;
+  Ctx.Net := Self;
+  Ctx.Peer := Peer;
+  Ctx.CorrelationId := Msg.Header.CorrelationId;
+  if not FRpc.DispatchRequest(Msg.Payload[0],
+    Copy(Msg.Payload, 1, Length(Msg.Payload) - 1),
+    Msg.Header.CorrelationId, @Ctx.Reply) then
+    Ctx.Free;
+end;
+
 procedure TServerNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32; const Msg: TNetMessage);
 var
   State: TPlayerStateData;
@@ -348,6 +388,8 @@ begin
         BroadcastExcept(Msg, PlayerId);
       end;
     end;
+    msgRpcRequest:
+      HandleRpcRequest(Peer, Msg);
   end;
 end;
 

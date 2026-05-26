@@ -11,8 +11,7 @@ uses
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
-  ClientAuthSystem,
-  JobQueueSystem;
+  ClientAuthSystem, RpcClient, JobQueueSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -24,6 +23,7 @@ type
     FOutbox: TClientOutbox;
     FNetSystem: TClientNetSystem;
     FAuthSystem: TClientAuthSystem;
+    FRpc: TRpcClient;
     FLobbyId: UInt32;
     procedure RegisterSystems; override;
   public
@@ -37,6 +37,7 @@ type
     property Viewport: TCastleViewport read FViewport write FViewport;
     property NetSystem: TClientNetSystem read FNetSystem;
     property AuthSystem: TClientAuthSystem read FAuthSystem;
+    property Rpc: TRpcClient read FRpc;
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
   end;
 
@@ -49,6 +50,7 @@ constructor TGameWorldClient.Create(const ARoot: TCastleAbstractRootTransform;
 var
   B: TWorldBridge;
 begin
+  FRpc := TRpcClient.Create;
   B := TWorldBridge.Create(ARoot);
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
@@ -60,6 +62,7 @@ end;
 destructor TGameWorldClient.Destroy;
 begin
   FreeAndNil(FMouseLookUi);
+  FRpc.Free;
   inherited;
 end;
 
@@ -117,6 +120,11 @@ begin
   FNetSystem := TClientNetSystem.Create(Self);
   FSnapSystem := TClientSnapshotSystem.Create(Self);
   FNetSystem.SnapSystem := FSnapSystem;
+  FNetSystem.Rpc := FRpc;
+  FRpc.SendProc := procedure(const M: TNetMessage)
+  begin
+    FNetSystem.SendToChannel(M, NET_CH_RELIABLE);
+  end;
 
   FAuthSystem.OnAuthResult := procedure(Sender: TObject; const Result: TAuthRequestResult)
   begin

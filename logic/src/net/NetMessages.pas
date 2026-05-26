@@ -43,7 +43,6 @@ uses
 const
   NET_CH_UNRELIABLE = 0;
   NET_CH_RELIABLE = 1;
-  NET_HEADER_SIZE = 7;
 
 type
   TNetMsgType = Byte;
@@ -65,22 +64,24 @@ type
   end;
 
 const
-  msgInvalid    = 0;
-  msgJoinReq    = 1;
-  msgJoinAccept = 2;
-  msgJoinDeny   = 3;
-  msgInput      = 4;
-  msgSnapshot   = 5;
-  msgSpawn      = 6;
-  msgDespawn    = 7;
-  msgEvent      = 8;
-  msgChat       = 9;
-  msgPing       = 10;
-  msgPong       = 11;
+  msgInvalid     = 0;
+  msgJoinReq     = 1;
+  msgJoinAccept  = 2;
+  msgJoinDeny    = 3;
+  msgInput       = 4;
+  msgSnapshot    = 5;
+  msgSpawn       = 6;
+  msgDespawn     = 7;
+  msgEvent       = 8;
+  msgChat        = 9;
+  msgPing        = 10;
+  msgPong        = 11;
   msgPlayerState = 12;
-  msgShot = 13;
-  msgHit = 14;
-  msgAuth = 15;
+  msgShot        = 13;
+  msgHit         = 14;
+  msgAuth        = 15;
+  msgRpcRequest  = 16;
+  msgRpcResponse = 17;
 
 type
   TJoinReqData = packed record
@@ -132,6 +133,7 @@ type
   TNetMsgHeader = packed record
     MsgType: TNetMsgType;
     Sequence: UInt32;
+    CorrelationId: TGuid;
     PayloadLen: UInt16;
   end;
 

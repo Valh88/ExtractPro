@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
-  ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer;
+  ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer, RpcClient;
 
 type
   TSendMessageProc = reference to procedure(const M: TNetMessage; const AChannel: Integer);
@@ -30,6 +30,7 @@ type
     FLastError: string;
     FMyEntityId: TEntityId;
     FSnapSystem: TClientSnapshotSystem;
+    FRpc: TRpcClient;
     FDefaultSendProc: TSendMessageProc;
     FOnDeny: TNotifyEvent;
     FDenyReason: string;
@@ -60,6 +61,7 @@ type
     property OnDisconnected: TClientDisconnectEvent read GetOnDisconnected write SetOnDisconnected;
     property OnReceive: TClientReceiveEvent read GetOnReceive write SetOnReceive;
     property SnapSystem: TClientSnapshotSystem read FSnapSystem write FSnapSystem;
+    property Rpc: TRpcClient read FRpc write FRpc;
     property DefaultSendProc: TSendMessageProc read FDefaultSendProc write FDefaultSendProc;
     property MyEntityId: TEntityId read FMyEntityId;
     property AuthToken: string read FAuthToken write FAuthToken;
@@ -87,6 +89,7 @@ begin
   FDenyReason := '';
   FOnDeny := nil;
   FLobbyId := 1;
+  FRpc := nil;
 end;
 
 destructor TClientNetSystem.Destroy;
@@ -339,6 +342,11 @@ begin
         WriteLn('[Hit] target:', Hit.TargetEntityId,
           ' damage:', Hit.DamageAmount:0:0,
           ' source:', Hit.SourceEntityId);
+    end;
+    msgRpcResponse:
+    begin
+      if FRpc <> nil then
+        FRpc.DispatchResponse(Msg.Header.CorrelationId, Msg.Payload);
     end;
   end;
 end;
