@@ -6,3 +6,5 @@ logic/packagefiles.xml
 castle-engine-output
 headless_app/physics_headless_test
 headless_app/ExtractProServer
+*.db
+*.db-journal

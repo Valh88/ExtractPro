@@ -288,7 +288,7 @@ begin
             SetLength(FPendingAuth, Length(FPendingAuth) - 1);
           end;
           Log('Player ' + PlayerId.ToString + ' authenticated as ' + AuthResult.Login);
-SpawnPlayer(Peer, PlayerId);
+          SpawnPlayer(Peer, PlayerId);
         end
         else
         begin

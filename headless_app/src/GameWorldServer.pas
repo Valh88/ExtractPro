@@ -8,7 +8,7 @@ interface
 
 uses
   GameWorld, WorldBridge, CastleTransform, Interfaces, ServerNetSystem, RNL, NetMessages,
-  ServerSnapshotSystem, ServerShotSystem, ServerAuthSystem, AuthTypes;
+  ServerSnapshotSystem, ServerShotSystem, ServerAuthSystem, ServerDbSystem, AuthTypes;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -20,14 +20,18 @@ type
     FNetSystem: TServerNetSystem;
     FShotSystem: TServerShotSystem;
     FAuthSystem: TServerAuthSystem;
+    FDbSystem: TServerDbSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const APort: Word = 7777;
       const AMaxPlayers: Integer = 8; const AAuthPort: Word = 0;
       const ARequireAuth: Boolean = False);
+    destructor Destroy; override;
+    procedure SetDbSystem(aDbSystem: TServerDbSystem);
     property NetSystem: TServerNetSystem read FNetSystem;
     property AuthSystem: TServerAuthSystem read FAuthSystem;
+    property DbSystem: TServerDbSystem read FDbSystem;
   end;
 
 implementation
@@ -48,6 +52,18 @@ begin
   B := TWorldBridge.Create(ARoot);
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
+end;
+
+procedure TGameWorldServer.SetDbSystem(aDbSystem: TServerDbSystem);
+begin
+  FDbSystem := aDbSystem;
+  if aDbSystem <> nil then
+    AddSystem(aDbSystem);
+end;
+
+destructor TGameWorldServer.Destroy;
+begin
+  inherited;
 end;
 
 procedure TGameWorldServer.RegisterSystems;

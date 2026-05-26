@@ -9,7 +9,7 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  ServerEntityFactory, GameWorldServer, AuthTypes;
+  ServerEntityFactory, GameWorldServer, ServerDbSystem, AuthTypes;
 
 type
   TGameServerApp = class;
@@ -25,6 +25,7 @@ type
     FMaxPlayers: Integer;
     FAuthPort: Word;
     FRequireAuth: Boolean;
+    FDBFileName: TFileName;
     FRunning: Boolean;
     FTickCount: Int64;
     FOnTick: TTickEvent;
@@ -62,6 +63,7 @@ begin
   FMaxPlayers := 8;
   FAuthPort := AUTH_SERVER_DEFAULT_PORT;
   FRequireAuth := False;
+  FDBFileName := 'server.db';
   FRunning := False;
   FTickCount := 0;
 end;
@@ -102,7 +104,9 @@ begin
     else if S = '--no-auth' then
       FAuthPort := 0
     else if S = '--require-auth' then
-      FRequireAuth := True;
+      FRequireAuth := True
+    else if S.StartsWith('--db=') then
+      FDBFileName := S.SubString(5);
   end;
 end;
 
@@ -110,6 +114,7 @@ procedure TGameServerApp.LoadScene;
 var
   Design: TCastleTransformDesign;
   Factory: IEntityFactory;
+  DbSys: TServerDbSystem;
 begin
   FWorldRoot := TCastleRootTransform.Create(nil);
   Design := TCastleTransformDesign.Create(nil);
@@ -127,6 +132,14 @@ begin
   Factory := TServerEntityFactory.Create('castle-data:/PlayerProtoNoCamera.castle-transform', '');
   {$endif}
   FGameWorld := TGameWorldServer.Create(FWorldRoot, Factory, FPort, FMaxPlayers, FAuthPort, FRequireAuth);
+
+  if FDBFileName <> '' then
+  begin
+    DbSys := TServerDbSystem.Create(FGameWorld, FDBFileName);
+    FGameWorld.SetDbSystem(DbSys);
+    Log(Format('Database: %s', [FDBFileName]));
+  end;
+
   FGameWorld.Start;
 end;
 
