@@ -14,6 +14,7 @@ uses
 type
   TGameWorldServer = class(TGameWorld)
   protected
+    FWorldRoot: TCastleAbstractRootTransform;
     FPort: Word;
     FMaxPlayers: Integer;
     FAuthPort: Word;
@@ -23,6 +24,7 @@ type
     FAuthSystem: TServerAuthSystem;
     FDbSystem: TServerDbSystem;
     procedure RegisterSystems; override;
+    procedure Update(const SecondsPassed: Single); override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const APort: Word = 7777;
@@ -46,6 +48,7 @@ constructor TGameWorldServer.Create(const ARoot: TCastleAbstractRootTransform;
 var
   B: TWorldBridge;
 begin
+  FWorldRoot := ARoot;
   FPort := APort;
   FMaxPlayers := AMaxPlayers;
   FAuthPort := AAuthPort;
@@ -92,6 +95,14 @@ begin
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
   AddSystem(FShotSystem);
   AddSystem(TJobQueueSystem.Create(Self));
+end;
+
+procedure TGameWorldServer.Update(const SecondsPassed: Single);
+begin
+  inherited Update(SecondsPassed);
+  {$ifndef VISUAL}
+  FWorldRoot.UpdateIncreaseTime(SecondsPassed);
+  {$endif}
 end;
 
 end.

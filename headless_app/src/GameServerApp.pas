@@ -169,9 +169,6 @@ begin
     while FRunning do
     begin
       FGameWorld.Update(DT);
-      {$ifndef VISUAL}
-      FWorldRoot.UpdateIncreaseTime(DT);
-      {$endif}
       if Assigned(FOnTick) then
         FOnTick(Self, DT);
 
