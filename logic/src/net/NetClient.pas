@@ -155,7 +155,7 @@ begin
   ClearEvent;
   Status := FHost.Service(FEvent, ATimeoutMs);
 
-  if Status = RNL_HOST_SERVICE_STATUS_EVENT then
+  while Status = RNL_HOST_SERVICE_STATUS_EVENT do
   begin
     case FEvent.Type_ of
       RNL_HOST_EVENT_TYPE_PEER_CONNECT:
@@ -175,7 +175,7 @@ begin
 
       RNL_HOST_EVENT_TYPE_PEER_RECEIVE:
       begin
-        if FEvent.Message = nil then Exit;
+        if FEvent.Message = nil then Continue;
         Bytes := FEvent.Message.AsBytes;
         FEvent.Message.DecRef;
         FEvent.Message := nil;
@@ -184,6 +184,8 @@ begin
             FOnReceive(Self, Msg);
       end;
     end;
+    ClearEvent;
+    Status := FHost.Service(FEvent, 0);
   end;
 end;
 

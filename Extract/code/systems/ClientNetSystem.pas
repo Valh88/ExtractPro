@@ -32,6 +32,7 @@ type
     FSnapSystem: TClientSnapshotSystem;
     FRpc: TRpcClient;
     FDefaultSendProc: TSendMessageProc;
+    FConnectedReported: Boolean;
     FOnDeny: TNotifyEvent;
     FDenyReason: string;
     FAuthToken: string;
@@ -90,6 +91,7 @@ begin
   FOnDeny := nil;
   FLobbyId := 1;
   FRpc := nil;
+  FConnectedReported := False;
 end;
 
 destructor TClientNetSystem.Destroy;
@@ -160,6 +162,7 @@ begin
 
   if FClient.State <> csDisconnected then
     FClient.Service();
+
   if (FClient.State = csDisconnected) and FConnected and (FRetryCount < FMaxRetries) then
   begin
     FRetryTimer := FRetryTimer + SecondsPassed;
@@ -232,7 +235,6 @@ begin
   FRetryCount := 0;
   FRetryTimer := 0;
   FLastError := '';
-
   if FAuthToken <> '' then
   begin
     FillChar(AuthData, SizeOf(AuthData), 0);
@@ -277,6 +279,12 @@ var
   Hit: THitData;
   DenyCode: string;
 begin
+  if not FConnectedReported then
+  begin
+    FConnectedReported := True;
+    OnClientConnected(Self);
+  end;
+
   case Msg.Header.MsgType of
     msgJoinDeny:
     begin
