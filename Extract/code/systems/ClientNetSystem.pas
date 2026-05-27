@@ -344,6 +344,13 @@ begin
         end;
       end;
     end;
+    msgDespawn:
+    begin
+      if Length(Msg.Payload) >= 4 then
+        WorldObj.World.UnregisterEntity(
+          Msg.Payload[0] or (Msg.Payload[1] shl 8) or
+          (Msg.Payload[2] shl 16) or (Msg.Payload[3] shl 24));
+    end;
     msgHit:
     begin
       if THitData.FromBytes(Msg.Payload, Hit) then

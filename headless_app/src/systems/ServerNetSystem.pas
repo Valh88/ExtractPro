@@ -268,6 +268,7 @@ procedure TServerNetSystem.OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer;
 var
   Idx: Integer;
   EntityId: UInt32;
+  M: TNetMessage;
 begin
   Log('Player disconnected: ' + PlayerId.ToString);
   Idx := FindPendingJoin(Peer);
@@ -280,6 +281,9 @@ begin
   EntityId := FServer.GetPeerEntityId(Peer);
   if EntityId <> 0 then
   begin
+    M.Init(msgDespawn, [Byte(EntityId), Byte(EntityId shr 8),
+      Byte(EntityId shr 16), Byte(EntityId shr 24)]);
+    Broadcast(M);
     WorldObj.World.UnregisterEntity(EntityId);
     WorldObj.RemoveEntity(EntityId);
   end;
