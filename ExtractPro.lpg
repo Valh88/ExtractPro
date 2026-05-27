@@ -8,6 +8,12 @@
           <Mode Name="Release"/>
         </BuildModes>
       </Target>
+      <Target FileName="test/fpcunitproject1.lpi">
+        <BuildModes>
+          <Mode Name="Default"/>
+        </BuildModes>
+      </Target>
+      <Target FileName="logic/extractlogic.lpk"/>
     </Targets>
   </ProjectGroup>
 </CONFIG>

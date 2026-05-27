@@ -8,3 +8,5 @@ headless_app/physics_headless_test
 headless_app/ExtractProServer
 *.db
 *.db-journal
+test/fpcunitproject1
+test/lib/x86_64-linux/
