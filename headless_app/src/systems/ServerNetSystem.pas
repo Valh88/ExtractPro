@@ -283,7 +283,7 @@ begin
   begin
     M.Init(msgDespawn, [Byte(EntityId), Byte(EntityId shr 8),
       Byte(EntityId shr 16), Byte(EntityId shr 24)]);
-    Broadcast(M);
+    Broadcast(M); //заглушка
     WorldObj.World.UnregisterEntity(EntityId);
     WorldObj.RemoveEntity(EntityId);
   end;

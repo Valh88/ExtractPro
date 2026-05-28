@@ -14,7 +14,7 @@ uses
   TouchMoveControl, WorldSystemBase, JobQueueSystem, JobQueue, RNL, 
   NetMessages, NetServer, NetClient, AuthTypes, AuthServer, AuthClient, 
   BulletTimer, GameWorldClient, DbAccounts, DbItems, DbSession, DbConfig, 
-  DbCore, Db, LazarusPackageIntf;
+  DbCore, Db, State, StateMachine, LazarusPackageIntf;
 
 implementation
 

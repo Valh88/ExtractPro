@@ -7,7 +7,7 @@
       <Version Value="11"/>
       <SearchPaths>
         <IncludeFiles Value="../../../mORMot2/packages/lazarus"/>
-        <OtherUnitFiles Value="src;src/db;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;src/auth_server;../Extract/code/systems;../Extract/code"/>
+        <OtherUnitFiles Value="src;src/db;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;src/auth_server;../Extract/code/systems;../Extract/code;src/fsm"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
@@ -93,23 +93,23 @@
         <UnitName Value="NetServer"/>
       </Item>
       <Item>
-<Filename Value="src/net/NetClient.pas"/>
-      <UnitName Value="NetClient"/>
+        <Filename Value="src/net/NetClient.pas"/>
+        <UnitName Value="NetClient"/>
       </Item>
       <Item>
-      <Filename Value="src/auth_server/AuthTypes.pas"/>
-      <UnitName Value="AuthTypes"/>
+        <Filename Value="src/auth_server/AuthTypes.pas"/>
+        <UnitName Value="AuthTypes"/>
       </Item>
       <Item>
-      <Filename Value="src/auth_server/AuthServer.pas"/>
-      <UnitName Value="AuthServer"/>
+        <Filename Value="src/auth_server/AuthServer.pas"/>
+        <UnitName Value="AuthServer"/>
       </Item>
       <Item>
-      <Filename Value="src/auth_server/AuthClient.pas"/>
-      <UnitName Value="AuthClient"/>
+        <Filename Value="src/auth_server/AuthClient.pas"/>
+        <UnitName Value="AuthClient"/>
       </Item>
       <Item>
-      <Filename Value="src/behaviors/BulletTimer.pas"/>
+        <Filename Value="src/behaviors/BulletTimer.pas"/>
         <UnitName Value="BulletTimer"/>
       </Item>
       <Item>
@@ -143,6 +143,14 @@
       <Item>
         <Filename Value="../../../mORMot2/packages/lazarus/mormot2.lpk"/>
         <Type Value="Text"/>
+      </Item>
+      <Item>
+        <Filename Value="src/fsm/state.pas"/>
+        <UnitName Value="State"/>
+      </Item>
+      <Item>
+        <Filename Value="src/fsm/statemachine.pas"/>
+        <UnitName Value="StateMachine"/>
       </Item>
     </Files>
     <RequiredPkgs>
