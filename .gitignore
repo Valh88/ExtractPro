@@ -10,3 +10,4 @@ headless_app/ExtractProServer
 *.db-journal
 lib
 test/fpcunitproject1
+Extract/.zed/
