@@ -14,6 +14,13 @@
         </BuildModes>
       </Target>
       <Target FileName="logic/extractlogic.lpk"/>
+      <Target FileName="headless_app/physics_headless_test.lpi">
+        <BuildModes>
+          <Mode Name="Debug" Compile="True"/>
+          <Mode Name="Release"/>
+          <Mode Name="VisualDebug"/>
+        </BuildModes>
+      </Target>
     </Targets>
   </ProjectGroup>
 </CONFIG>
