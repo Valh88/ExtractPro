@@ -8,7 +8,8 @@ interface
 
 uses
   SysUtils, Classes,
-  WorldSystemBase, GameWorld, AuthTypes, AuthClient,
+  Interfaces, AuthTypes, AuthClient,
+  CastleKeysMouse,
   System.Threading;
 
 type
@@ -25,7 +26,7 @@ type
 
   TAuthRequestEvent = procedure(Sender: TObject; const Result: TAuthRequestResult) of object;
 
-  TClientAuthSystem = class(TWorldSystemBase)
+  TClientAuthSystem = class(TInterfacedObject, IWorldSystem)
   private
     FClient: TAuthClient;
     FToken: string;
@@ -36,9 +37,10 @@ type
     FOnAuthResult: TAuthRequestEvent;
     procedure DoAuth(const ALogin, APassword, AEmail: string; AKind: TAuthRequestKind);
   public
-    constructor Create(AWorldObj: TGameWorld; const AServerUrl: string = '');
+    constructor Create(const AServerUrl: string = '');
     destructor Destroy; override;
-    procedure Update(const SecondsPassed: Single); override;
+    procedure Update(const SecondsPassed: Single);
+    function Press(const Event: TInputPressRelease): Boolean;
     procedure LoginAsync(const ALogin, APassword: string);
     procedure RegisterAsync(const ALogin, APassword, AEmail: string);
     property Token: string read FToken;
@@ -51,9 +53,9 @@ implementation
 
 { TClientAuthSystem }
 
-constructor TClientAuthSystem.Create(AWorldObj: TGameWorld; const AServerUrl: string);
+constructor TClientAuthSystem.Create(const AServerUrl: string);
 begin
-  inherited Create(AWorldObj);
+  inherited Create;
   FClient := TAuthClient.Create(AServerUrl);
   FTask := nil;
   FToken := '';
@@ -145,6 +147,11 @@ begin
   begin
     DoAuth(ALogin, APassword, AEmail, arkRegister);
   end);
+end;
+
+function TClientAuthSystem.Press(const Event: TInputPressRelease): Boolean;
+begin
+  Result := False;
 end;
 
 end.

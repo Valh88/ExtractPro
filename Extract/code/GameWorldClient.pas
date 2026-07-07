@@ -108,7 +108,7 @@ var
 begin
   inherited;
 
-  FAuthSystem := TClientAuthSystem.Create(Self);
+  FAuthSystem := TClientAuthSystem.Create;
   AddSystem(FAuthSystem);
 
   FOutbox := TClientOutbox.Create(Self);
