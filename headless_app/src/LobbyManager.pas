@@ -26,6 +26,7 @@ type
   private
     FLobbies: TLobbyArray;
     FLobbyServer: TLobbyServer;
+    FLobbyDbSystem: TServerDbSystem;
     FFactory: IEntityFactory;
     FNextId: UInt32;
     FDatabase: TGameDatabase;
@@ -42,7 +43,8 @@ type
     function FindLobbyByPlayerId(const APlayerId: UInt32): TGameWorldServer;
     procedure UpdateAll(const SecondsPassed: Single);
     function GetCount: Integer;
-    property Database: TGameDatabase read FDatabase write FDatabase;
+    procedure SetDatabase(const AValue: TGameDatabase);
+    property Database: TGameDatabase read FDatabase write SetDatabase;
     property AuthValidator: IAuthValidator read FValidator write FValidator;
     property OnLog: TNotifyEvent read FOnLog write FOnLog;
     property Lobbies: TLobbyArray read FLobbies;
@@ -72,8 +74,18 @@ begin
   for i := 0 to High(FLobbies) do
     FLobbies[i].World.Free;
   FLobbies := nil;
+  FLobbyDbSystem.Free;
   FFactory := nil;
   inherited;
+end;
+
+procedure TLobbyManager.SetDatabase(const AValue: TGameDatabase);
+begin
+  FDatabase := AValue;
+  FLobbyDbSystem.Free;
+  FLobbyDbSystem := nil;
+  if FDatabase <> nil then
+    FLobbyDbSystem := TServerDbSystem.CreateWithDB(FDatabase);
 end;
 
 function TLobbyManager.AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean): UInt32;
@@ -81,7 +93,6 @@ var
   Lobby: TLobbyInfo;
   WorldRoot: TCastleAbstractRootTransform;
   Design: TCastleTransformDesign;
-  LobbyDb: TServerDbSystem;
   idx: Integer;
 begin
   idx := FindLobbyByPort(APort);
@@ -107,11 +118,8 @@ begin
   if FValidator <> nil then
     Lobby.World.NetSystem.AuthValidator := FValidator;
 
-  if FDatabase <> nil then
-  begin
-    LobbyDb := TServerDbSystem.CreateWithDB(FDatabase);
-    Lobby.World.SetDbSystem(LobbyDb);
-  end;
+  if FLobbyDbSystem <> nil then
+    Lobby.World.SetDbSystem(FLobbyDbSystem);
 
   Lobby.World.Start;
 
@@ -130,6 +138,10 @@ begin
   if FLobbyServer <> nil then
     raise Exception.Create('Matchmaking lobby already exists');
   FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
+  if FValidator <> nil then
+    FLobbyServer.AuthValidator := FValidator;
+  if FLobbyDbSystem <> nil then
+    FLobbyServer.SetDbSystem(FLobbyDbSystem);
 end;
 
 procedure TLobbyManager.RemoveLobby(const AId: UInt32);

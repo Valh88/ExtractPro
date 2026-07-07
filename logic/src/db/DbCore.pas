@@ -7,6 +7,7 @@ interface
 uses
   SysUtils, Classes,
   mormot.core.base,
+  mormot.core.os,
   mormot.orm.core,
   mormot.rest.core,
   mormot.rest.sqlite3,
@@ -19,10 +20,12 @@ uses
 type
   TGameDatabase = class
   private
+    FLock: TOSLock;
     FModel: TOrmModel;
     FServer: TRestServerDB;
     function GetOrm: IRestOrm;
     function GetBackgroundTimer: TRestBackgroundTimer;
+    function FindAccountByAuthIdUnsafe(AuthUserId: Int64): TOrmGameAccount;
   public
     constructor Create(const aFileName: TFileName);
     destructor Destroy; override;
@@ -53,6 +56,7 @@ implementation
 constructor TGameDatabase.Create(const aFileName: TFileName);
 begin
   inherited Create;
+  FLock.Init;
   FModel := TOrmModel.Create([
     TOrmGameAccount,
     TOrmPlayerStats,
@@ -70,6 +74,7 @@ end;
 
 destructor TGameDatabase.Destroy;
 begin
+  FLock.Done;
   FServer.Free;
   FModel.Free;
   inherited;
@@ -85,45 +90,65 @@ begin
   Result := FServer.EnsureBackgroundTimerExists;
 end;
 
-function TGameDatabase.FindAccountByAuthId(AuthUserId: Int64): TOrmGameAccount;
+function TGameDatabase.FindAccountByAuthIdUnsafe(AuthUserId: Int64): TOrmGameAccount;
 begin
   TOrmGameAccount.AutoFree(Result, FServer.Orm,
     'AuthUserId = ?', [], [AuthUserId]);
+end;
+
+function TGameDatabase.FindAccountByAuthId(AuthUserId: Int64): TOrmGameAccount;
+begin
+  FLock.Lock;
+  try
+    Result := FindAccountByAuthIdUnsafe(AuthUserId);
+  finally
+    FLock.Unlock;
+  end;
 end;
 
 function TGameDatabase.EnsureAccount(AuthUserId: Int64; const Login: RawUtf8): TID;
 var
   acc: TOrmGameAccount;
 begin
-  acc := FindAccountByAuthId(AuthUserId);
-  if acc <> nil then
-  begin
-    Result := acc.IDValue;
-    if acc.Login <> Login then
-    begin
-      acc.Login := Login;
-      FServer.Orm.Update(acc);
-    end;
-    Exit;
-  end;
-  acc := TOrmGameAccount.Create;
+  FLock.Lock;
   try
-    acc.AuthUserId := AuthUserId;
-    acc.Login := Login;
-    Result := FServer.Orm.Add(acc, True);
+    acc := FindAccountByAuthIdUnsafe(AuthUserId);
+    if acc <> nil then
+    begin
+      Result := acc.IDValue;
+      if acc.Login <> Login then
+      begin
+        acc.Login := Login;
+        FServer.Orm.Update(acc);
+      end;
+      Exit;
+    end;
+    acc := TOrmGameAccount.Create;
+    try
+      acc.AuthUserId := AuthUserId;
+      acc.Login := Login;
+      Result := FServer.Orm.Add(acc, True);
+    finally
+      acc.Free;
+    end;
   finally
-    acc.Free;
+    FLock.Unlock;
   end;
 end;
 
 function TGameDatabase.Retrieve(Table: TOrmClass; ID: TID): TOrm;
 begin
-  Result := Table.Create;
+  FLock.Lock;
   try
-    if not FServer.Orm.Retrieve(ID, Result) then
+    Result := Table.Create;
+    try
+      if not FServer.Orm.Retrieve(ID, Result) then
+        FreeAndNil(Result);
+    except
       FreeAndNil(Result);
-  except
-    FreeAndNil(Result);
+    end;
+  finally
+    FLock.Unlock;
   end;
 end;
 
@@ -131,33 +156,43 @@ function TGameDatabase.GetConfig(const Key, Default: RawUtf8): RawUtf8;
 var
   cfg: TOrmServerConfig;
 begin
-  TOrmServerConfig.AutoFree(cfg, FServer.Orm, 'Key = ?', [], [Key]);
-  if cfg <> nil then
-    Result := cfg.Value
-  else
-    Result := Default;
+  FLock.Lock;
+  try
+    TOrmServerConfig.AutoFree(cfg, FServer.Orm, 'Key = ?', [], [Key]);
+    if cfg <> nil then
+      Result := cfg.Value
+    else
+      Result := Default;
+  finally
+    FLock.Unlock;
+  end;
 end;
 
 procedure TGameDatabase.SetConfig(const Key, Value: RawUtf8);
 var
   cfg: TOrmServerConfig;
 begin
-  TOrmServerConfig.AutoFree(cfg, FServer.Orm, 'Key = ?', [], [Key]);
-  if cfg <> nil then
-  begin
-    cfg.Value := Value;
-    FServer.Orm.Update(cfg);
-  end
-  else
-  begin
-    cfg := TOrmServerConfig.Create;
-    try
-      cfg.Key := Key;
+  FLock.Lock;
+  try
+    TOrmServerConfig.AutoFree(cfg, FServer.Orm, 'Key = ?', [], [Key]);
+    if cfg <> nil then
+    begin
       cfg.Value := Value;
-      FServer.Orm.Add(cfg, True);
-    finally
-      cfg.Free;
+      FServer.Orm.Update(cfg);
+    end
+    else
+    begin
+      cfg := TOrmServerConfig.Create;
+      try
+        cfg.Key := Key;
+        cfg.Value := Value;
+        FServer.Orm.Add(cfg, True);
+      finally
+        cfg.Free;
+      end;
     end;
+  finally
+    FLock.Unlock;
   end;
 end;
 

@@ -5,7 +5,8 @@ unit LobbyWorld;
 interface
 
 uses
-  SysUtils, Classes, Generics.Collections, help_types, GameConfig, Interfaces;
+  SysUtils, Classes, Generics.Collections, help_types, GameConfig, Interfaces,
+  AuthTypes;
 
 type
   TLobbyPlayerStatus = (lpsConnected, lpsSearching, lpsReady);
@@ -25,7 +26,6 @@ type
     MaxPlayers: Word;
   end;
 
-  TLobbyWorldSystemList = specialize TList<IWorldSystem>;
   TLobbyPlayerArray = array of TLobbyPlayerInfo;
   TLobbyRoomArray = array of TLobbyRoomInfo;
 
@@ -33,8 +33,9 @@ type
   private
     FPlayers: array of TLobbyPlayerInfo;
     FRooms: array of TLobbyRoomInfo;
+    FAuthValidator: IAuthValidator;
   protected
-    FSystems: TLobbyWorldSystemList;
+    FSystems: TWorldSystemList;
     procedure AddSystem(ASystem: IWorldSystem);
     procedure RegisterSystems; virtual;
     function FindPlayerIndex(const APlayerId: UInt32): Integer;
@@ -47,6 +48,7 @@ type
 
     property Players: TLobbyPlayerArray read FPlayers;
     property Rooms: TLobbyRoomArray read FRooms;
+    property AuthValidator: IAuthValidator read FAuthValidator write FAuthValidator;
   end;
 
 implementation
@@ -56,7 +58,7 @@ implementation
 constructor TLobbyWorldBase.Create;
 begin
   inherited Create;
-  FSystems := TLobbyWorldSystemList.Create;
+  FSystems := TWorldSystemList.Create;
   RegisterSystems;
 end;
 

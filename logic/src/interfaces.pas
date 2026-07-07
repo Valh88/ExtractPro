@@ -7,7 +7,7 @@ unit Interfaces;
 interface
 
 uses
-  SysUtils, Classes, CastleTransform, CastleKeysMouse, CastleUIControls, help_types;
+  SysUtils, Classes, Generics.Collections, CastleTransform, CastleKeysMouse, CastleUIControls, help_types;
 
 type
 
@@ -87,6 +87,8 @@ type
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
   end;
+
+  TWorldSystemList = specialize TList<IWorldSystem>;
 
   { Коллбек попадания пули }
   TBulletHitEvent = reference to procedure(const HitEntityId: TEntityId; const Damage: TDamageInfo);

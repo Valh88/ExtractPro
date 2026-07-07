@@ -26,7 +26,7 @@ type
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
     procedure FlushDeadEntities;
   protected
-    FSystems: array of IWorldSystem;
+    FSystems: TWorldSystemList;
     procedure RegisterSystems; virtual;
     procedure AddSystem(ASystem: IWorldSystem);
   public
@@ -72,6 +72,7 @@ implementation
 constructor TGameWorld.Create(AWorld: IGameWorld; AFactory: IEntityFactory);
 begin
   inherited Create;
+  FSystems := TWorldSystemList.Create;
   FWorld := AWorld;
   FFactory := AFactory;
   FData.Init;
@@ -86,7 +87,7 @@ end;
 destructor TGameWorld.Destroy;
 begin
   FWorld := nil;
-  FSystems := nil;
+  FSystems.Free;
   FData.Free;
   FFactory := nil;
   FEventBus.Free;
@@ -99,8 +100,7 @@ end;
 
 procedure TGameWorld.AddSystem(ASystem: IWorldSystem);
 begin
-  SetLength(FSystems, Length(FSystems) + 1);
-  FSystems[High(FSystems)] := ASystem;
+  FSystems.Add(ASystem);
 end;
 
 function TGameWorld.AllocateEntityId: TEntityId;
@@ -213,7 +213,7 @@ procedure TGameWorld.Update(const SecondsPassed: Single);
 var
   i: Integer;
 begin
-  for i := 0 to High(FSystems) do
+  for i := 0 to FSystems.Count - 1 do
     FSystems[i].Update(SecondsPassed);
 
   FEventBus.Flush;
@@ -225,7 +225,7 @@ var
   i: Integer;
 begin
   Result := False;
-  for i := 0 to High(FSystems) do
+  for i := 0 to FSystems.Count - 1 do
     if FSystems[i].Press(Event) then Exit(True);
 end;
 
