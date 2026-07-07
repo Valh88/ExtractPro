@@ -1,12 +1,15 @@
 unit ClientAuthSystem;
 
 {$mode objfpc}{$H+}
+{$modeswitch functionreferences}
+{$modeswitch anonymousfunctions}
 
 interface
 
 uses
-  SysUtils, Classes, SyncObjs,
-  WorldSystemBase, GameWorld, AuthTypes, AuthClient;
+  SysUtils, Classes,
+  WorldSystemBase, GameWorld, AuthTypes, AuthClient,
+  System.Threading;
 
 type
   TAuthRequestKind = (arkNone, arkLogin, arkRegister);
@@ -22,30 +25,16 @@ type
 
   TAuthRequestEvent = procedure(Sender: TObject; const Result: TAuthRequestResult) of object;
 
-  TAuthHttpThread = class(TThread)
-  private
-    FClient: TAuthClient;
-    FKind: TAuthRequestKind;
-    FLogin, FPassword, FEmail: string;
-    FResult: TAuthRequestResult;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(const ALogin, APassword, AEmail: string; AKind: TAuthRequestKind;
-      const AServerUrl: string);
-    destructor Destroy; override;
-    property Result: TAuthRequestResult read FResult;
-  end;
-
   TClientAuthSystem = class(TWorldSystemBase)
   private
     FClient: TAuthClient;
     FToken: string;
     FUserId: Int64;
     FLogin: string;
-    FThread: TAuthHttpThread;
-    FLastResult: TAuthRequestResult;
+    FTask: ITask;
+    FAsyncResult: TAuthRequestResult;
     FOnAuthResult: TAuthRequestEvent;
+    procedure DoAuth(const ALogin, APassword, AEmail: string; AKind: TAuthRequestKind);
   public
     constructor Create(AWorldObj: TGameWorld; const AServerUrl: string = '');
     destructor Destroy; override;
@@ -60,115 +49,102 @@ type
 
 implementation
 
-{ TAuthHttpThread }
-
-constructor TAuthHttpThread.Create(const ALogin, APassword, AEmail: string;
-  AKind: TAuthRequestKind; const AServerUrl: string);
-begin
-  inherited Create(False);
-  FClient := TAuthClient.Create(AServerUrl);
-  FKind := AKind;
-  FLogin := ALogin;
-  FPassword := APassword;
-  FEmail := AEmail;
-  FreeOnTerminate := False;
-  FillChar(FResult, SizeOf(FResult), 0);
-  FResult.Kind := AKind;
-end;
-
-destructor TAuthHttpThread.Destroy;
-begin
-  FClient.Free;
-  inherited;
-end;
-
-procedure TAuthHttpThread.Execute;
-var
-  Resp: TAuthResponse;
-begin
-  case FKind of
-    arkLogin:
-    begin
-      Resp := FClient.Login(FLogin, FPassword);
-      FResult.Success := Resp.Success;
-      FResult.Token := Resp.SessionToken;
-      FResult.UserId := Resp.UserId;
-      FResult.UserLogin := Resp.Login;
-      FResult.ErrorMsg := Resp.ErrorMsg;
-    end;
-    arkRegister:
-    begin
-      Resp := FClient.Register(FLogin, FPassword, FEmail);
-      FResult.Success := Resp.Success;
-      FResult.Token := Resp.SessionToken;
-      FResult.UserId := Resp.UserId;
-      FResult.UserLogin := Resp.Login;
-      FResult.ErrorMsg := Resp.ErrorMsg;
-    end;
-  end;
-end;
-
 { TClientAuthSystem }
 
 constructor TClientAuthSystem.Create(AWorldObj: TGameWorld; const AServerUrl: string);
 begin
   inherited Create(AWorldObj);
   FClient := TAuthClient.Create(AServerUrl);
-  FThread := nil;
+  FTask := nil;
   FToken := '';
   FUserId := 0;
   FLogin := '';
   FOnAuthResult := nil;
-  FillChar(FLastResult, SizeOf(FLastResult), 0);
+  FillChar(FAsyncResult, SizeOf(FAsyncResult), 0);
 end;
 
 destructor TClientAuthSystem.Destroy;
 begin
-  if FThread <> nil then
+  if FTask <> nil then
   begin
-    FThread.Terminate;
-    FThread.WaitFor;
-    FThread.Free;
+    FTask.Cancel;
+    FTask := nil;
   end;
   FClient.Free;
   inherited;
 end;
 
+procedure TClientAuthSystem.DoAuth(const ALogin, APassword, AEmail: string;
+  AKind: TAuthRequestKind);
+var
+  Client: TAuthClient;
+  Resp: TAuthResponse;
+  Res: TAuthRequestResult;
+begin
+  Client := TAuthClient.Create(FClient.ServerUrl);
+  try
+    FillChar(Res, SizeOf(Res), 0);
+    Res.Kind := AKind;
+    case AKind of
+      arkLogin:
+      begin
+        Resp := Client.Login(ALogin, APassword);
+        Res.Success := Resp.Success;
+        Res.Token := Resp.SessionToken;
+        Res.UserId := Resp.UserId;
+        Res.UserLogin := Resp.Login;
+        Res.ErrorMsg := Resp.ErrorMsg;
+      end;
+      arkRegister:
+      begin
+        Resp := Client.Register(ALogin, APassword, AEmail);
+        Res.Success := Resp.Success;
+        Res.Token := Resp.SessionToken;
+        Res.UserId := Resp.UserId;
+        Res.UserLogin := Resp.Login;
+        Res.ErrorMsg := Resp.ErrorMsg;
+      end;
+    end;
+    FAsyncResult := Res;
+  finally
+    Client.Free;
+  end;
+end;
+
 procedure TClientAuthSystem.Update(const SecondsPassed: Single);
 begin
-  if FThread <> nil then
+  if (FTask <> nil) and (FTask.Status = TTaskStatus.Completed) then
   begin
-    if FThread.Finished then
+    if FAsyncResult.Success and (FAsyncResult.Kind = arkLogin) then
     begin
-      FLastResult := FThread.Result;
-      if FLastResult.Success and (FLastResult.Kind = arkLogin) then
-      begin
-        FToken := FLastResult.Token;
-        FUserId := FLastResult.UserId;
-        FLogin := FLastResult.UserLogin;
-      end;
-      if Assigned(FOnAuthResult) then
-        FOnAuthResult(Self, FLastResult);
-      FThread.Free;
-      FThread := nil;
+      FToken := FAsyncResult.Token;
+      FUserId := FAsyncResult.UserId;
+      FLogin := FAsyncResult.UserLogin;
     end;
+    if Assigned(FOnAuthResult) then
+      FOnAuthResult(Self, FAsyncResult);
+    FTask := nil;
   end;
 end;
 
 procedure TClientAuthSystem.LoginAsync(const ALogin, APassword: string);
 begin
-  if FThread <> nil then
-    Exit;
-  FillChar(FLastResult, SizeOf(FLastResult), 0);
-  FThread := TAuthHttpThread.Create(ALogin, APassword, '', arkLogin, FClient.ServerUrl);
+  if FTask <> nil then Exit;
+  FillChar(FAsyncResult, SizeOf(FAsyncResult), 0);
+  FTask := TTask.Run(procedure
+  begin
+    DoAuth(ALogin, APassword, '', arkLogin);
+  end);
 end;
 
 procedure TClientAuthSystem.RegisterAsync(const ALogin, APassword, AEmail: string);
 begin
-  if FThread <> nil then
-    Exit;
-  FillChar(FLastResult, SizeOf(FLastResult), 0);
-  FThread := TAuthHttpThread.Create(ALogin, APassword, AEmail, arkRegister, FClient.ServerUrl);
+  if FTask <> nil then Exit;
+  FillChar(FAsyncResult, SizeOf(FAsyncResult), 0);
+  FTask := TTask.Run(procedure
+  begin
+    DoAuth(ALogin, APassword, AEmail, arkRegister);
+  end);
 end;
 
 end.
