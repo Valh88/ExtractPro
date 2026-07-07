@@ -29,6 +29,7 @@ type
     procedure Update(const SecondsPassed: Single); override;
     procedure Connect(const AHost: string; APort: Word);
     procedure Disconnect;
+    procedure Send(const M: TNetMessage; const AChannel: Byte = NET_CH_RELIABLE);
     procedure RequestRoomList;
     procedure RequestJoinRaid(const ARoomId: UInt32);
 
@@ -68,6 +69,11 @@ end;
 procedure TLobbyClientNetSystem.Disconnect;
 begin
   FClient.Disconnect;
+end;
+
+procedure TLobbyClientNetSystem.Send(const M: TNetMessage; const AChannel: Byte);
+begin
+  FClient.Send(M, AChannel);
 end;
 
 procedure TLobbyClientNetSystem.Update(const SecondsPassed: Single);

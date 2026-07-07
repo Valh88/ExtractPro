@@ -7,12 +7,13 @@ interface
 uses
   SysUtils, Classes,
   LobbyWorld, help_types, Interfaces,
-  LobbyClientNetSystem, ClientAuthSystem;
+  LobbyClientNetSystem, ClientAuthSystem, RpcClient, NetMessages;
 
 type
   TLobbyClient = class(TLobbyWorldBase)
   private
     FAuthSystem: TClientAuthSystem;
+    FRpc: TRpcClient;
     FNetSystem: TLobbyClientNetSystem;
   protected
     procedure RegisterSystems; override;
@@ -22,6 +23,7 @@ type
     procedure Connect(const AHost: string; APort: Word);
     procedure Disconnect;
     property AuthSystem: TClientAuthSystem read FAuthSystem;
+    property Rpc: TRpcClient read FRpc;
     property NetSystem: TLobbyClientNetSystem read FNetSystem;
   end;
 
@@ -36,12 +38,18 @@ end;
 
 destructor TLobbyClient.Destroy;
 begin
+  FRpc.Free;
   inherited;
 end;
 
 procedure TLobbyClient.RegisterSystems;
 begin
   inherited;
+  FRpc := TRpcClient.Create;
+  FRpc.SendProc := procedure(const M: TNetMessage)
+  begin
+    FNetSystem.Send(M);
+  end;
   FAuthSystem := TClientAuthSystem.Create;
   AddSystem(FAuthSystem);
   FNetSystem := TLobbyClientNetSystem.Create(Self);

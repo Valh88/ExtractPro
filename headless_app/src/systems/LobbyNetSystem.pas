@@ -7,12 +7,13 @@ interface
 uses
   SysUtils, Classes,
   LobbySystemBase, LobbyWorld,
-  RNL, NetMessages, NetServer;
+  RNL, NetMessages, NetServer, RpcServer, RpcTypes;
 
 type
   TLobbyNetSystem = class(TLobbySystemBase)
   private
     FServer: TGameServer;
+    FRpc: TRpcServer;
     FPort: Word;
     FMaxPlayers: Integer;
     procedure OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
@@ -24,6 +25,8 @@ type
     procedure Update(const SecondsPassed: Single); override;
     procedure StartServer;
     procedure StopServer;
+    function SendTo(Peer: TRNLPeer; const M: TNetMessage): Boolean;
+    property Rpc: TRpcServer read FRpc;
   end;
 
 implementation
@@ -39,11 +42,13 @@ begin
   FServer.OnConnect := @OnPlayerConnected;
   FServer.OnDisconnect := @OnPlayerDisconnected;
   FServer.OnReceive := @OnPlayerReceive;
+  FRpc := TRpcServer.Create;
 end;
 
 destructor TLobbyNetSystem.Destroy;
 begin
   StopServer;
+  FRpc.Free;
   FServer.Free;
   inherited;
 end;
@@ -56,6 +61,11 @@ end;
 procedure TLobbyNetSystem.StopServer;
 begin
   FServer.Stop;
+end;
+
+function TLobbyNetSystem.SendTo(Peer: TRNLPeer; const M: TNetMessage): Boolean;
+begin
+  Result := FServer.SendTo(Peer, M);
 end;
 
 procedure TLobbyNetSystem.Update(const SecondsPassed: Single);

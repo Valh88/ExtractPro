@@ -57,9 +57,13 @@ lazbuild fpcunitproject1.lpi   # Build test runner
 
 ## Development Notes
 - Uses `{$mode objfpc}{$H+}` and modern Pascal features (anonymous functions, function references)
-- mORMot2 for database/ORM/networking
+- mORMot2 for database/ORM/networking — `TGameDatabase` (DbCore) wraps `TRestServerDB` with `TOSLock` for thread-safe concurrent access from lobby thread pool
 - Physics simulation on server (headless)
 - Client-server architecture with custom RPC (NetMessages, NetServer, NetClient)
+- `TWorldSystemList = specialize TList<IWorldSystem>` defined in `Interfaces.pas`; `FSystems` uses `TList` instead of dynamic array in both `TGameWorld` and `TLobbyWorldBase`
+- `TClientAuthSystem` is `class(TInterfacedObject, IWorldSystem)` — no dependency on `TGameWorld`; shared by both `GameWorldClient` and `LobbyClient`
+- `TServerDbSystem` created once in `LobbyManager.SetDatabase` and shared across all raid lobbies + matchmaking lobby (single `TGameDatabase` instance with `TOSLock`)
+- All lobby updates run in `TParallel.For` — each lobby's `Update` on a thread pool thread; `TGameDatabase` synchronous methods protected by `TOSLock`; async batched writes (`TRestBatchLocked`) thread-safe internally
 
 ## Common Tasks
 | Task | Command |
