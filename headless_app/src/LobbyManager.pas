@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes, CastleTransform, CastleScene,
-  GameWorldServer, Interfaces, ServerEntityFactory,
+  GameWorldServer, LobbyServer, Interfaces, ServerEntityFactory,
   ServerDbSystem, AuthTypes, DbCore,
   System.Threading;
 
@@ -25,6 +25,7 @@ type
   TLobbyManager = class
   private
     FLobbies: TLobbyArray;
+    FLobbyServer: TLobbyServer;
     FFactory: IEntityFactory;
     FNextId: UInt32;
     FDatabase: TGameDatabase;
@@ -35,6 +36,7 @@ type
     constructor Create(const AFactory: IEntityFactory);
     destructor Destroy; override;
     function AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean = False): UInt32;
+    procedure AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer = 64);
     procedure RemoveLobby(const AId: UInt32);
     function FindLobbyById(const AId: UInt32): TGameWorldServer;
     function FindLobbyByPlayerId(const APlayerId: UInt32): TGameWorldServer;
@@ -44,6 +46,7 @@ type
     property AuthValidator: IAuthValidator read FValidator write FValidator;
     property OnLog: TNotifyEvent read FOnLog write FOnLog;
     property Lobbies: TLobbyArray read FLobbies;
+    property LobbyServer: TLobbyServer read FLobbyServer;
     property Count: Integer read GetCount;
   end;
 
@@ -65,6 +68,7 @@ destructor TLobbyManager.Destroy;
 var
   i: Integer;
 begin
+  FLobbyServer.Free;
   for i := 0 to High(FLobbies) do
     FLobbies[i].World.Free;
   FLobbies := nil;
@@ -105,7 +109,7 @@ begin
 
   if FDatabase <> nil then
   begin
-    LobbyDb := TServerDbSystem.CreateWithDB(Lobby.World, FDatabase);
+    LobbyDb := TServerDbSystem.CreateWithDB(FDatabase);
     Lobby.World.SetDbSystem(LobbyDb);
   end;
 
@@ -119,6 +123,13 @@ begin
 
   if Assigned(FOnLog) then
     FOnLog(Self);
+end;
+
+procedure TLobbyManager.AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer);
+begin
+  if FLobbyServer <> nil then
+    raise Exception.Create('Matchmaking lobby already exists');
+  FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
 end;
 
 procedure TLobbyManager.RemoveLobby(const AId: UInt32);
@@ -173,13 +184,18 @@ end;
 procedure TLobbyManager.UpdateAll(const SecondsPassed: Single);
 var
   L: TLobbyArray;
+  LS: TLobbyServer;
   SP: Single;
 begin
   L := FLobbies;
+  LS := FLobbyServer;
   SP := SecondsPassed;
-  TParallel.&For(0, High(L), procedure(i: Integer)
+  TParallel.&For(-1, High(L), procedure(i: Integer)
   begin
-    L[i].World.Update(SP);
+    if i = -1 then
+      LS.Update(SP)
+    else
+      L[i].World.Update(SP);
   end);
 end;
 

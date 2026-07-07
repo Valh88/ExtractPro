@@ -29,6 +29,10 @@
         <UnitName Value="GameWorld"/>
       </Item>
       <Item>
+        <Filename Value="src/LobbyWorld.pas"/>
+        <UnitName Value="LobbyWorld"/>
+      </Item>
+      <Item>
         <Filename Value="src/GameConfig.pas"/>
         <UnitName Value="GameConfig"/>
       </Item>
@@ -71,6 +75,10 @@
       <Item>
         <Filename Value="src/world_systems/WorldSystemBase.pas"/>
         <UnitName Value="WorldSystemBase"/>
+      </Item>
+      <Item>
+        <Filename Value="src/world_systems/LobbySystemBase.pas"/>
+        <UnitName Value="LobbySystemBase"/>
       </Item>
       <Item>
         <Filename Value="src/world_systems/JobQueueSystem.pas"/>

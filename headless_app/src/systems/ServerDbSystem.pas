@@ -8,23 +8,24 @@ uses
   Classes, SysUtils,
   mormot.core.base,
   DbCore, DbAccounts, DbItems, DbSession, DbConfig,
-  WorldSystemBase, GameWorld;
+  CastleKeysMouse, Interfaces;
 
 type
-  TServerDbSystem = class(TWorldSystemBase)
+  TServerDbSystem = class(TInterfacedObject, IWorldSystem)
   private
     FDatabase: TGameDatabase;
     FDBFileName: TFileName;
     FOwnsDatabase: Boolean;
   public
-    constructor Create(AWorldObj: TGameWorld; const aDBFileName: TFileName); reintroduce;
-    constructor CreateWithDB(AWorldObj: TGameWorld; const ADatabase: TGameDatabase);
+    constructor Create(const aDBFileName: TFileName); reintroduce;
+    constructor CreateWithDB(const ADatabase: TGameDatabase); reintroduce;
     destructor Destroy; override;
 
     property Database: TGameDatabase read FDatabase;
     property DBFileName: TFileName read FDBFileName;
 
-    procedure Update(const SecondsPassed: Single); override;
+    procedure Update(const SecondsPassed: Single);
+    function Press(const Event: TInputPressRelease): Boolean;
   end;
 
 implementation
@@ -80,7 +81,7 @@ implementation
 
 { TServerDbSystem }
 
-constructor TServerDbSystem.Create(AWorldObj: TGameWorld; const aDBFileName: TFileName);
+constructor TServerDbSystem.Create(const aDBFileName: TFileName);
 
   procedure SeedDefaults;
   var
@@ -109,7 +110,7 @@ constructor TServerDbSystem.Create(AWorldObj: TGameWorld; const aDBFileName: TFi
   end;
 
 begin
-  inherited Create(AWorldObj);
+  inherited Create;
   FDBFileName := aDBFileName;
   FDatabase := TGameDatabase.Create(aDBFileName);
   FOwnsDatabase := True;
@@ -120,9 +121,9 @@ begin
   FDatabase.AsyncStartBatch(TOrmPlayerItem, 5, 500);
 end;
 
-constructor TServerDbSystem.CreateWithDB(AWorldObj: TGameWorld; const ADatabase: TGameDatabase);
+constructor TServerDbSystem.CreateWithDB(const ADatabase: TGameDatabase);
 begin
-  inherited Create(AWorldObj);
+  inherited Create;
   FDBFileName := '';
   FDatabase := ADatabase;
   FOwnsDatabase := False;
@@ -141,6 +142,11 @@ end;
 
 procedure TServerDbSystem.Update(const SecondsPassed: Single);
 begin
+end;
+
+function TServerDbSystem.Press(const Event: TInputPressRelease): Boolean;
+begin
+  Result := False;
 end;
 
 end.

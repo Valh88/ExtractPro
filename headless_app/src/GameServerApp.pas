@@ -25,6 +25,7 @@ type
     FDatabase: TGameDatabase;
     FAuthServer: TAuthServer;
     FPort: Word;
+    FLobbyPort: Word;
     FMaxPlayers: Integer;
     FAuthPort: Word;
     FRequireAuth: Boolean;
@@ -63,6 +64,7 @@ constructor TGameServerApp.Create;
 begin
   inherited Create;
   FPort := 7777;
+  FLobbyPort := 7776;
   FMaxPlayers := 8;
   FAuthPort := 0;
   FRequireAuth := False;
@@ -106,6 +108,8 @@ begin
     S := ParamStr(i);
     if S.StartsWith('--port=') then
       FPort := Word(StrToIntDef(S.SubString(7), 7777))
+    else if S.StartsWith('--lobby-port=') then
+      FLobbyPort := Word(StrToIntDef(S.SubString(13), 7776))
     else if S.StartsWith('--max-players=') then
       FMaxPlayers := StrToIntDef(S.SubString(14), 8)
     else if S.StartsWith('--auth-port=') then
@@ -146,6 +150,9 @@ begin
     Log('Auth required for all connections');
 
   FLobbyManager.AddLobby(FPort, FMaxPlayers, FRequireAuth);
+  FLobbyManager.AddMatchmakingLobby(FLobbyPort);
+  FLobbyManager.LobbyServer.Start;
+  Log(Format('Lobby Server on port %d', [FLobbyPort]));
 end;
 
 procedure TGameServerApp.Run;

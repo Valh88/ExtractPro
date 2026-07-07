@@ -82,6 +82,11 @@ const
   msgAuth        = 15;
   msgRpcRequest  = 16;
   msgRpcResponse = 17;
+  msgRoomList     = 18;
+  msgRoomListRequest = 19;
+  msgJoinRaid     = 20;
+  msgJoinRaidAccept = 21;
+  msgJoinRaidDeny = 22;
 
 type
   TJoinReqData = packed record
