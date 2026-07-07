@@ -16,7 +16,6 @@ const
 type
   TSnapshotFrame = record
     ServerTime: Double;
-    LocalTime: Single;
     Entries: array of TSnapshotEntry;
   end;
 
@@ -26,7 +25,7 @@ type
     FHead: Integer;
     FTail: Integer;
     FCount: Integer;
-    FTime: Single;
+    FServerTime: Double;
     FLocalPlayerId: TEntityId;
     function FindEntry(const Entries: array of TSnapshotEntry; EntityId: UInt32): Integer;
     function LerpAngle(A, B, T: Single): Single;
@@ -69,18 +68,21 @@ var
   Entity: IGameEntity;
   Interp: TPlayerInterpolation;
 begin
+  FHead := (FHead + 1) mod SNAP_BUFFER_SIZE;
+  FBuffer[FHead].ServerTime := Data.ServerTime;
+  FBuffer[FHead].Entries := Copy(Data.Entries, 0, Length(Data.Entries));
+
   if FCount = SNAP_BUFFER_SIZE then
     FTail := (FTail + 1) mod SNAP_BUFFER_SIZE
   else
+  begin
     Inc(FCount);
-
-  FHead := (FHead + 1) mod SNAP_BUFFER_SIZE;
-  FBuffer[FHead].ServerTime := Data.ServerTime;
-  FBuffer[FHead].LocalTime := FTime;
-  FBuffer[FHead].Entries := Copy(Data.Entries, 0, Length(Data.Entries));
+    if FCount = 1 then
+      FTail := FHead;
+  end;
 
   if FCount = 2 then
-    FBuffer[FTail].LocalTime := FTime;
+    FServerTime := FBuffer[FTail].ServerTime;
 
   for I := 0 to High(Data.Entries) do
   begin
@@ -101,13 +103,10 @@ begin
         WorldObj.AddPlayer(Entity);
       end;
       if Entity = nil then Continue;
-    end;
 
-    Interp := Entity.Transform.FindBehavior(TPlayerInterpolation) as TPlayerInterpolation;
-    if Interp = nil then
-    begin
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
+      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
     end;
   end;
 end;
@@ -122,9 +121,9 @@ var
   Interp: TPlayerInterpolation;
   LerpX, LerpY, LerpZ, LerpRot: Single;
 begin
-  FTime := FTime + SecondsPassed;
-
   if FCount < 2 then Exit;
+
+  FServerTime := FServerTime + SecondsPassed;
 
   while FCount >= 2 do
   begin
@@ -134,15 +133,15 @@ begin
 
     if Duration <= 0 then
     begin
-      FTail := (FTail + 1) mod SNAP_BUFFER_SIZE;
+      FTail := CurrIdx;
       Dec(FCount);
       Continue;
     end;
 
-    T := (FTime - FBuffer[PrevIdx].LocalTime) / Duration;
+    T := (FServerTime - FBuffer[PrevIdx].ServerTime) / Duration;
     if T >= 1.0 then
     begin
-      FTail := (FTail + 1) mod SNAP_BUFFER_SIZE;
+      FTail := CurrIdx;
       Dec(FCount);
       Continue;
     end;
@@ -154,7 +153,10 @@ begin
 
   PrevIdx := FTail;
   CurrIdx := (FTail + 1) mod SNAP_BUFFER_SIZE;
-  T := (FTime - FBuffer[PrevIdx].LocalTime) / Duration;
+  Duration := FBuffer[CurrIdx].ServerTime - FBuffer[PrevIdx].ServerTime;
+  if Duration <= 0 then Duration := 0.01;
+
+  T := (FServerTime - FBuffer[PrevIdx].ServerTime) / Duration;
   T := EnsureRange(T, 0.0, 1.0);
 
   for I := 0 to High(FBuffer[CurrIdx].Entries) do
@@ -169,13 +171,6 @@ begin
     if Interp = nil then Continue;
 
     J := FindEntry(FBuffer[PrevIdx].Entries, Entry.EntityId);
-    // Сейчас SetTarget дёргается каждый кадр:
-    // - ❌ Текущий (экспонента) — дёргается
-    // Нужно вызывать один раз при переходе на новую пару снапшотов:
-    // - A: все по порядку — (1→2→3→4) каждый lerp до конца
-    // - B: когда текущая интерполяция закончилась — берётся не следующий по очереди, а самый последний (промежуточные пропускаются)
-    // B: пришло 3 снапшота пока lerp к (1) шёл
-    // (1→2→3→4) → lerp (1), потом сразу перепрыгнуть к (4), (2) и (3) выкинутьсейчас работае тт
     if J >= 0 then
     begin
       PrevEntry := FBuffer[PrevIdx].Entries[J];
@@ -183,9 +178,9 @@ begin
       LerpY := PrevEntry.PosY + (Entry.PosY - PrevEntry.PosY) * T;
       LerpZ := PrevEntry.PosZ + (Entry.PosZ - PrevEntry.PosZ) * T;
       LerpRot := LerpAngle(PrevEntry.RotY, Entry.RotY, T);
-      Interp.SetTarget(LerpX, LerpY, LerpZ, LerpRot);
+      Interp.ApplyTarget(LerpX, LerpY, LerpZ, LerpRot);
     end else
-      Interp.SetTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
   end;
 end;
 

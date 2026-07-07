@@ -18,8 +18,10 @@ type
     FSmoothFactor: Single;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure SetTarget(const AX, AY, AZ, ARotY: Single);
+    procedure ApplyTarget(const AX, AY, AZ, ARotY: Single);
+    procedure SnapTo(const AX, AY, AZ, ARotY: Single);
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
+    property SmoothFactor: Single read FSmoothFactor write FSmoothFactor;
   end;
 
 implementation
@@ -29,13 +31,37 @@ implementation
 constructor TPlayerInterpolation.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FSmoothFactor := 6.0;
+  FSmoothFactor := 20.0;
 end;
 
-procedure TPlayerInterpolation.SetTarget(const AX, AY, AZ, ARotY: Single);
+procedure TPlayerInterpolation.ApplyTarget(const AX, AY, AZ, ARotY: Single);
 begin
-  FTargetPos := CastleVectors.Vector3(AX, AY, AZ);
+  FTargetPos := Vector3(AX, AY, AZ);
   FTargetRot := ARotY;
+end;
+
+procedure TPlayerInterpolation.SnapTo(const AX, AY, AZ, ARotY: Single);
+var
+  I: Integer;
+begin
+  FTargetPos := Vector3(AX, AY, AZ);
+  FTargetRot := ARotY;
+
+  if Parent = nil then Exit;
+  Parent.Translation := FTargetPos;
+
+  if FVisRoot = nil then
+    for I := 0 to Parent.Count - 1 do
+      if Parent.Items[I].Name = 'VisualRoot' then
+      begin
+        FVisRoot := Parent.Items[I];
+        Break;
+      end;
+
+  if FVisRoot <> nil then
+    FVisRoot.Rotation := Vector4(0, 1, 0, FTargetRot)
+  else
+    Parent.Rotation := Vector4(0, 1, 0, FTargetRot);
 end;
 
 procedure TPlayerInterpolation.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
@@ -70,9 +96,9 @@ begin
   if Abs(Diff) > 0.001 then
   begin
     if FVisRoot <> nil then
-      FVisRoot.Rotation := CastleVectors.Vector4(0, 1, 0, CurrRot + Diff * K)
+      FVisRoot.Rotation := Vector4(0, 1, 0, CurrRot + Diff * K)
     else
-      Parent.Rotation := CastleVectors.Vector4(0, 1, 0, CurrRot + Diff * K);
+      Parent.Rotation := Vector4(0, 1, 0, CurrRot + Diff * K);
   end;
 end;
 
