@@ -56,9 +56,6 @@ type
     procedure Flush;
   end;
 
-var
-  GameEventBus: TEventBus;
-
 implementation
 
 { TEventSubscriber }
@@ -126,9 +123,5 @@ begin
   FQueue := nil;
 end;
 
-initialization
-  GameEventBus := TEventBus.Create;
 
-finalization
-  GameEventBus.Free;
 end.

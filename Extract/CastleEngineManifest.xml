@@ -28,6 +28,8 @@ See https://castle-engine.io/project_manifest for documentation of this file.
       <path value="../../../mORMot2/src/net/" />
       <path value="../../../mORMot2/src/db/" />
       <path value="../../../mORMot2/src/lib/" />
+      <path value="/home/vano/fpcupdeluxe/fpc/units/x86_64-linux/vcl-compat/" />
+      <path value="/home/vano/fpcupdeluxe/fpc/units/x86_64-linux/fcl-base/" />
     </search_paths>
     <library_paths>
       <path value="../../../mORMot2/static" />

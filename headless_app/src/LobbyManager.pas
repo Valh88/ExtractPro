@@ -1,13 +1,16 @@
 unit LobbyManager;
 
 {$mode objfpc}{$H+}
+{$modeswitch functionreferences}
+{$modeswitch anonymousfunctions}
 
 interface
 
 uses
   SysUtils, Classes, CastleTransform, CastleScene,
   GameWorldServer, Interfaces, ServerEntityFactory,
-  ServerDbSystem, AuthTypes, DbCore;
+  ServerDbSystem, AuthTypes, DbCore,
+  System.Threading;
 
 type
   TLobbyInfo = record
@@ -169,10 +172,15 @@ end;
 
 procedure TLobbyManager.UpdateAll(const SecondsPassed: Single);
 var
-  i: Integer;
+  L: TLobbyArray;
+  SP: Single;
 begin
-  for i := 0 to High(FLobbies) do
-    FLobbies[i].World.Update(SecondsPassed);
+  L := FLobbies;
+  SP := SecondsPassed;
+  TParallel.&For(0, High(L), procedure(i: Integer)
+  begin
+    L[i].World.Update(SP);
+  end);
 end;
 
 end.

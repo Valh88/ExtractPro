@@ -29,6 +29,8 @@
       <path value="../../../mORMot2/src/orm/" />
       <path value="../../../mORMot2/src/rest/" />
       <path value="../../../mORMot2/src/soa/" />
+      <path value="/home/vano/fpcupdeluxe/fpc/units/x86_64-linux/vcl-compat/" />
+      <path value="/home/vano/fpcupdeluxe/fpc/units/x86_64-linux/fcl-base/" />
     </search_paths>
     <library_paths>
       <path value="../../../mORMot2/static" />

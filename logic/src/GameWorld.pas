@@ -20,6 +20,7 @@ type
     FWorld: IGameWorld;
     FFactory: IEntityFactory;
     FDeadEntities: array of TEntityId;
+    FEventBus: TEventBus;
 
     function FindPlayerIndex(const AEntityId: TEntityId): Integer;
     function FindEnemyIndex(const AEntityId: TEntityId): Integer;
@@ -79,6 +80,7 @@ begin
   FMaxRaidTime := GlobalConfig.RaidTime;
 
   RegisterSystems;
+  FEventBus := TEventBus.Create;
 end;
 
 destructor TGameWorld.Destroy;
@@ -87,6 +89,7 @@ begin
   FSystems := nil;
   FData.Free;
   FFactory := nil;
+  FEventBus.Free;
   inherited;
 end;
 
@@ -213,7 +216,7 @@ begin
   for i := 0 to High(FSystems) do
     FSystems[i].Update(SecondsPassed);
 
-  GameEventBus.Flush;
+  FEventBus.Flush;
   FlushDeadEntities;
 end;
 
@@ -232,7 +235,7 @@ end;
 
 procedure TGameWorld.QueueEvent(const Ev: TGameEvent);
 begin
-  GameEventBus.Queue(Ev);
+  FEventBus.Queue(Ev);
 end;
 
 procedure TGameWorld.QueueDeadEntity(const AEntityId: TEntityId);
@@ -333,7 +336,7 @@ begin
   Ev.EventType := geEnemySpawned;
   Ev.EntityId := E.Id;
   Ev.Position := E.SpawnPosition;
-  GameEventBus.Queue(Ev);
+  FEventBus.Queue(Ev);
 
   if (FWorld <> nil) and (FFactory <> nil) then
     FWorld.RegisterEntity(FFactory.CreateEnemyEntity(E.Id));
