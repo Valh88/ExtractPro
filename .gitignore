@@ -12,3 +12,4 @@ lib
 test/fpcunitproject1
 Extract/.zed/
 .gigacode
+headless_app/ExtractProServer_visual

@@ -20,7 +20,10 @@ castle-engine compile          # CGE CLI build tool
 ### Server (headless_app/)
 ```bash
 cd headless_app
-castle-engine compile          # Uses physics_headless_test.dpr
+castle-engine compile                                 # headless (default)
+castle-engine compile --compiler-option=-dVISUAL      # окно + физика (тест)
+# Or: lazbuild physics_headless_test.lpi --ws=none
+# Or: lazbuild --bm=VisualDebug physics_headless_test.lpi --ws=none
 ```
 
 ### Logic Package (logic/)

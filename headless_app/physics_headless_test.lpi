@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="13"/>
+    <General>
+      <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+        <CompatibilityMode Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="ExtractProServer"/>
+    </General>
+    <BuildModes Count="3">
+      <Item1 Name="Debug" Default="True"/>
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="ExtractProServer"/>
+          </Target>
+          <SearchPaths>
+            <OtherUnitFiles Value="src;src/systems;src/behaviours;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+            <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+            </Checks>
+            <Optimizations>
+              <OptimizationLevel Value="2"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CustomOptions Value="-dRELEASE"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
+      <Item3 Name="VisualDebug">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="ExtractProServer_visual"/>
+          </Target>
+          <SearchPaths>
+            <OtherUnitFiles Value="src;src/systems;src/behaviours;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+            <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CustomOptions Value="-dVISUAL"/>
+          </Other>
+        </CompilerOptions>
+      </Item3>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages Count="4">
+      <Item1>
+        <PackageName Value="ExtractLogic"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="castle_engine_base"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="mormot2"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="castle_engine_window"/>
+      </Item4>
+    </RequiredPackages>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="physics_headless_test.dpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="src/GameServerApp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="GameServerApp"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="src/GameWorldServer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="GameWorldServer"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="src/LobbyManager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LobbyManager"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="src/ServerEntityFactory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerEntityFactory"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="src/systems/ServerNetSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerNetSystem"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="src/systems/ServerShotSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerShotSystem"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="src/systems/ServerSnapshotSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerSnapshotSystem"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="src/systems/ServerDbSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerDbSystem"/>
+      </Unit8>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="ExtractProServer"/>
+    </Target>
+    <SearchPaths>
+      <OtherUnitFiles Value="src;src/systems;src/behaviours;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+      <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+      </Debugging>
+    </Linking>
+    <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
+      <CustomOptions Value="-dDEBUG"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="1">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
