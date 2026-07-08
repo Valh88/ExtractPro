@@ -23,7 +23,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="code"/>
-            <OtherUnitFiles Value="code;code/systems"/>
+            <OtherUnitFiles Value="code;code/systems;code/views"/>
             <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -69,7 +69,7 @@
         <PackageName Value="castle_engine_base"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="Extract_standalone.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,6 +93,10 @@
         <Filename Value="code/systems/ShotSystem.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="code/views/startview.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -102,7 +106,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="code;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="code;code/systems"/>
+      <OtherUnitFiles Value="code;code/systems;code/views"/>
       <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
