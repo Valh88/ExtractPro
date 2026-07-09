@@ -52,7 +52,7 @@ var
 begin
   Result.Success := False;
   FHttp.Request(
-    RawUtf8(FServerUrl + '/auth/login'),
+    RawUtf8(FServerUrl + '/api/auth/login'),
     'POST', '',
     VariantToUtf8(_Obj([
       'UserName', RawUtf8(aLogin),
@@ -79,7 +79,7 @@ var
 begin
   Result.Success := False;
   FHttp.Request(
-    RawUtf8(FServerUrl + '/auth/register'),
+    RawUtf8(FServerUrl + '/api/auth/register'),
     'POST', '',
     VariantToUtf8(_Obj([
       'UserName', RawUtf8(aLogin),
@@ -106,7 +106,7 @@ var
 begin
   Result.Valid := False;
   FHttp.Request(
-    RawUtf8(FServerUrl + '/auth/validate'),
+    RawUtf8(FServerUrl + '/api/auth/validate'),
     'POST', '',
     VariantToUtf8(_Obj([
       'Token', RawUtf8(Token)

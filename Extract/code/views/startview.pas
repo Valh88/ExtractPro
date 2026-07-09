@@ -92,7 +92,7 @@ procedure TViewStartView.OnLoginResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
   if Result.Success then
-    FLobbyClient.Connect('127.0.0.1', 7777)
+    FLobbyClient.Connect('127.0.0.1', 7776)
   else
     FConnecting := False;
 end;
