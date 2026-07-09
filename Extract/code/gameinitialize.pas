@@ -35,7 +35,7 @@ begin
   ViewStartView := TViewStartView.Create(Application);
   {$endregion 'Castle View Creation'}
 
-  Window.Container.View := ViewMain;
+  Window.Container.View := ViewStartView;
 end;
 
 initialization

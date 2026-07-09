@@ -1,6 +1,8 @@
 unit LobbyClient;
 
 {$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
 
 interface
 

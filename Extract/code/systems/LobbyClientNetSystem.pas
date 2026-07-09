@@ -20,8 +20,8 @@ type
     FOnRoomList: TNotifyEvent;
     FOnJoinAccepted: TNotifyEvent;
     FOnJoinDenied: TNotifyEvent;
-    procedure OnConnected(Sender: TObject);
-    procedure OnDisconnected(Sender: TObject);
+    procedure HandleConnected(Sender: TObject);
+    procedure HandleDisconnected(Sender: TObject);
     procedure OnReceive(Sender: TObject; const Msg: TNetMessage);
   public
     constructor Create(ALobbyWorld: TLobbyWorldBase);
@@ -48,8 +48,8 @@ constructor TLobbyClientNetSystem.Create(ALobbyWorld: TLobbyWorldBase);
 begin
   inherited Create(ALobbyWorld);
   FClient := TGameClient.Create;
-  FClient.OnConnected := @OnConnected;
-  FClient.OnDisconnected := @OnDisconnected;
+  FClient.OnConnected := @HandleConnected;
+  FClient.OnDisconnected := @HandleDisconnected;
   FClient.OnReceive := @OnReceive;
 end;
 
@@ -82,13 +82,13 @@ begin
     FClient.Service;
 end;
 
-procedure TLobbyClientNetSystem.OnConnected(Sender: TObject);
+procedure TLobbyClientNetSystem.HandleConnected(Sender: TObject);
 begin
   if Assigned(FOnConnected) then
     FOnConnected(Self);
 end;
 
-procedure TLobbyClientNetSystem.OnDisconnected(Sender: TObject);
+procedure TLobbyClientNetSystem.HandleDisconnected(Sender: TObject);
 begin
   if Assigned(FOnDisconnected) then
     FOnDisconnected(Self);

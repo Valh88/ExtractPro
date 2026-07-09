@@ -117,7 +117,7 @@ procedure TClientAuthSystem.Update(const SecondsPassed: Single);
 begin
   if (FTask <> nil) and (FTask.Status = TTaskStatus.Completed) then
   begin
-    if FAsyncResult.Success and (FAsyncResult.Kind = arkLogin) then
+    if FAsyncResult.Success then
     begin
       FToken := FAsyncResult.Token;
       FUserId := FAsyncResult.UserId;
