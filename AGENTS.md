@@ -64,6 +64,15 @@ lazbuild fpcunitproject1.lpi   # Build test runner
 - `TClientAuthSystem` is `class(TInterfacedObject, IWorldSystem)` — no dependency on `TGameWorld`; shared by both `GameWorldClient` and `LobbyClient`
 - `TServerDbSystem` created once in `LobbyManager.SetDatabase` and shared across all raid lobbies + matchmaking lobby (single `TGameDatabase` instance with `TOSLock`)
 - All lobby updates run in `TParallel.For` — each lobby's `Update` on a thread pool thread; `TGameDatabase` synchronous methods protected by `TOSLock`; async batched writes (`TRestBatchLocked`) thread-safe internally
+- `TLobbyClient` (`LobbyClient.pas`) is the central lobby module — connects to matchmaking (port 7776), manages room list, trading, chat
+- `TLobbyClientNetSystem` wraps `TGameClient` for ENET connection to matchmaking server
+
+## RNL / ENET Connection Flow
+- `TGameClient.Service` handles `RNL_HOST_EVENT_TYPE_PEER_APPROVAL` (type=5) as connection established (alongside `PEER_CONNECT`)
+- `RNL_HOST_EVENT_TYPE_PEER_DENIAL` (type=6) handled as disconnect (alongside `PEER_DISCONNECT`)
+- Client receives `PEER_APPROVAL` from server after handshake completes (not `PEER_CONNECT`)
+- Server's `TGameServer.Service` does NOT handle `PEER_CHECK_CONNECTION_TOKEN` — RNL auto-accepts by default
+- `TGameClient` reuses `FHost` with `AllowIncomingConnections := False` (outgoing client only)
 
 ## Common Tasks
 | Task | Command |

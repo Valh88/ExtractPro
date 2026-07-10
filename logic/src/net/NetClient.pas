@@ -188,8 +188,6 @@ begin
     end;
     ClearEvent;
     Status := FHost.Service(FEvent, 0);
-    if Status = RNL_HOST_SERVICE_STATUS_EVENT then
-      WriteLn(StdErr, '[GameClient] loop EVENT type=', Integer(FEvent.Type_));
   end;
 end;
 
