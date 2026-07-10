@@ -15,6 +15,7 @@ type
     FClient: TGameClient;
     FHost: string;
     FPort: Word;
+    FAuthToken: string;
     FOnConnected: TNotifyEvent;
     FOnDisconnected: TNotifyEvent;
     FOnRoomList: TNotifyEvent;
@@ -33,6 +34,7 @@ type
     procedure RequestRoomList;
     procedure RequestJoinRaid(const ARoomId: UInt32);
 
+    property AuthToken: string read FAuthToken write FAuthToken;
     property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
     property OnDisconnected: TNotifyEvent read FOnDisconnected write FOnDisconnected;
     property OnRoomList: TNotifyEvent read FOnRoomList write FOnRoomList;
@@ -83,8 +85,21 @@ begin
 end;
 
 procedure TLobbyClientNetSystem.HandleConnected(Sender: TObject);
+var
+  M: TNetMessage;
+  AuthData: TAuthPayload;
+  i: Integer;
 begin
   WriteLn(StdErr, '[LobbyNet] Connected to lobby server');
+  if FAuthToken <> '' then
+  begin
+    FillChar(AuthData, SizeOf(AuthData), 0);
+    for i := 1 to Length(FAuthToken) do
+      if i <= 64 then
+        AuthData.Token[i - 1] := AnsiChar(FAuthToken[i]);
+    M.Init(msgAuth, AuthData.ToBytes);
+    FClient.Send(M, NET_CH_RELIABLE);
+  end;
   if Assigned(FOnConnected) then
     FOnConnected(Self);
 end;

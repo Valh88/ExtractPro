@@ -46,6 +46,8 @@ type
     procedure Stop; virtual;
     procedure Update(const SecondsPassed: Single); virtual;
     function Press(const Event: TInputPressRelease): Boolean; virtual;
+    function AddPlayer(const APlayerId: UInt32; const ALogin: string): Boolean;
+    procedure RemovePlayer(const APlayerId: UInt32);
 
     property Players: TLobbyPlayerArray read FPlayers;
     property Rooms: TLobbyRoomArray read FRooms;
@@ -111,6 +113,30 @@ begin
     if FPlayers[Result].PlayerId = APlayerId then
       Exit;
   Result := -1;
+end;
+
+function TLobbyWorldBase.AddPlayer(const APlayerId: UInt32; const ALogin: string): Boolean;
+var
+  L: Integer;
+begin
+  if FindPlayerIndex(APlayerId) <> -1 then Exit(False);
+  L := Length(FPlayers);
+  SetLength(FPlayers, L + 1);
+  FPlayers[L].PlayerId := APlayerId;
+  FPlayers[L].Login := ALogin;
+  FPlayers[L].Status := lpsConnected;
+  Result := True;
+end;
+
+procedure TLobbyWorldBase.RemovePlayer(const APlayerId: UInt32);
+var
+  Idx, L: Integer;
+begin
+  Idx := FindPlayerIndex(APlayerId);
+  if Idx = -1 then Exit;
+  L := High(FPlayers);
+  FPlayers[Idx] := FPlayers[L];
+  SetLength(FPlayers, L);
 end;
 
 end.

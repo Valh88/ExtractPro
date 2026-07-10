@@ -100,6 +100,7 @@ begin
     Information.Text.Add('Token: ' + Result.Token);
     Information.Text.Add('Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
     Information.Exists := True;
+    FLobbyClient.NetSystem.AuthToken := Result.Token;
     FLobbyClient.Connect('127.0.0.1', 7776);
   end
   else
