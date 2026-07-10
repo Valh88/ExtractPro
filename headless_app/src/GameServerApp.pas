@@ -9,8 +9,9 @@ uses
   SysUtils, Classes,
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
-  ServerEntityFactory, GameWorldServer, ServerDbSystem, AuthTypes,
-  LobbyManager, AuthServer, DbCore;
+  ServerEntityFactory, GameWorldServer, ServerDbSystem,
+  LobbyManager, AuthServer, DbCore,
+  AuthTypes;
 
 type
   TGameServerApp = class;
@@ -66,7 +67,7 @@ begin
   FPort := 7777;
   FLobbyPort := 7776;
   FMaxPlayers := 8;
-  FAuthPort := 0;
+  FAuthPort := AUTH_SERVER_DEFAULT_PORT;
   FRequireAuth := False;
   FDBFileName := 'server.db';
   FRunning := False;
