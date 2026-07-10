@@ -74,6 +74,17 @@ lazbuild fpcunitproject1.lpi   # Build test runner
 - Server's `TGameServer.Service` does NOT handle `PEER_CHECK_CONNECTION_TOKEN` — RNL auto-accepts by default
 - `TGameClient` reuses `FHost` with `AllowIncomingConnections := False` (outgoing client only)
 
+## Auth Flow (msgAuth)
+- `TClientAuthSystem.LoginAsync` → HTTP POST to auth server → stores `FToken`
+- On ENET connect (`HandleConnected`/`OnClientConnected`), client packs `TAuthPayload` from `AuthToken` and sends `msgAuth` (msgType=15)
+- Server validates via `IAuthValidator.ValidateToken` → `TAuthServerValidator` → synchronous SQLite query (`sessions` JOIN `users`)
+- **`FRequireAuth=False`** by default: player added to `Players` immediately, no token needed
+- **`--require-auth`**: all lobbies (matchmaking + game worlds) require `msgAuth` validation
+- `TLobbyServer.RequireAuth` → `TLobbyNetSystem.RequireAuth` (getter/setter)
+- Game world client (`TViewMain.Start`): token from `FAuthSystem.OnAuthResult` (login path). Direct `ViewMain` without login → **only works with `--require-auth=False`**
+- Validation is synchronous (local SQLite). For remote DB — convert to async with `TTask.Run` + `TThreadedQueue`
+- **Known limitation:** guest/anonymous login not implemented yet
+
 ## Common Tasks
 | Task | Command |
 |------|---------|
