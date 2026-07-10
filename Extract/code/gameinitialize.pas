@@ -17,6 +17,7 @@ uses SysUtils,
   // The content here may be automatically updated by CGE editor.
   , GameViewMain
   , StartView
+  , GameViewLobby
   {$endregion 'Castle Initialization Uses'};
 
 var
@@ -33,6 +34,7 @@ begin
   // The content here may be automatically updated by CGE editor.
   ViewMain := TViewMain.Create(Application);
   ViewStartView := TViewStartView.Create(Application);
+  ViewLobby := TViewLobby.Create(Application);
   {$endregion 'Castle View Creation'}
 
   Window.Container.View := ViewStartView;
