@@ -16,6 +16,8 @@ type
     FDbSystem: TServerDbSystem;
     FPort: Word;
     FMaxPlayers: Integer;
+    function GetRequireAuth: Boolean;
+    procedure SetRequireAuth(const AValue: Boolean);
   protected
     procedure RegisterSystems; override;
   public
@@ -24,6 +26,7 @@ type
     procedure SetDbSystem(aDbSystem: TServerDbSystem);
     procedure Start; override;
     procedure Stop; override;
+    property RequireAuth: Boolean read GetRequireAuth write SetRequireAuth;
   end;
 
 implementation
@@ -66,6 +69,20 @@ procedure TLobbyServer.Stop;
 begin
   inherited;
   FNetSystem.StopServer;
+end;
+
+function TLobbyServer.GetRequireAuth: Boolean;
+begin
+  if FNetSystem <> nil then
+    Result := FNetSystem.RequireAuth
+  else
+    Result := False;
+end;
+
+procedure TLobbyServer.SetRequireAuth(const AValue: Boolean);
+begin
+  if FNetSystem <> nil then
+    FNetSystem.RequireAuth := AValue;
 end;
 
 end.

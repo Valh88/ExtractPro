@@ -37,7 +37,7 @@ type
     constructor Create(const AFactory: IEntityFactory);
     destructor Destroy; override;
     function AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean = False): UInt32;
-    procedure AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer = 64);
+    procedure AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer = 64; const ARequireAuth: Boolean = False);
     procedure RemoveLobby(const AId: UInt32);
     function FindLobbyById(const AId: UInt32): TGameWorldServer;
     function FindLobbyByPlayerId(const APlayerId: UInt32): TGameWorldServer;
@@ -133,11 +133,12 @@ begin
     FOnLog(Self);
 end;
 
-procedure TLobbyManager.AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer);
+procedure TLobbyManager.AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer; const ARequireAuth: Boolean);
 begin
   if FLobbyServer <> nil then
     raise Exception.Create('Matchmaking lobby already exists');
   FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
+  FLobbyServer.RequireAuth := ARequireAuth;
   if FValidator <> nil then
     FLobbyServer.AuthValidator := FValidator;
   if FLobbyDbSystem <> nil then

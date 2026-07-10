@@ -151,7 +151,7 @@ begin
     Log('Auth required for all connections');
 
   FLobbyManager.AddLobby(FPort, FMaxPlayers, FRequireAuth);
-  FLobbyManager.AddMatchmakingLobby(FLobbyPort);
+  FLobbyManager.AddMatchmakingLobby(FLobbyPort, 64, FRequireAuth);
   FLobbyManager.LobbyServer.Start;
   Log(Format('Lobby Server on port %d', [FLobbyPort]));
 end;
