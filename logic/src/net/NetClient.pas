@@ -158,6 +158,7 @@ begin
   while Status = RNL_HOST_SERVICE_STATUS_EVENT do
   begin
     case FEvent.Type_ of
+      RNL_HOST_EVENT_TYPE_PEER_APPROVAL,
       RNL_HOST_EVENT_TYPE_PEER_CONNECT:
       begin
         FState := csConnected;
@@ -165,6 +166,7 @@ begin
           FOnConnected(Self);
       end;
 
+      RNL_HOST_EVENT_TYPE_PEER_DENIAL,
       RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
       begin
         FPeer := nil;
@@ -186,6 +188,8 @@ begin
     end;
     ClearEvent;
     Status := FHost.Service(FEvent, 0);
+    if Status = RNL_HOST_SERVICE_STATUS_EVENT then
+      WriteLn(StdErr, '[GameClient] loop EVENT type=', Integer(FEvent.Type_));
   end;
 end;
 

@@ -75,6 +75,7 @@ end;
 
 procedure TLobbyNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
 begin
+  WriteLn(StdErr, '[LobbyServer] Player connected: id=', PlayerId);
   // TODO: add to LobbyWorld.Players, send room list
 end;
 

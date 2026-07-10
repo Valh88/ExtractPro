@@ -92,11 +92,12 @@ end;
 procedure TViewStartView.OnLoginResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
+  WriteLn(StdErr, '[StartView] OnLoginResult: success=', Result.Success);
   if Result.Success then
   begin
     Information.Text.Clear;
     Information.Text.Add('Token: ' + Result.Token);
-    Information.Text.Add('User: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
+    Information.Text.Add('Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
     Information.Exists := True;
     FLobbyClient.Connect('127.0.0.1', 7776);
   end
@@ -112,6 +113,7 @@ end;
 procedure TViewStartView.OnRegisterResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
+  WriteLn(StdErr, '[StartView] OnRegisterResult: success=', Result.Success);
   if not Result.Success then
   begin
     Information.Text.Clear;
@@ -130,6 +132,7 @@ end;
 
 procedure TViewStartView.OnLobbyConnected(Sender: TObject);
 begin
+  WriteLn(StdErr, '[StartView] OnLobbyConnected');
   FConnecting := False;
   Container.View := ViewMain;
 end;

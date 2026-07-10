@@ -84,6 +84,7 @@ end;
 
 procedure TLobbyClientNetSystem.HandleConnected(Sender: TObject);
 begin
+  WriteLn(StdErr, '[LobbyNet] Connected to lobby server');
   if Assigned(FOnConnected) then
     FOnConnected(Self);
 end;
