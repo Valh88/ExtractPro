@@ -18,6 +18,7 @@ type
     Password: TCastleEdit;
     Ok: TCastleButton;
     Reg: TCastleButton;
+    Information: TCastleLabel;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -92,9 +93,20 @@ procedure TViewStartView.OnLoginResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
   if Result.Success then
-    FLobbyClient.Connect('127.0.0.1', 7776)
+  begin
+    Information.Text.Clear;
+    Information.Text.Add('Token: ' + Result.Token);
+    Information.Text.Add('User: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
+    Information.Exists := True;
+    FLobbyClient.Connect('127.0.0.1', 7776);
+  end
   else
+  begin
+    Information.Text.Clear;
+    Information.Text.Add('Login failed: ' + Result.ErrorMsg);
+    Information.Exists := True;
     FConnecting := False;
+  end;
 end;
 
 procedure TViewStartView.OnRegisterResult(Sender: TObject;
@@ -102,9 +114,15 @@ procedure TViewStartView.OnRegisterResult(Sender: TObject;
 begin
   if not Result.Success then
   begin
+    Information.Text.Clear;
+    Information.Text.Add('Register failed: ' + Result.ErrorMsg);
+    Information.Exists := True;
     FConnecting := False;
     Exit;
   end;
+  Information.Text.Clear;
+  Information.Text.Add('Register OK, logging in...');
+  Information.Exists := True;
   FLobbyClient.AuthSystem.OnAuthResult := @OnLoginResult;
   FLobbyClient.NetSystem.OnConnected := @OnLobbyConnected;
   FLobbyClient.AuthSystem.LoginAsync(Login.Text, Password.Text);

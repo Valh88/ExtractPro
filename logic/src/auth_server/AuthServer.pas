@@ -243,10 +243,12 @@ begin
   Json := _JsonFast(Ctxt.InContent);
   Login := string(VariantToUtf8(Json.UserName));
   Password := string(VariantToUtf8(Json.PassWord));
+  WriteLn(StdErr, '[AuthServer] POST /api/auth/login user=', Login);
   if (Login = '') or (Password = '') then
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Login and password required']));
     Ctxt.OutContentType := 'application/json';
+    WriteLn(StdErr, '[AuthServer] Login FAILED: empty login/password');
     Exit(400);
   end;
   Resp := AuthenticateUser(Login, Password);
@@ -256,11 +258,13 @@ begin
     Ctxt.OutContent := VariantToUtf8(_Obj([
       'success', True, 'token', RawUtf8(Resp.SessionToken),
       'user_id', Resp.UserId, 'login', RawUtf8(Resp.Login)]));
+    WriteLn(StdErr, '[AuthServer] Login OK: user_id=', Resp.UserId, ', login=', Resp.Login);
     Result := 200;
   end
   else
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['success', False, 'error', RawUtf8(Resp.ErrorMsg)]));
+    WriteLn(StdErr, '[AuthServer] Login FAILED: ', Resp.ErrorMsg);
     Result := 401;
   end;
 end;
@@ -275,16 +279,19 @@ begin
   Login := string(VariantToUtf8(Json.UserName));
   Password := string(VariantToUtf8(Json.PassWord));
   Email := string(VariantToUtf8(Json.Email));
+  WriteLn(StdErr, '[AuthServer] POST /api/auth/register user=', Login);
   if (Login = '') or (Password = '') then
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Login and password required']));
     Ctxt.OutContentType := 'application/json';
+    WriteLn(StdErr, '[AuthServer] Register FAILED: empty login/password');
     Exit(400);
   end;
   if Length(Password) < 4 then
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['error', 'Password too short (min 4 chars)']));
     Ctxt.OutContentType := 'application/json';
+    WriteLn(StdErr, '[AuthServer] Register FAILED: password too short');
     Exit(400);
   end;
   Resp := CreateUser(Login, Password, Email);
@@ -292,11 +299,13 @@ begin
   if Resp.Success then
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['success', True, 'user_id', Resp.UserId, 'login', RawUtf8(Resp.Login)]));
+    WriteLn(StdErr, '[AuthServer] Register OK: user_id=', Resp.UserId, ', login=', Resp.Login);
     Result := 201;
   end
   else
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['success', False, 'error', RawUtf8(Resp.ErrorMsg)]));
+    WriteLn(StdErr, '[AuthServer] Register FAILED: ', Resp.ErrorMsg);
     Result := 409;
   end;
 end;
@@ -309,18 +318,26 @@ var
 begin
   Json := _JsonFast(Ctxt.InContent);
   Token := string(VariantToUtf8(Json.Token));
+  WriteLn(StdErr, '[AuthServer] POST /api/auth/validate token=', Copy(Token, 1, 8), '...');
   if Token = '' then
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['valid', False, 'error', 'Token required']));
     Ctxt.OutContentType := 'application/json';
+    WriteLn(StdErr, '[AuthServer] Validate FAILED: empty token');
     Exit(400);
   end;
   AuthResult := ValidateSession(Token);
   Ctxt.OutContentType := 'application/json';
   if AuthResult.Valid then
-    Ctxt.OutContent := VariantToUtf8(_Obj(['valid', True, 'user_id', AuthResult.UserId, 'login', RawUtf8(AuthResult.Login)]))
+  begin
+    Ctxt.OutContent := VariantToUtf8(_Obj(['valid', True, 'user_id', AuthResult.UserId, 'login', RawUtf8(AuthResult.Login)]));
+    WriteLn(StdErr, '[AuthServer] Validate OK: user_id=', AuthResult.UserId);
+  end
   else
+  begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['valid', False, 'error', 'Invalid or expired token']));
+    WriteLn(StdErr, '[AuthServer] Validate FAILED: invalid/expired token');
+  end;
   Result := 200;
 end;
 

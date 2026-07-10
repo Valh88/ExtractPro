@@ -171,6 +171,18 @@
               ]
             }
           ]
+        },
+        {
+          "$$ClassName" : "TCastleLabel",
+          "Name" : "Information",
+          "Text" : [
+            "Information"
+          ],
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 2.4000000000000000E+002,
+            "Y" : 1.6000000000000000E+002
+          }
         }
       ],
       "InternalDesignCamera" : {
