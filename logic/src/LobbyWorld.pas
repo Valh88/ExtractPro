@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, Generics.Collections, help_types, GameConfig, Interfaces,
-  AuthTypes;
+  AuthTypes, CastleKeysMouse;
 
 type
   TLobbyPlayerStatus = (lpsConnected, lpsSearching, lpsReady);
@@ -45,6 +45,7 @@ type
     procedure Start; virtual;
     procedure Stop; virtual;
     procedure Update(const SecondsPassed: Single); virtual;
+    function Press(const Event: TInputPressRelease): Boolean; virtual;
 
     property Players: TLobbyPlayerArray read FPlayers;
     property Rooms: TLobbyRoomArray read FRooms;
@@ -84,6 +85,15 @@ var
 begin
   for i := 0 to FSystems.Count - 1 do
     FSystems[i].Update(SecondsPassed);
+end;
+
+function TLobbyWorldBase.Press(const Event: TInputPressRelease): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+  for i := 0 to FSystems.Count - 1 do
+    if FSystems[i].Press(Event) then Exit(True);
 end;
 
 procedure TLobbyWorldBase.RegisterSystems;

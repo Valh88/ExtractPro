@@ -9,7 +9,7 @@ interface
 uses
   Classes,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
-  LobbyClient, ClientAuthSystem, GameViewMain;
+  LobbyClient, ClientAuthSystem, GameViewLobby;
 
 type
   TViewStartView = class(TCastleView)
@@ -57,7 +57,8 @@ end;
 
 procedure TViewStartView.Stop;
 begin
-  FreeAndNil(FLobbyClient);
+  if FLobbyClient <> nil then
+    FreeAndNil(FLobbyClient);
   inherited;
 end;
 
@@ -134,7 +135,9 @@ procedure TViewStartView.OnLobbyConnected(Sender: TObject);
 begin
   WriteLn(StdErr, '[StartView] OnLobbyConnected');
   FConnecting := False;
-  Container.View := ViewMain;
+  ViewLobby.SetLobbyClient(FLobbyClient);
+  FLobbyClient := nil;
+  Container.View := ViewLobby;
 end;
 
 end.
