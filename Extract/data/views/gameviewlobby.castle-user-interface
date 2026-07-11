@@ -149,7 +149,7 @@
               },
               "Name" : "TabPlay",
               "Text" : [
-                "ИГРАТЬ"
+                "PLAY"
               ],
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
@@ -164,11 +164,11 @@
               },
               "Name" : "TabLoadouts",
               "Text" : [
-                "КОМПЛЕКТЫ"
+                "LOADOUTS"
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 1.0900000000000000E+002
+                "X" : 7.9000000000000000E+001
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
@@ -183,11 +183,11 @@
               },
               "Name" : "TabHeroes",
               "Text" : [
-                "ГЕРОИ"
+                "HEROES"
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 2.7300000000000000E+002
+                "X" : 2.2100000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
@@ -202,11 +202,11 @@
               },
               "Name" : "TabMarket",
               "Text" : [
-                "БАРАХОЛКА"
+                "MARKET"
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 3.7100000000000000E+002
+                "X" : 3.3500000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
@@ -333,8 +333,8 @@
       "Stretch" : true,
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
-        "X" : 2.0000000000000000E+001,
-        "Y" : -2.9500000000000000E+002
+        "X" : 4.0000000000000000E+001,
+        "Y" : -2.8500000000000000E+002
       },
       "VerticalAnchorParent" : "vpTop",
       "VerticalAnchorSelf" : "vpTop",
@@ -352,7 +352,7 @@
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "ModeTitle",
           "Text" : [
-            "РЕЖИМ ИГРЫ"
+            "GAME MODE"
           ],
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
@@ -391,7 +391,7 @@
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "Duration",
           "Text" : [
-            "Длительность - 30:00"
+            "Duration - 30:00"
           ],
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
@@ -457,7 +457,7 @@
             "Green" : 6.0000002384185791E-001,
             "Red" : 6.0000002384185791E-001
           },
-          "Caption" : "ПОИСК",
+          "Caption" : "SEARCH",
           "CustomBackground" : true,
           "CustomBackgroundDisabled" : {
             "$$ClassName" : "TCastleImagePersistent"
