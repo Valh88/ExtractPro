@@ -1,0 +1,193 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "Hud",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleUserInterface",
+      "Height" : 5.6000000000000000E+001,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "SkillsPanel",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "Y" : 1.6000000000000000E+002
+      },
+      "Width" : 3.7600000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot0",
+          "Stretch" : true,
+          "Width" : 5.6000000000000000E+001
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot1",
+          "Stretch" : true,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 6.4000000000000000E+001
+          },
+          "Width" : 5.6000000000000000E+001
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot2",
+          "Stretch" : true,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 1.2800000000000000E+002
+          },
+          "Width" : 5.6000000000000000E+001
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot3",
+          "Stretch" : true,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 1.9200000000000000E+002
+          },
+          "Width" : 5.6000000000000000E+001
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot4",
+          "Stretch" : true,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 2.5600000000000000E+002
+          },
+          "Width" : 5.6000000000000000E+001
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/skill_slot.png"
+          },
+          "Height" : 5.6000000000000000E+001,
+          "Name" : "SkillSlot5",
+          "Stretch" : true,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 3.2000000000000000E+002
+          },
+          "Width" : 5.6000000000000000E+001
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/indicator_crouch.png"
+      },
+      "Height" : 5.8000000000000000E+001,
+      "Name" : "StanceIndicator",
+      "Stretch" : true,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 2.9000000000000000E+002,
+        "Y" : 6.0000000000000000E+001
+      },
+      "Width" : 5.8000000000000000E+001
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 5.0000000000000000E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Green" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 2.4000000000000000E+001,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "HpBg",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "Y" : 9.0000000000000000E+001
+      },
+      "Width" : 3.0000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleRectangleControl",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 1.0000000149011612E-001,
+            "Green" : 1.0000000149011612E-001,
+            "Red" : 5.5000001192092896E-001
+          },
+          "Height" : 2.4000000000000000E+001,
+          "Name" : "HpFill",
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 3.0000000000000000E+002
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 5.0000000000000000E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Green" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 1.0000000000000000E+001,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "EnergyBg",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "Y" : 6.0000000000000000E+001
+      },
+      "Width" : 3.0000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleRectangleControl",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 5.0000000745058060E-002,
+            "Green" : 3.0000001192092896E-001,
+            "Red" : 6.9999998807907104E-001
+          },
+          "Height" : 1.0000000000000000E+001,
+          "Name" : "EnergyFill",
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 3.0000000000000000E+002
+        }
+      ]
+    }
+  ]
+}
