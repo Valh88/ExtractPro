@@ -35,6 +35,7 @@ type
     procedure StartServer;
     procedure StopServer;
     function SendTo(Peer: TRNLPeer; const M: TNetMessage): Boolean;
+    function SendToPlayer(APlayerId: UInt32; const M: TNetMessage): Boolean;
     property Rpc: TRpcServer read FRpc;
     property RequireAuth: Boolean read FRequireAuth write FRequireAuth;
   end;
@@ -78,6 +79,11 @@ end;
 function TLobbyNetSystem.SendTo(Peer: TRNLPeer; const M: TNetMessage): Boolean;
 begin
   Result := FServer.SendTo(Peer, M);
+end;
+
+function TLobbyNetSystem.SendToPlayer(APlayerId: UInt32; const M: TNetMessage): Boolean;
+begin
+  Result := FServer.SendToPlayer(APlayerId, M);
 end;
 
 function TLobbyNetSystem.FindPendingAuth(Peer: TRNLPeer): Integer;

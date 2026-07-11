@@ -99,6 +99,7 @@ type
     procedure SetPeerEntityId(APeer: TRNLPeer; AEntityId: UInt32);
     function GetPeerEntityId(APeer: TRNLPeer): UInt32;
     function GetPeerEntityIdByPlayerId(APlayerId: UInt32): UInt32;
+    function FindPlayerIdByEntityId(AEntityId: UInt32): UInt32;
     property Host: TRNLHost read FHost;
     property Port: Word read FPort;
     property Peers: Integer read FMaxPlayers;
@@ -307,6 +308,16 @@ begin
   for i := 0 to High(FPeers) do
     if FPeers[i].PlayerId = APlayerId then
       Exit(FPeers[i].EntityId);
+  Result := 0;
+end;
+
+function TGameServer.FindPlayerIdByEntityId(AEntityId: UInt32): UInt32;
+var
+  i: Integer;
+begin
+  for i := 0 to High(FPeers) do
+    if FPeers[i].EntityId = AEntityId then
+      Exit(FPeers[i].PlayerId);
   Result := 0;
 end;
 
