@@ -20,12 +20,15 @@ uses
   AuthTypes;
 
 type
+  TRegisterEvent = procedure(Sender: TObject; const AUserId: Int64; const ALogin: string) of object;
+
   TAuthServer = class
   private
     FServer: THttpServer;
     FPort: Word;
     FDB: TSqlDataBase;
     FValidator: IAuthValidator;
+    FOnRegister: TRegisterEvent;
     function OnRequest(Ctxt: THttpServerRequestAbstract): cardinal;
     function HandleLogin(Ctxt: THttpServerRequestAbstract): cardinal;
     function HandleRegister(Ctxt: THttpServerRequestAbstract): cardinal;
@@ -41,6 +44,7 @@ type
     procedure Start;
     procedure Stop;
     property Validator: IAuthValidator read FValidator;
+    property OnRegister: TRegisterEvent read FOnRegister write FOnRegister;
   end;
 
   TAuthServerValidator = class(TInterfacedObject, IAuthValidator)
@@ -300,6 +304,8 @@ begin
   begin
     Ctxt.OutContent := VariantToUtf8(_Obj(['success', True, 'user_id', Resp.UserId, 'login', RawUtf8(Resp.Login)]));
     WriteLn(StdErr, '[AuthServer] Register OK: user_id=', Resp.UserId, ', login=', Resp.Login);
+    if Assigned(FOnRegister) then
+      FOnRegister(Self, Resp.UserId, Resp.Login);
     Result := 201;
   end
   else

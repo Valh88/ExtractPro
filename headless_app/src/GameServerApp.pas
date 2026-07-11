@@ -10,7 +10,7 @@ uses
   CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
   ServerEntityFactory, GameWorldServer, ServerDbSystem,
-  LobbyManager, AuthServer, DbCore,
+  LobbyManager, AuthServer, DbCore, DbAccounts,
   AuthTypes;
 
 type
@@ -37,6 +37,7 @@ type
     FOnLog: TLogEvent;
     procedure Log(const Msg: String);
     procedure SetupShared;
+    procedure OnAuthRegister(Sender: TObject; const AUserId: Int64; const ALogin: string);
   public
     constructor Create;
     destructor Destroy; override;
@@ -124,6 +125,21 @@ begin
   end;
 end;
 
+procedure TGameServerApp.OnAuthRegister(Sender: TObject; const AUserId: Int64; const ALogin: string);
+var
+  Acc: TOrmGameAccount;
+begin
+  if FDatabase = nil then Exit;
+  Acc := TOrmGameAccount.Create;
+  try
+    Acc.AuthUserId := AUserId;
+    Acc.Login := ALogin;
+    FDatabase.Orm.Add(Acc, True);
+  finally
+    Acc.Free;
+  end;
+end;
+
 procedure TGameServerApp.SetupShared;
 begin
   FFactory := TServerEntityFactory.Create(
@@ -138,6 +154,7 @@ begin
   if FAuthPort > 0 then
   begin
     FAuthServer := TAuthServer.Create(FAuthPort);
+    FAuthServer.OnRegister := @OnAuthRegister;
     FAuthServer.Start;
     Log(Format('Auth Server on port %d', [FAuthPort]));
   end;
