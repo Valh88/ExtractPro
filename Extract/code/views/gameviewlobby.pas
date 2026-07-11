@@ -10,9 +10,22 @@ uses
 type
   TViewLobby = class(TCastleView)
   published
-    { Components designed using CGE editor.
-      These fields will be automatically initialized at Start. }
-    // ButtonXxx: TCastleButton;
+    TopPanel: TCastleRectangleControl;
+    GoldGroup: TCastleHorizontalGroup;
+    GoldIcon: TCastleImageControl;
+    Gold: TCastleLabel;
+    MenuTabs: TCastleHorizontalGroup;
+    TabPlay: TCastleLabel;
+    TabLoadouts: TCastleLabel;
+    TabHeroes: TCastleLabel;
+    TabMarket: TCastleLabel;
+    RightIcons: TCastleHorizontalGroup;
+    Party1: TCastleImageControl;
+    Party2: TCastleImageControl;
+    PartyMain: TCastleImageControl;
+    IconChat: TCastleImageControl;
+    IconSettings: TCastleImageControl;
+    IconExit: TCastleImageControl;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
