@@ -9,12 +9,10 @@ uses
   AuthTypes, CastleKeysMouse;
 
 type
-  TLobbyPlayerStatus = (lpsConnected, lpsSearching, lpsReady);
-
   TLobbyPlayerInfo = record
     PlayerId: UInt32;
     Login: string;
-    Status: TLobbyPlayerStatus;
+    Data: TObject;
   end;
 
   TLobbyRoomInfo = record
@@ -66,8 +64,12 @@ begin
 end;
 
 destructor TLobbyWorldBase.Destroy;
+var
+  i: Integer;
 begin
   FSystems.Free;
+  for i := 0 to High(FPlayers) do
+    FPlayers[i].Data.Free;
   FPlayers := nil;
   FRooms := nil;
   inherited;
@@ -124,7 +126,7 @@ begin
   SetLength(FPlayers, L + 1);
   FPlayers[L].PlayerId := APlayerId;
   FPlayers[L].Login := ALogin;
-  FPlayers[L].Status := lpsConnected;
+  FPlayers[L].Data := nil;
   Result := True;
 end;
 
@@ -135,6 +137,7 @@ begin
   Idx := FindPlayerIndex(APlayerId);
   if Idx = -1 then Exit;
   L := High(FPlayers);
+  FPlayers[Idx].Data.Free;
   FPlayers[Idx] := FPlayers[L];
   SetLength(FPlayers, L);
 end;
