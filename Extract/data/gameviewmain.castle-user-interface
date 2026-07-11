@@ -76,6 +76,18 @@
         "X" : 1.2500000000000000E+003,
         "Y" : 8.8000000000000000E+002
       }
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Height" : 3.2000000000000000E+002,
+      "Name" : "Hud",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000000000000E+001,
+        "Y" : 1.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/Hud.castle-user-interface",
+      "Width" : 1.5800000000000000E+003
     }
   ],
   "InternalDesignCamera" : {
@@ -89,20 +101,21 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.6486157178878784E+000,
-      "X" : -3.3574242144823074E-002,
-      "Y" : 9.9875128269195557E-001,
-      "Z" : 3.6996360868215561E-002
+      "W" : 1.5866936445236206E+000,
+      "X" : -1.7145653069019318E-001,
+      "Y" : 9.7045701742172241E-001,
+      "Z" : 1.6975247859954834E-001
     },
     "ScalePersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 9.9999994039535522E-001
+      "X" : 9.9999994039535522E-001,
+      "Y" : 9.9999988079071045E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 6.8705642700195312E+001,
-      "Y" : 2.1195056915283203E+001,
-      "Z" : -1.6838708877563477E+001
+      "X" : 6.6298812866210938E+001,
+      "Y" : 2.0328304290771484E+001,
+      "Z" : -1.6872932434082031E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {
