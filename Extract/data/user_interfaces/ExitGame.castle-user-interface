@@ -1,0 +1,162 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "ExitGame",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 4.0000000596046448E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Green" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "FullSize" : true,
+      "Name" : "Overlay"
+    },
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/panel_bg.png"
+      },
+      "Height" : 2.0000000000000000E+002,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "DialogBg",
+      "Stretch" : true,
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle",
+      "Width" : 3.8000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleLabel",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "QuestionLabel",
+          "Text" : [
+            "Exit game?"
+          ],
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "Y" : 3.5000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle"
+        },
+        {
+          "$$ClassName" : "TCastleButton",
+          "AutoSize" : false,
+          "Caption" : "YES",
+          "CustomBackground" : true,
+          "CustomBackgroundDisabled" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundFocused" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundNormal" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundPressed" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomColorNormalPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 1.0000000149011612E-001,
+            "Green" : 1.0000000149011612E-001,
+            "Red" : 6.9999998807907104E-001
+          },
+          "CustomColorPressedPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 5.0000000745058060E-002,
+            "Green" : 5.0000000745058060E-002,
+            "Red" : 4.4999998807907104E-001
+          },
+          "CustomTextColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "CustomTextColorUse" : true,
+          "Height" : 3.6000000000000000E+001,
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpRight",
+          "Image" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "Name" : "YesBtn",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -2.0000000000000000E+001,
+            "Y" : -2.0000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle"
+        },
+        {
+          "$$ClassName" : "TCastleButton",
+          "AutoSize" : false,
+          "Caption" : "NO",
+          "CustomBackground" : true,
+          "CustomBackgroundDisabled" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundFocused" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundNormal" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundPressed" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomColorNormalPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 1.0000000149011612E-001,
+            "Green" : 1.0000000149011612E-001,
+            "Red" : 5.5000001192092896E-001
+          },
+          "CustomColorPressedPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 5.0000000745058060E-002,
+            "Green" : 5.0000000745058060E-002,
+            "Red" : 3.4999999403953552E-001
+          },
+          "CustomTextColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "CustomTextColorUse" : true,
+          "Height" : 3.6000000000000000E+001,
+          "HorizontalAnchorParent" : "hpMiddle",
+          "Image" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "Name" : "NoBtn",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 2.0000000000000000E+001,
+            "Y" : -2.0000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle"
+        }
+      ]
+    }
+  ]
+}

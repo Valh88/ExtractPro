@@ -1,0 +1,407 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "ChatPanel",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/panel_bg.png"
+      },
+      "Height" : 4.2000000000000000E+002,
+      "Name" : "ChatBg",
+      "Stretch" : true,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.2400000000000000E+003,
+        "Y" : -3.0000000000000000E+002
+      },
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 3.2000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleLabel",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "Name" : "ChatTitle",
+          "Text" : [
+            "CHAT"
+          ],
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 1.5000000000000000E+001,
+            "Y" : -1.0000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop"
+        },
+        {
+          "$$ClassName" : "TCastleScrollView",
+          "Height" : 3.0000000000000000E+002,
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "ChatScroll",
+          "ScrollArea" : {
+            "$$ClassName" : "TCastleScrollArea",
+            "TranslationPersistent" : {
+              "$$ClassName" : "TCastleVector2Persistent",
+              "Y" : 3.4000000000000000E+001
+            },
+            "$Children" : [
+              {
+                "$$ClassName" : "TCastleVerticalGroup",
+                "AutoSizeToChildren" : true,
+                "Name" : "ChatMessages",
+                "Spacing" : 4.0000000000000000E+000,
+                "WidthFraction" : 1.0000000000000000E+000,
+                "$Children" : [
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 5.0000000000000000E-001,
+                      "Green" : 5.0000000000000000E-001,
+                      "Red" : 8.0000001192092896E-001
+                    },
+                    "Name" : "Msg0",
+                    "Text" : [
+                      "[System] Game started"
+                    ],
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg1",
+                    "Text" : [
+                      "Player1: Hello everyone!"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.5999998092651367E+001
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg2",
+                    "Text" : [
+                      "Player2: gl hf"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -5.1999996185302734E+001
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 4.0000000596046448E-001,
+                      "Green" : 8.0000001192092896E-001,
+                      "Red" : 4.0000000596046448E-001
+                    },
+                    "Name" : "Msg3",
+                    "Text" : [
+                      "You: nice"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -7.7999992370605469E+001
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg4",
+                    "Text" : [
+                      "Player1: going mid"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.0399999237060547E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg5",
+                    "Text" : [
+                      "Player3: need help"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.3000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 4.0000000596046448E-001,
+                      "Green" : 8.0000001192092896E-001,
+                      "Red" : 4.0000000596046448E-001
+                    },
+                    "Name" : "Msg6",
+                    "Text" : [
+                      "You: omw"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.5600000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg7",
+                    "Text" : [
+                      "Player2: coming too"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.8200000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 5.0000000000000000E-001,
+                      "Green" : 5.0000000000000000E-001,
+                      "Red" : 8.0000001192092896E-001
+                    },
+                    "Name" : "Msg8",
+                    "Text" : [
+                      "[System] Wave 1 incoming"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.0800000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg9",
+                    "Text" : [
+                      "Player3: I'll tank"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.3400000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg10",
+                    "Text" : [
+                      "Player1: focus mage"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.6000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 7.5000000000000000E-001,
+                      "Green" : 7.5000000000000000E-001,
+                      "Red" : 7.5000000000000000E-001
+                    },
+                    "Name" : "Msg11",
+                    "Text" : [
+                      "Player2: on it"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.8600000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  },
+                  {
+                    "$$ClassName" : "TCastleLabel",
+                    "ColorPersistent" : {
+                      "$$ClassName" : "TCastleColorPersistent",
+                      "Blue" : 4.0000000596046448E-001,
+                      "Green" : 8.0000001192092896E-001,
+                      "Red" : 4.0000000596046448E-001
+                    },
+                    "Name" : "Msg12",
+                    "Text" : [
+                      "You: need mana"
+                    ],
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -3.1200000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop"
+                  }
+                ]
+              }
+            ]
+          },
+          "ScrollBarWidth" : 1.0000000000000000E+001,
+          "ScrollbarFrame" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarFrame_thin.png"
+          },
+          "ScrollbarSlider" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarSlider_thin.png"
+          },
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "Y" : -4.0000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 2.9000000000000000E+002
+        },
+        {
+          "$$ClassName" : "TCastleEdit",
+          "BackgroundColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 6.0000002384185791E-001,
+            "Blue" : 0.0000000000000000E+000,
+            "Green" : 0.0000000000000000E+000,
+            "Red" : 0.0000000000000000E+000
+          },
+          "CaptureAllInput" : false,
+          "Height" : 3.0000000000000000E+001,
+          "Name" : "ChatInput",
+          "Text" : "Type message...",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 1.5000000000000000E+001,
+            "Y" : -3.5000000000000000E+002
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 2.2000000000000000E+002
+        },
+        {
+          "$$ClassName" : "TCastleButton",
+          "AutoSize" : false,
+          "Caption" : "SEND",
+          "CustomBackground" : true,
+          "CustomBackgroundDisabled" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundFocused" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundNormal" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomBackgroundPressed" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "CustomColorNormalPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 1.0000000149011612E-001,
+            "Green" : 1.0000000149011612E-001,
+            "Red" : 5.5000001192092896E-001
+          },
+          "CustomColorPressedPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Alpha" : 1.0000000000000000E+000,
+            "Blue" : 5.0000000745058060E-002,
+            "Green" : 5.0000000745058060E-002,
+            "Red" : 3.4999999403953552E-001
+          },
+          "CustomTextColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "CustomTextColorUse" : true,
+          "Height" : 3.0000000000000000E+001,
+          "HorizontalAnchorParent" : "hpRight",
+          "HorizontalAnchorSelf" : "hpRight",
+          "Image" : {
+            "$$ClassName" : "TCastleImagePersistent"
+          },
+          "Name" : "SendBtn",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -1.5000000000000000E+001,
+            "Y" : -3.5000000000000000E+002
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 6.0000000000000000E+001
+        }
+      ]
+    }
+  ]
+}
