@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes, CastleTransform, CastleScene,
-  GameWorldServer, LobbyServer, Interfaces, ServerEntityFactory,
+  GameWorldServer, Interfaces, ServerEntityFactory,
   ServerDbSystem, AuthTypes, DbCore,
   System.Threading;
 
@@ -25,7 +25,7 @@ type
   TLobbyManager = class
   private
     FLobbies: TLobbyArray;
-    FLobbyServer: TLobbyServer;
+    FLobbyServer: TObject;
     FLobbyDbSystem: TServerDbSystem;
     FFactory: IEntityFactory;
     FNextId: UInt32;
@@ -44,17 +44,25 @@ type
     procedure UpdateAll(const SecondsPassed: Single);
     function GetCount: Integer;
     procedure SetDatabase(const AValue: TGameDatabase);
+    procedure StartLobbyServer;
     property Database: TGameDatabase read FDatabase write SetDatabase;
     property AuthValidator: IAuthValidator read FValidator write FValidator;
     property OnLog: TNotifyEvent read FOnLog write FOnLog;
     property Lobbies: TLobbyArray read FLobbies;
-    property LobbyServer: TLobbyServer read FLobbyServer;
     property Count: Integer read GetCount;
   end;
 
 implementation
 
+uses LobbyServer, LobbyManagerSystem;
+
 { TLobbyManager }
+
+procedure TLobbyManager.StartLobbyServer;
+begin
+  if FLobbyServer <> nil then
+    TLobbyServer(FLobbyServer).Start;
+end;
 
 constructor TLobbyManager.Create(const AFactory: IEntityFactory);
 begin
@@ -138,11 +146,12 @@ begin
   if FLobbyServer <> nil then
     raise Exception.Create('Matchmaking lobby already exists');
   FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
-  FLobbyServer.RequireAuth := ARequireAuth;
+  TLobbyServer(FLobbyServer).AddSystem(TLobbyManagerSystem.Create(Self));
+  TLobbyServer(FLobbyServer).RequireAuth := ARequireAuth;
   if FValidator <> nil then
-    FLobbyServer.AuthValidator := FValidator;
+    TLobbyServer(FLobbyServer).AuthValidator := FValidator;
   if FLobbyDbSystem <> nil then
-    FLobbyServer.SetDbSystem(FLobbyDbSystem);
+    TLobbyServer(FLobbyServer).SetDbSystem(FLobbyDbSystem);
 end;
 
 procedure TLobbyManager.RemoveLobby(const AId: UInt32);
@@ -201,7 +210,7 @@ var
   SP: Single;
 begin
   L := FLobbies;
-  LS := FLobbyServer;
+  LS := TLobbyServer(FLobbyServer);
   SP := SecondsPassed;
   TParallel.&For(-1, High(L), procedure(i: Integer)
   begin

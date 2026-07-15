@@ -169,7 +169,7 @@ begin
 
   FLobbyManager.AddLobby(FPort, FMaxPlayers, FRequireAuth);
   FLobbyManager.AddMatchmakingLobby(FLobbyPort, 64, FRequireAuth);
-  FLobbyManager.LobbyServer.Start;
+  FLobbyManager.StartLobbyServer;
   Log(Format('Lobby Server on port %d', [FLobbyPort]));
 end;
 

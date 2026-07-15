@@ -5,7 +5,7 @@ unit LobbyWorld;
 interface
 
 uses
-  SysUtils, Classes, Generics.Collections, help_types, GameConfig, Interfaces,
+  SysUtils, Classes, GameConfig, Interfaces,
   AuthTypes, CastleKeysMouse;
 
 type
@@ -15,22 +15,11 @@ type
     Data: TObject;
   end;
 
-  TLobbyRoomInfo = record
-    RoomId: UInt32;
-    Name: string;
-    MapName: string;
-    Port: Word;
-    CurrentPlayers: Word;
-    MaxPlayers: Word;
-  end;
-
   TLobbyPlayerArray = array of TLobbyPlayerInfo;
-  TLobbyRoomArray = array of TLobbyRoomInfo;
 
   TLobbyWorldBase = class
   private
     FPlayers: array of TLobbyPlayerInfo;
-    FRooms: array of TLobbyRoomInfo;
     FAuthValidator: IAuthValidator;
   protected
     FSystems: TWorldSystemList;
@@ -48,7 +37,6 @@ type
     procedure RemovePlayer(const APlayerId: UInt32);
 
     property Players: TLobbyPlayerArray read FPlayers;
-    property Rooms: TLobbyRoomArray read FRooms;
     property AuthValidator: IAuthValidator read FAuthValidator write FAuthValidator;
   end;
 
@@ -71,7 +59,6 @@ begin
   for i := 0 to High(FPlayers) do
     FPlayers[i].Data.Free;
   FPlayers := nil;
-  FRooms := nil;
   inherited;
 end;
 
