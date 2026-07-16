@@ -16,7 +16,7 @@ type
     Gold: TCastleLabel;
     MenuTabs: TCastleHorizontalGroup;
     TabPlay: TCastleLabel;
-    TabLoadouts: TCastleLabel;
+    TabInventory: TCastleLabel;
     TabHeroes: TCastleLabel;
     TabMarket: TCastleLabel;
     RightIcons: TCastleHorizontalGroup;
@@ -87,6 +87,8 @@ end;
 procedure TViewLobby.SetLobbyClient(const AValue: TLobbyClient);
 begin
   FLobbyClient := AValue;
+  if FLobbyClient.ViewSystem <> nil then
+    FLobbyClient.ViewSystem.View := Self;
 end;
 
 end.

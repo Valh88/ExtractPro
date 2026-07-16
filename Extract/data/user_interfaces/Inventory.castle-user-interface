@@ -1,0 +1,714 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "Inventory",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/panel_bg.png"
+      },
+      "Height" : 6.9000000000000000E+002,
+      "Name" : "InventoryBg",
+      "Stretch" : true,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 9.8000000000000000E+002,
+        "Y" : -1.7500000000000000E+002
+      },
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 5.7000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleLabel",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "InventoryTitle",
+          "Text" : [
+            "INVENTORY"
+          ],
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "Y" : -1.5000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop"
+        },
+        {
+          "$$ClassName" : "TCastleScrollView",
+          "Height" : 6.1000000000000000E+002,
+          "Name" : "InventoryScroll",
+          "ScrollArea" : {
+            "$$ClassName" : "TCastleScrollArea",
+            "TranslationPersistent" : {
+              "$$ClassName" : "TCastleVector2Persistent",
+              "X" : 1.0000000000000000E+001
+            },
+            "$Children" : [
+              {
+                "$$ClassName" : "TCastleVerticalGroup",
+                "AutoSizeToChildren" : true,
+                "Name" : "SlotsGrid",
+                "Spacing" : 4.0000000000000000E+000,
+                "WidthFraction" : 1.0000000000000000E+000,
+                "$Children" : [
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row0",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot00",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot01",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot02",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot03",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot04",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot05",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row1",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -8.8000007629394531E+001
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot10",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot11",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot12",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot13",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot14",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot15",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row2",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.7600001525878906E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot20",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot21",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot22",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot23",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot24",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot25",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row3",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.6400003051757812E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot30",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot31",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot32",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot33",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot34",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot35",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row4",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -3.5200003051757812E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot40",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot41",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot42",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot43",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot44",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot45",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Name" : "Row5",
+                    "Spacing" : 2.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -4.4000003051757812E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot50",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot51",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 8.6000007629394531E+001
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot52",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 1.7200001525878906E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot53",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.5800003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot54",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.4400003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 8.0000000000000000E+001,
+                        "Name" : "Slot55",
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 4.3000003051757812E+002
+                        },
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "ScrollBarWidth" : 1.0000000000000000E+001,
+          "ScrollbarFrame" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarFrame_thin.png"
+          },
+          "ScrollbarSlider" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarSlider_thin.png"
+          },
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 2.0000000000000000E+001,
+            "Y" : -5.5000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 5.4000000000000000E+002
+        }
+      ]
+    }
+  ]
+}
