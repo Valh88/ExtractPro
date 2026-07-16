@@ -8,12 +8,19 @@ uses Classes,
 type
   TViewPlay = class(TCastleView)
   published
-    { Components designed using CGE editor.
-      These fields will be automatically initialized at Start. }
-    // ButtonXxx: TCastleButton;
+    PlayPanel: TCastleDesign;
   public
+    LeftPanel: TCastleImageControl;
+    ModeTitle: TCastleLabel;
+    MapImage: TCastleImageControl;
+    Duration: TCastleLabel;
+    ModeIcons: TCastleHorizontalGroup;
+    SoloIcon: TCastleImageControl;
+    PartyIcon: TCastleImageControl;
+    SearchBtn: TCastleButton;
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
+    procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
   end;
 
@@ -31,7 +38,20 @@ end;
 procedure TViewPlay.Start;
 begin
   inherited;
-  { Executed once when view starts. }
+  LeftPanel := PlayPanel.DesignedComponent('LeftPanel') as TCastleImageControl;
+  ModeTitle := PlayPanel.DesignedComponent('ModeTitle') as TCastleLabel;
+  MapImage := PlayPanel.DesignedComponent('MapImage') as TCastleImageControl;
+  Duration := PlayPanel.DesignedComponent('Duration') as TCastleLabel;
+  ModeIcons := PlayPanel.DesignedComponent('ModeIcons') as TCastleHorizontalGroup;
+  SoloIcon := PlayPanel.DesignedComponent('SoloIcon') as TCastleImageControl;
+  PartyIcon := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
+  SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
+end;
+
+procedure TViewPlay.Stop;
+begin
+  inherited;
+  ViewPlay := nil;
 end;
 
 procedure TViewPlay.Update(const SecondsPassed: Single; var HandleInput: boolean);

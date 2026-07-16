@@ -1,5 +1,13 @@
 {
+  "$$ClassName" : "TCastleUserInterface",
   "FullSize" : true,
   "Name" : "RootGroup",
-  "$ClassName" : "TCastleUserInterface"
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleDesign",
+      "FullSize" : true,
+      "Name" : "PlayPanel",
+      "DesignUrl" : "castle-data:/user_interfaces/PlayPanel.castle-user-interface"
+    }
+  ]
 }
