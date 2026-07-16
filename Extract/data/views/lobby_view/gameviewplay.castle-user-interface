@@ -7,7 +7,7 @@
       "$$ClassName" : "TCastleDesign",
       "FullSize" : true,
       "Name" : "PlayPanel",
-      "DesignUrl" : "castle-data:/user_interfaces/PlayPanel.castle-user-interface"
+      "Url" : "castle-data:/user_interfaces/PlayPanel.castle-user-interface"
     }
   ]
 }
