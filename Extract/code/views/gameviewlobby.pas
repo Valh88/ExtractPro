@@ -26,14 +26,6 @@ type
     IconChat: TCastleImageControl;
     IconSettings: TCastleImageControl;
     IconExit: TCastleImageControl;
-    LeftPanel: TCastleImageControl;
-    ModeTitle: TCastleLabel;
-    MapImage: TCastleImageControl;
-    Duration: TCastleLabel;
-    ModeIcons: TCastleHorizontalGroup;
-    SoloIcon: TCastleImageControl;
-    PartyIcon: TCastleImageControl;
-    SearchBtn: TCastleButton;
     BottomPanel: TCastleRectangleControl;
     BottomGradient: TCastleImageControl;
   public
