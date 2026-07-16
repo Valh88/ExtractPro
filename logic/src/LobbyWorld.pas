@@ -6,12 +6,13 @@ interface
 
 uses
   SysUtils, Classes, GameConfig, Interfaces,
-  AuthTypes, CastleKeysMouse;
+  AuthTypes, CastleKeysMouse, EntityTypes;
 
 type
   TLobbyPlayerInfo = record
     PlayerId: UInt32;
     Login: string;
+    State: TPlayerState;
     Data: TObject;
   end;
 
@@ -113,6 +114,7 @@ begin
   SetLength(FPlayers, L + 1);
   FPlayers[L].PlayerId := APlayerId;
   FPlayers[L].Login := ALogin;
+  FPlayers[L].State := psInLobby;
   FPlayers[L].Data := nil;
   Result := True;
 end;

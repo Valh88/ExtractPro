@@ -38,6 +38,8 @@ type
 
   TEnemyArray = array of TEnemyData;
 
+  TPlayerState = (psInLobby, psInGame);
+
   TPlayerStatus = (psInRaid, psExtracted, psDead);
 
   TPlayerData = record

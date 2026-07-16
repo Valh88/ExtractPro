@@ -190,9 +190,9 @@
                 "Green" : 4.4999998807907104E-001,
                 "Red" : 4.4999998807907104E-001
               },
-              "Name" : "TabLoadouts",
+              "Name" : "TabInventory",
               "Text" : [
-                "LOADOUTS"
+                "INVENTORY"
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
@@ -215,7 +215,7 @@
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 2.2100000000000000E+002
+                "X" : 2.2600000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
@@ -234,7 +234,7 @@
               ],
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 3.3500000000000000E+002
+                "X" : 3.4000000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
