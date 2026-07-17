@@ -26,8 +26,7 @@ type
     FAnimTargetTab: TLobbyViewTab;
     FPhaseDoneCount: Integer;
     FHoveredTab: TLobbyViewTab;
-    FActiveColorAnim: TColorAnimation;
-    FWobbleAnim: TWobbleAnimation;
+    FHoverScaleAnim: TScaleAnimation;
     FLastMousePos: TVector2;
     FMouseInContainer: Boolean;
     FSwitchingTabs: Boolean;
@@ -64,9 +63,9 @@ const
   IndicatorColor: TCastleColor = (X: 0.55; Y: 0.10; Z: 0.10; W: 1.0);
   TransitionDuration: Single = 0.3;
   AnimDuration: Single = 0.15;
-  HoverAnimDuration: Single = 0.12;
-  WobbleDuration: Single = 0.3;
-  WobbleAmplitude: Single = 3;
+  HoverAnimDuration: Single = 0.15;
+  HoverScaleFrom: Single = 1.0;
+  HoverScaleTo: Single = 1.15;
 
 type
   TLobbyViewSystemHelper = class helper for TLobbyViewSystem
@@ -100,8 +99,7 @@ begin
   FAnimTargetTab := lvtPlay;
   FPhaseDoneCount := 0;
   FHoveredTab := High(TLobbyViewTab);
-  FActiveColorAnim := nil;
-  FWobbleAnim := nil;
+  FHoverScaleAnim := nil;
   FLastMousePos := Vector2(0, 0);
   FMouseInContainer := False;
   FSwitchingTabs := False;
@@ -161,7 +159,7 @@ end;
 
 procedure TLobbyViewSystem.OnHoverAnimComplete(Sender: TObject);
 begin
-  FActiveColorAnim := nil;
+  FHoverScaleAnim := nil;
 end;
 
 procedure TLobbyViewSystem.PhaseCompleted;
@@ -227,10 +225,8 @@ begin
   if FView = nil then Exit;
 
   FAnimManager.Update(SecondsPassed);
-  if (FActiveColorAnim <> nil) and FActiveColorAnim.IsComplete then
-    FActiveColorAnim := nil;
-  if (FWobbleAnim <> nil) and FWobbleAnim.IsComplete then
-    FWobbleAnim := nil;
+  if (FHoverScaleAnim <> nil) and FHoverScaleAnim.IsComplete then
+    FHoverScaleAnim := nil;
 
   if (not FTransition.IsActive) and (not FSwitchingTabs) then
   begin
@@ -245,34 +241,26 @@ begin
           HoverFound := True;
           if FHoveredTab <> i then
           begin
-            if FActiveColorAnim <> nil then
+            if FHoverScaleAnim <> nil then
             begin
-              FActiveColorAnim.Stop;
-              FActiveColorAnim := nil;
-            end;
-            if FWobbleAnim <> nil then
-            begin
-              FWobbleAnim.Stop;
-              FWobbleAnim := nil;
+              FHoverScaleAnim.Stop;
+              FHoverScaleAnim := nil;
             end;
             if (FHoveredTab <= High(TLobbyViewTab)) and (FHoveredTab <> FActiveTab) then
             begin
               Lbl := GetLabelForTab(FHoveredTab);
               if Lbl <> nil then
-                Lbl.Color := InactiveColor;
+                Lbl.FontScale := HoverScaleFrom;
             end;
             FHoveredTab := i;
             if i <> FActiveTab then
             begin
               Lbl := GetLabelForTab(i);
-              FActiveColorAnim := TColorAnimation.Create(Lbl, HoverAnimDuration,
-                Lbl.Color, ActiveColor);
-              FActiveColorAnim.OnComplete := @OnHoverAnimComplete;
-              FActiveColorAnim.Start;
-              FAnimManager.Add(FActiveColorAnim);
-              FWobbleAnim := TWobbleAnimation.Create(Lbl, WobbleDuration, WobbleAmplitude);
-              FWobbleAnim.Start;
-              FAnimManager.Add(FWobbleAnim);
+              FHoverScaleAnim := TScaleAnimation.Create(Lbl, HoverAnimDuration,
+                HoverScaleFrom, HoverScaleTo);
+              FHoverScaleAnim.OnComplete := @OnHoverAnimComplete;
+              FHoverScaleAnim.Start;
+              FAnimManager.Add(FHoverScaleAnim);
             end;
           end;
           Break;
@@ -282,21 +270,16 @@ begin
 
     if not HoverFound then
     begin
-      if FActiveColorAnim <> nil then
+      if FHoverScaleAnim <> nil then
       begin
-        FActiveColorAnim.Stop;
-        FActiveColorAnim := nil;
-      end;
-      if FWobbleAnim <> nil then
-      begin
-        FWobbleAnim.Stop;
-        FWobbleAnim := nil;
+        FHoverScaleAnim.Stop;
+        FHoverScaleAnim := nil;
       end;
       if (FHoveredTab <= High(TLobbyViewTab)) and (FHoveredTab <> FActiveTab) then
       begin
         Lbl := GetLabelForTab(FHoveredTab);
         if Lbl <> nil then
-          Lbl.Color := InactiveColor;
+          Lbl.FontScale := HoverScaleFrom;
       end;
       FHoveredTab := High(TLobbyViewTab);
     end;
@@ -365,6 +348,7 @@ end;
 
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
 var
+  i: TLobbyViewTab;
   OldLabel: TCastleLabel;
   WA: TWidthAnimation;
   CA: TColorAnimation;
@@ -379,12 +363,9 @@ begin
   FAnimTargetTab := ATab;
   FPhaseDoneCount := 0;
   FSwitchingTabs := True;
-  FActiveColorAnim := nil;
-  if FWobbleAnim <> nil then
-  begin
-    FWobbleAnim.Stop;
-    FWobbleAnim := nil;
-  end;
+  FHoverScaleAnim := nil;
+  for i := Low(TLobbyViewTab) to High(TLobbyViewTab) do
+    GetLabelForTab(i).FontScale := HoverScaleFrom;
   FAnimManager.Clear;
 
   OldLabel.InsertFront(FTabIndicator);

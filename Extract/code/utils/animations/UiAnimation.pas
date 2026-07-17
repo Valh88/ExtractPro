@@ -72,7 +72,21 @@ type
     procedure Stop; override;
   end;
 
+  TScaleAnimation = class(TBaseAnimation)
+  private
+    FLbl: TCastleLabel;
+    FFromScale, FToScale: Single;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(ALbl: TCastleLabel; const ADuration: Single;
+      const AFromScale, AToScale: Single);
+    procedure Stop; override;
+  end;
+
 implementation
+
+uses CastleUtils;
 
 { TBaseAnimation }
 
@@ -193,6 +207,28 @@ procedure TWobbleAnimation.Stop;
 begin
   FControl.Translation := Vector2(FOriginX, FControl.Translation.Y);
   inherited;
+end;
+
+{ TScaleAnimation }
+
+constructor TScaleAnimation.Create(ALbl: TCastleLabel; const ADuration: Single;
+  const AFromScale, AToScale: Single);
+begin
+  inherited Create(ADuration);
+  FLbl := ALbl;
+  FFromScale := AFromScale;
+  FToScale := AToScale;
+end;
+
+procedure TScaleAnimation.Stop;
+begin
+  FLbl.FontScale := FFromScale;
+  inherited;
+end;
+
+procedure TScaleAnimation.DoAnimate(const Progress: Single);
+begin
+  FLbl.FontScale := FFromScale + (FToScale - FFromScale) * Progress;
 end;
 
 end.
