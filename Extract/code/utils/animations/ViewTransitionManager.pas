@@ -5,8 +5,8 @@ unit ViewTransitionManager;
 interface
 
 uses
-  Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors,
-  UiAnimation;
+  Classes, SysUtils, CastleUIControls, CastleControls, CastleRectangles,
+  CastleVectors, UiAnimation;
 
 type
   TViewTransitionManager = class
@@ -41,7 +41,8 @@ begin
   FFromView := nil;
   FToView := nil;
   FOverlay := TCastleRectangleControl.Create(nil);
-  FOverlay.FullSize := True;
+  FOverlay.FullSize := False;
+  FOverlay.Color := Vector4(0, 0, 0, 0);
   FCurrentAnimation := nil;
   FOnCompleted := nil;
   FFadeDuration := 0.3;
@@ -70,7 +71,14 @@ begin
   end;
   FOverlay.Color := Vector4(0, 0, 0, 0);
   if FFromView <> nil then
+  begin
     FFromView.InsertFront(FOverlay);
+    FOverlay.Anchor(hpLeft);
+    FOverlay.WidthFraction := 1;
+    FOverlay.Anchor(vpBottom, 70);
+    FOverlay.Height := FFromView.EffectiveHeight - 140;
+    if FOverlay.Height < 0 then FOverlay.Height := 0;
+  end;
   FCurrentAnimation := TFadeAnimation.Create(FOverlay, FFadeDuration, 0, 1);
   FCurrentAnimation.OnComplete := @FadeOutComplete;
   FCurrentAnimation.Start;
@@ -88,6 +96,11 @@ begin
   if FToView <> nil then
   begin
     FToView.InsertFront(FOverlay);
+    FOverlay.Anchor(hpLeft);
+    FOverlay.WidthFraction := 1;
+    FOverlay.Anchor(vpBottom, 70);
+    FOverlay.Height := FToView.EffectiveHeight - 140;
+    if FOverlay.Height < 0 then FOverlay.Height := 0;
     FContainer.PushView(FToView);
   end;
   FCurrentAnimation := TFadeAnimation.Create(FOverlay, FFadeDuration, 1, 0);
