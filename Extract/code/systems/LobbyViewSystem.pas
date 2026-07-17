@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleKeysMouse, CastleColors, Interfaces,
-  GameViewPlay, GameViewInventory;
+  GameViewPlay, GameViewInventory, ViewTransitionManager;
 
 type
   TLobbyViewTab = (lvtPlay, lvtInventory, lvtHeroes, lvtMarket);
@@ -17,12 +17,16 @@ type
     FView: TObject;
     FViewPlay: TViewPlay;
     FViewInventory: TViewInventory;
+    FActiveView: TCastleView;
     FActiveTab: TLobbyViewTab;
+    FTransition: TViewTransitionManager;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
-    procedure ShowTabView(const AView: TCastleView);
+    function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     procedure SetView(const AValue: TObject);
+    procedure TransitionCompleted(Sender: TObject);
   public
     constructor Create(AView: TObject);
+    destructor Destroy; override;
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
     procedure UpdateTabVisuals;
@@ -41,6 +45,7 @@ uses GameViewLobby;
 const
   ActiveColor: TCastleColor = (X: 0.75; Y: 0.75; Z: 0.75; W: 1.0);
   InactiveColor: TCastleColor = (X: 0.45; Y: 0.45; Z: 0.45; W: 1.0);
+  TransitionDuration: Single = 0.3;
 
 type
   TLobbyViewSystemHelper = class helper for TLobbyViewSystem
@@ -63,38 +68,61 @@ begin
   FView := AView;
   FViewPlay := nil;
   FViewInventory := nil;
+  FActiveView := nil;
   FActiveTab := lvtPlay;
+  FTransition := TViewTransitionManager.Create;
+  FTransition.OnCompleted := @TransitionCompleted;
 end;
 
-procedure TLobbyViewSystem.ShowTabView(const AView: TCastleView);
-var
-  Container: TCastleContainer;
+destructor TLobbyViewSystem.Destroy;
 begin
-  Container := LobbyView.Container;
-  if Container = nil then Exit;
-  if Container.CurrentFrontView <> AView then
-  begin
-    if Container.CurrentViewStackCount > 1 then
-      Container.PopView;
-    Container.PushView(AView);
-  end;
+  FTransition.Free;
+  inherited;
 end;
 
-procedure TLobbyViewSystem.Update(const SecondsPassed: Single);
+function TLobbyViewSystem.GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
 begin
-  if FView = nil then Exit;
-  case FActiveTab of
+  case ATab of
     lvtPlay:
     begin
       if FViewPlay = nil then FViewPlay := TViewPlay.Create(Application);
-      ShowTabView(FViewPlay);
+      Result := FViewPlay;
     end;
     lvtInventory:
     begin
       if FViewInventory = nil then FViewInventory := TViewInventory.Create(Application);
-      ShowTabView(FViewInventory);
+      Result := FViewInventory;
     end;
-    lvtHeroes, lvtMarket: ; // TODO
+  else
+    Result := nil;
+  end;
+end;
+
+procedure TLobbyViewSystem.TransitionCompleted(Sender: TObject);
+begin
+  FActiveView := GetOrCreateView(FActiveTab);
+end;
+
+procedure TLobbyViewSystem.Update(const SecondsPassed: Single);
+var
+  Container: TCastleContainer;
+  TargetView: TCastleView;
+begin
+  if FView = nil then Exit;
+
+  if FTransition.IsActive then
+  begin
+    FTransition.Update(SecondsPassed);
+    Exit;
+  end;
+
+  if FActiveView = nil then
+  begin
+    Container := LobbyView.Container;
+    if Container = nil then Exit;
+    TargetView := GetOrCreateView(FActiveTab);
+    Container.PushView(TargetView);
+    FActiveView := TargetView;
   end;
 end;
 
@@ -135,10 +163,26 @@ begin
 end;
 
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
+var
+  OldView: TCastleView;
+  TargetView: TCastleView;
+  Container: TCastleContainer;
 begin
   if FActiveTab = ATab then Exit;
+  if FTransition.IsActive then Exit;
+
   FActiveTab := ATab;
   UpdateTabVisuals;
+
+  OldView := FActiveView;
+  if (OldView <> nil) and (LobbyView <> nil) then
+  begin
+    Container := LobbyView.Container;
+    if Container = nil then Exit;
+    TargetView := GetOrCreateView(ATab);
+    FActiveView := nil;
+    FTransition.StartTransition(Container, OldView, TargetView, TransitionDuration);
+  end;
 end;
 
 end.
