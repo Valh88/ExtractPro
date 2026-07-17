@@ -53,6 +53,11 @@ end;
 procedure TViewLobby.Start;
 begin
   inherited;
+  if FLobbyClient <> nil then
+  begin
+    TabPlay.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
+    TabInventory.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
+  end;
 end;
 
 procedure TViewLobby.Stop;

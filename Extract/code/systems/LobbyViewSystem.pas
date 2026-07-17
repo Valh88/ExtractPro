@@ -20,12 +20,15 @@ type
     FActiveTab: TLobbyViewTab;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
     procedure ShowTabView(const AView: TCastleView);
+    procedure SetView(const AValue: TObject);
   public
     constructor Create(AView: TObject);
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
+    procedure OnTabPress(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
     property ActiveTab: TLobbyViewTab read FActiveTab write SetActiveTab;
-    property View: TObject read FView write FView;
+    property View: TObject read FView write SetView;
     property ViewPlay: TViewPlay read FViewPlay;
     property ViewInventory: TViewInventory read FViewInventory;
   end;
@@ -93,6 +96,23 @@ end;
 function TLobbyViewSystem.Press(const Event: TInputPressRelease): Boolean;
 begin
   Result := False;
+end;
+
+procedure TLobbyViewSystem.OnTabPress(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if Sender = LobbyView.TabPlay then
+    SetActiveTab(lvtPlay)
+  else if Sender = LobbyView.TabInventory then
+    SetActiveTab(lvtInventory)
+  else
+    Exit;
+  Handled := True;
+end;
+
+procedure TLobbyViewSystem.SetView(const AValue: TObject);
+begin
+  FView := AValue;
 end;
 
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
