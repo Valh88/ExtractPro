@@ -122,6 +122,10 @@
         <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>
+        <Filename Value="code/utils/animations/AnimationManager.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
+      <Unit13>
         <Filename Value="code/LobbyClient.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit12>

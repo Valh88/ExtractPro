@@ -8,7 +8,7 @@ uses
   SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleControls, CastleKeysMouse, CastleColors,
   CastleVectors, Interfaces,
-  GameViewPlay, GameViewInventory, ViewTransitionManager, UiAnimation;
+  GameViewPlay, GameViewInventory, ViewTransitionManager, UiAnimation, AnimationManager;
 
 type
   TLobbyViewTab = (lvtPlay, lvtInventory, lvtHeroes, lvtMarket);
@@ -22,8 +22,7 @@ type
     FActiveTab: TLobbyViewTab;
     FTransition: TViewTransitionManager;
     FTabIndicator: TCastleRectangleControl;
-    FColorAnim: TColorAnimation;
-    FWidthAnim: TWidthAnimation;
+    FAnimManager: TAnimationManager;
     FAnimTargetTab: TLobbyViewTab;
     FPhaseDoneCount: Integer;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
@@ -86,16 +85,14 @@ begin
   FTabIndicator := TCastleRectangleControl.Create(nil);
   FTabIndicator.Color := IndicatorColor;
   FTabIndicator.Height := 3;
-  FColorAnim := nil;
-  FWidthAnim := nil;
+  FAnimManager := TAnimationManager.Create;
   FAnimTargetTab := lvtPlay;
   FPhaseDoneCount := 0;
 end;
 
 destructor TLobbyViewSystem.Destroy;
 begin
-  FreeAndNil(FWidthAnim);
-  FreeAndNil(FColorAnim);
+  FAnimManager.Free;
   FTransition.Free;
   FreeAndNil(FTabIndicator);
   inherited;
@@ -150,13 +147,12 @@ var
   OldView: TCastleView;
   TargetView: TCastleView;
   Container: TCastleContainer;
+  WA: TWidthAnimation;
+  CA: TColorAnimation;
 begin
   if FAnimTargetTab <> FActiveTab then
   begin
     // Phase 1 done — reparent indicator, start Phase 2
-    FreeAndNil(FWidthAnim);
-    FreeAndNil(FColorAnim);
-
     FActiveTab := FAnimTargetTab;
     NewLabel := GetLabelForTab(FActiveTab);
     if NewLabel = nil then Exit;
@@ -167,21 +163,21 @@ begin
     FTabIndicator.Width := 0;
     FTabIndicator.Translation := Vector2(0, FTabIndicator.Translation.Y);
 
-    FWidthAnim := TWidthAnimation.Create(FTabIndicator, AnimDuration,
+    WA := TWidthAnimation.Create(FTabIndicator, AnimDuration,
       0, NewLabel.EffectiveWidth);
-    FWidthAnim.OnComplete := @OnAnimComplete;
-    FWidthAnim.Start;
+    WA.OnComplete := @OnAnimComplete;
+    FAnimManager.Add(WA);
+    WA.Start;
 
-    FColorAnim := TColorAnimation.Create(NewLabel, AnimDuration,
+    CA := TColorAnimation.Create(NewLabel, AnimDuration,
       InactiveColor, ActiveColor);
-    FColorAnim.OnComplete := @OnAnimComplete;
-    FColorAnim.Start;
+    CA.OnComplete := @OnAnimComplete;
+    FAnimManager.Add(CA);
+    CA.Start;
   end
   else
   begin
     // Phase 2 done — both animations complete, switch view
-    FreeAndNil(FWidthAnim);
-    FreeAndNil(FColorAnim);
     FAnimTargetTab := lvtPlay;
     UpdateTabVisuals;
 
@@ -204,10 +200,7 @@ var
 begin
   if FView = nil then Exit;
 
-  if FColorAnim <> nil then
-    FColorAnim.Update(SecondsPassed);
-  if FWidthAnim <> nil then
-    FWidthAnim.Update(SecondsPassed);
+  FAnimManager.Update(SecondsPassed);
 
   if FTransition.IsActive then
   begin
@@ -259,17 +252,20 @@ begin
     GetLabelForTab(FActiveTab).InsertFront(FTabIndicator);
   FTabIndicator.Height := 3;
   FTabIndicator.Width := GetLabelForTab(FActiveTab).EffectiveWidth;
-  FTabIndicator.Anchor(hpLeft);
+  FTabIndicator.Anchor(hpMiddle);
   FTabIndicator.Anchor(vpTop, vpBottom, -6);
+  FTabIndicator.Translation := Vector2(0, FTabIndicator.Translation.Y);
 end;
 
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
 var
   OldLabel: TCastleLabel;
+  WA: TWidthAnimation;
+  CA: TColorAnimation;
 begin
   if FActiveTab = ATab then Exit;
   if FTransition.IsActive then Exit;
-  if FColorAnim <> nil then Exit;
+  if FAnimManager.IsActive then Exit;
 
   OldLabel := GetLabelForTab(FActiveTab);
   if OldLabel = nil then Exit;
@@ -277,19 +273,24 @@ begin
   FAnimTargetTab := ATab;
   FPhaseDoneCount := 0;
 
-  FreeAndNil(FWidthAnim);
-  FreeAndNil(FColorAnim);
+  FAnimManager.Clear;
 
-  OldLabel.Color := ActiveColor;
-  FWidthAnim := TWidthAnimation.Create(FTabIndicator, AnimDuration,
+  OldLabel.InsertFront(FTabIndicator);
+  FTabIndicator.Anchor(hpMiddle);
+  FTabIndicator.Anchor(vpTop, vpBottom, -6);
+  FTabIndicator.Translation := Vector2(0, FTabIndicator.Translation.Y);
+
+  WA := TWidthAnimation.Create(FTabIndicator, AnimDuration,
     FTabIndicator.Width, 0);
-  FWidthAnim.OnComplete := @OnAnimComplete;
-  FWidthAnim.Start;
+  WA.OnComplete := @OnAnimComplete;
+  FAnimManager.Add(WA);
+  WA.Start;
 
-  FColorAnim := TColorAnimation.Create(OldLabel, AnimDuration,
+  CA := TColorAnimation.Create(OldLabel, AnimDuration,
     ActiveColor, InactiveColor);
-  FColorAnim.OnComplete := @OnAnimComplete;
-  FColorAnim.Start;
+  CA.OnComplete := @OnAnimComplete;
+  FAnimManager.Add(CA);
+  CA.Start;
 end;
 
 end.
