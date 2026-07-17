@@ -179,6 +179,10 @@
               "Text" : [
                 "PLAY"
               ],
+              "AutoSize" : false,
+              "Width" : 50,
+              "Height" : 22,
+              "Alignment" : "hpMiddle",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle"
             },
@@ -194,6 +198,10 @@
               "Text" : [
                 "INVENTORY"
               ],
+              "AutoSize" : false,
+              "Width" : 90,
+              "Height" : 22,
+              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
                 "X" : 7.9000000000000000E+001
@@ -213,6 +221,10 @@
               "Text" : [
                 "HEROES"
               ],
+              "AutoSize" : false,
+              "Width" : 70,
+              "Height" : 22,
+              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
                 "X" : 2.2600000000000000E+002
@@ -232,6 +244,10 @@
               "Text" : [
                 "MARKET"
               ],
+              "AutoSize" : false,
+              "Width" : 70,
+              "Height" : 22,
+              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
                 "X" : 3.4000000000000000E+002

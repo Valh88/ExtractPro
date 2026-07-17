@@ -58,6 +58,8 @@ begin
   begin
     TabPlay.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
     TabInventory.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
+    TabHeroes.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
+    TabMarket.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
     FLobbyClient.ViewSystem.UpdateTabVisuals;
   end;
 end;

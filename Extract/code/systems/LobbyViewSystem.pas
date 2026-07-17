@@ -313,6 +313,10 @@ begin
     SetActiveTab(lvtPlay)
   else if Sender = LobbyView.TabInventory then
     SetActiveTab(lvtInventory)
+  else if Sender = LobbyView.TabHeroes then
+    SetActiveTab(lvtHeroes)
+  else if Sender = LobbyView.TabMarket then
+    SetActiveTab(lvtMarket)
   else
     Exit;
   Handled := True;
