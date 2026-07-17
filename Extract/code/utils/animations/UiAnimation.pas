@@ -5,7 +5,7 @@ unit UiAnimation;
 interface
 
 uses
-  Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors, CastleColors;
+  Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors, CastleColors, Math;
 
 type
   TBaseAnimation = class
@@ -19,7 +19,7 @@ type
     constructor Create(const ADuration: Single);
     procedure Update(const SecondsPassed: Single);
     procedure Start;
-    procedure Stop;
+    procedure Stop; virtual;
     function IsComplete: Boolean;
     property Duration: Single read FDuration write FDuration;
     property OnComplete: TNotifyEvent read FOnComplete write FOnComplete;
@@ -57,6 +57,19 @@ type
   public
     constructor Create(AControl: TCastleUserInterface; const ADuration: Single;
       const AFromWidth, AToWidth: Single);
+  end;
+
+  TWobbleAnimation = class(TBaseAnimation)
+  private
+    FControl: TCastleUserInterface;
+    FAmplitude: Single;
+    FOriginX: Single;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(AControl: TCastleUserInterface; const ADuration: Single;
+      const AAmplitude: Single);
+    procedure Stop; override;
   end;
 
 implementation
@@ -155,6 +168,31 @@ end;
 procedure TWidthAnimation.DoAnimate(const Progress: Single);
 begin
   FControl.Width := FFromWidth + (FToWidth - FFromWidth) * Progress;
+end;
+
+{ TWobbleAnimation }
+
+constructor TWobbleAnimation.Create(AControl: TCastleUserInterface;
+  const ADuration: Single; const AAmplitude: Single);
+begin
+  inherited Create(ADuration);
+  FControl := AControl;
+  FAmplitude := AAmplitude;
+  FOriginX := AControl.Translation.X;
+end;
+
+procedure TWobbleAnimation.DoAnimate(const Progress: Single);
+var
+  Offset: Single;
+begin
+  Offset := Sin(Progress * Pi * 6) * FAmplitude * (1 - Progress);
+  FControl.Translation := Vector2(FOriginX + Offset, FControl.Translation.Y);
+end;
+
+procedure TWobbleAnimation.Stop;
+begin
+  FControl.Translation := Vector2(FOriginX, FControl.Translation.Y);
+  inherited;
 end;
 
 end.
