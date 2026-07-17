@@ -240,6 +240,7 @@
                 "Green" : 4.4999998807907104E-001,
                 "Red" : 4.4999998807907104E-001
               },
+              "FontScale" : 1.0,
               "Name" : "TabMarket",
               "Text" : [
                 "MARKET"

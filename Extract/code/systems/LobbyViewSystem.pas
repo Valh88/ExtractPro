@@ -8,16 +8,17 @@ uses
   SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleControls, CastleKeysMouse, CastleColors,
   CastleVectors, Interfaces,
-  GameViewPlay, GameViewInventory, ViewTransitionManager, UiAnimation, AnimationManager;
+  GameViewPlay, GameViewInventory, GameViewMarket, ViewTransitionManager, UiAnimation, AnimationManager;
 
 type
-  TLobbyViewTab = (lvtPlay, lvtInventory, lvtHeroes, lvtMarket);
+  TLobbyViewTab = (lvtPlay, lvtInventory, lvtHeroes, lvtMarket, lvtCount);
 
   TLobbyViewSystem = class(TInterfacedObject, IWorldSystem)
   private
     FView: TObject;
     FViewPlay: TViewPlay;
     FViewInventory: TViewInventory;
+    FViewMarket: TViewMarket;
     FActiveView: TCastleView;
     FActiveTab: TLobbyViewTab;
     FTransition: TViewTransitionManager;
@@ -88,6 +89,7 @@ begin
   FView := AView;
   FViewPlay := nil;
   FViewInventory := nil;
+  FViewMarket := nil;
   FActiveView := nil;
   FActiveTab := lvtPlay;
   FTransition := TViewTransitionManager.Create;
@@ -98,7 +100,7 @@ begin
   FAnimManager := TAnimationManager.Create;
   FAnimTargetTab := lvtPlay;
   FPhaseDoneCount := 0;
-  FHoveredTab := High(TLobbyViewTab);
+  FHoveredTab := lvtCount;
   FHoverScaleAnim := nil;
   FLastMousePos := Vector2(0, 0);
   FMouseInContainer := False;
@@ -135,6 +137,11 @@ begin
     begin
       if FViewInventory = nil then FViewInventory := TViewInventory.Create(Application);
       Result := FViewInventory;
+    end;
+    lvtMarket:
+    begin
+      if FViewMarket = nil then FViewMarket := TViewMarket.Create(Application);
+      Result := FViewMarket;
     end;
   else
     Result := nil;
@@ -233,7 +240,7 @@ begin
     HoverFound := False;
     if FMouseInContainer then
     begin
-      for i := Low(TLobbyViewTab) to High(TLobbyViewTab) do
+      for i := Low(TLobbyViewTab) to Pred(lvtCount) do
       begin
         Lbl := GetLabelForTab(i);
         if (Lbl <> nil) and Lbl.RenderRect.Contains(FLastMousePos) then
@@ -246,7 +253,7 @@ begin
               FHoverScaleAnim.Stop;
               FHoverScaleAnim := nil;
             end;
-            if (FHoveredTab <= High(TLobbyViewTab)) and (FHoveredTab <> FActiveTab) then
+            if (FHoveredTab < lvtCount) and (FHoveredTab <> FActiveTab) then
             begin
               Lbl := GetLabelForTab(FHoveredTab);
               if Lbl <> nil then
@@ -275,13 +282,13 @@ begin
         FHoverScaleAnim.Stop;
         FHoverScaleAnim := nil;
       end;
-      if (FHoveredTab <= High(TLobbyViewTab)) and (FHoveredTab <> FActiveTab) then
+      if (FHoveredTab < lvtCount) and (FHoveredTab <> FActiveTab) then
       begin
         Lbl := GetLabelForTab(FHoveredTab);
         if Lbl <> nil then
           Lbl.FontScale := HoverScaleFrom;
       end;
-      FHoveredTab := High(TLobbyViewTab);
+      FHoveredTab := lvtCount;
     end;
   end;
 
@@ -337,7 +344,7 @@ procedure TLobbyViewSystem.UpdateTabVisuals;
 var
   i: TLobbyViewTab;
 begin
-  for i := Low(TLobbyViewTab) to High(TLobbyViewTab) do
+  for i := Low(TLobbyViewTab) to Pred(lvtCount) do
     GetLabelForTab(i).Color := InactiveColor;
   GetLabelForTab(FActiveTab).Color := ActiveColor;
 
@@ -368,7 +375,7 @@ begin
   FPhaseDoneCount := 0;
   FSwitchingTabs := True;
   FHoverScaleAnim := nil;
-  for i := Low(TLobbyViewTab) to High(TLobbyViewTab) do
+  for i := Low(TLobbyViewTab) to Pred(lvtCount) do
     GetLabelForTab(i).FontScale := HoverScaleFrom;
   FAnimManager.Clear;
 

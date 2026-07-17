@@ -1,0 +1,19 @@
+{
+  "$$ClassName": "TCastleUserInterface",
+  "FullSize": true,
+  "Name": "Market",
+  "$Children": [
+    {
+      "$$ClassName": "TCastleDesign",
+      "Height": 880,
+      "Name": "MarketDesign",
+      "TranslationPersistent": {
+        "$$ClassName": "TCastleVector2Persistent",
+        "X": 40,
+        "Y": 10
+      },
+      "Url": "castle-data:/user_interfaces/MarketDesign.castle-user-interface",
+      "Width": 1530
+    }
+  ]
+}
