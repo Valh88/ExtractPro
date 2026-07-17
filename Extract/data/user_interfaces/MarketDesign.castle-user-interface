@@ -587,7 +587,7 @@
                 "$$ClassName" : "TCastleVerticalGroup",
                 "AutoSizeToChildren" : true,
                 "Name" : "ItemsList",
-                "Spacing" : 4.0000000000000000E+000,
+                "Spacing" : 1.0000000000000000E+001,
                 "WidthFraction" : 1.0000000000000000E+000,
                 "$Children" : [
                   {
@@ -712,7 +712,7 @@
                     "Spacing" : 6.0000000000000000E+000,
                     "TranslationPersistent" : {
                       "$$ClassName" : "TCastleVector2Persistent",
-                      "Y" : -6.0000000000000000E+001
+                      "Y" : -6.6000000000000000E+001
                     },
                     "VerticalAnchorParent" : "vpTop",
                     "VerticalAnchorSelf" : "vpTop",
@@ -831,7 +831,7 @@
                     "Spacing" : 6.0000000000000000E+000,
                     "TranslationPersistent" : {
                       "$$ClassName" : "TCastleVector2Persistent",
-                      "Y" : -1.2000000000000000E+002
+                      "Y" : -1.3200000000000000E+002
                     },
                     "VerticalAnchorParent" : "vpTop",
                     "VerticalAnchorSelf" : "vpTop",
@@ -950,7 +950,7 @@
                     "Spacing" : 6.0000000000000000E+000,
                     "TranslationPersistent" : {
                       "$$ClassName" : "TCastleVector2Persistent",
-                      "Y" : -1.8000000000000000E+002
+                      "Y" : -1.9800000000000000E+002
                     },
                     "VerticalAnchorParent" : "vpTop",
                     "VerticalAnchorSelf" : "vpTop",
@@ -1069,7 +1069,7 @@
                     "Spacing" : 6.0000000000000000E+000,
                     "TranslationPersistent" : {
                       "$$ClassName" : "TCastleVector2Persistent",
-                      "Y" : -2.4000000000000000E+002
+                      "Y" : -2.6400000000000000E+002
                     },
                     "VerticalAnchorParent" : "vpTop",
                     "VerticalAnchorSelf" : "vpTop",
@@ -1167,6 +1167,125 @@
                         },
                         "Height" : 5.6000000000000000E+001,
                         "Name" : "ItemPrice4",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow5",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -3.3000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot5",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName5",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType5",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc5",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice5",
                         "Text" : [
                           "1000g"
                         ],
