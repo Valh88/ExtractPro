@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
+  CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   LobbyClient;
 
 type
@@ -34,6 +34,7 @@ type
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
+    function Motion(const Event: TInputMotion): Boolean; override;
     procedure SetLobbyClient(const AValue: TLobbyClient);
   private
     FLobbyClient: TLobbyClient;
@@ -80,6 +81,14 @@ begin
   if Result then Exit;
   if FLobbyClient <> nil then
     Result := FLobbyClient.Press(Event);
+end;
+
+function TViewLobby.Motion(const Event: TInputMotion): Boolean;
+begin
+  Result := inherited;
+  if Result then Exit;
+  if FLobbyClient <> nil then
+    FLobbyClient.ViewSystem.NotifyMotion(Event.Position);
 end;
 
 procedure TViewLobby.SetLobbyClient(const AValue: TLobbyClient);

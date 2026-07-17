@@ -25,6 +25,9 @@ type
     FAnimManager: TAnimationManager;
     FAnimTargetTab: TLobbyViewTab;
     FPhaseDoneCount: Integer;
+    FLastMousePos: TVector2;
+    FMouseInContainer: Boolean;
+    FSwitchingTabs: Boolean;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
     function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     procedure SetView(const AValue: TObject);
@@ -38,6 +41,7 @@ type
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
     procedure UpdateTabVisuals;
+    procedure NotifyMotion(const Position: TVector2);
     procedure OnTabPress(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
     property ActiveTab: TLobbyViewTab read FActiveTab write SetActiveTab;
@@ -48,7 +52,7 @@ type
 
 implementation
 
-uses GameViewLobby;
+uses GameViewLobby, Math;
 
 const
   ActiveColor: TCastleColor = (X: 0.75; Y: 0.75; Z: 0.75; W: 1.0);
@@ -88,6 +92,9 @@ begin
   FAnimManager := TAnimationManager.Create;
   FAnimTargetTab := lvtPlay;
   FPhaseDoneCount := 0;
+  FLastMousePos := Vector2(0, 0);
+  FMouseInContainer := False;
+  FSwitchingTabs := False;
 end;
 
 destructor TLobbyViewSystem.Destroy;
@@ -129,6 +136,7 @@ end;
 procedure TLobbyViewSystem.TransitionCompleted(Sender: TObject);
 begin
   FActiveView := GetOrCreateView(FActiveTab);
+  FSwitchingTabs := False;
 end;
 
 procedure TLobbyViewSystem.OnAnimComplete(Sender: TObject);
@@ -235,6 +243,12 @@ begin
   Handled := True;
 end;
 
+procedure TLobbyViewSystem.NotifyMotion(const Position: TVector2);
+begin
+  FLastMousePos := Position;
+  FMouseInContainer := True;
+end;
+
 procedure TLobbyViewSystem.SetView(const AValue: TObject);
 begin
   FView := AValue;
@@ -265,13 +279,14 @@ var
 begin
   if FActiveTab = ATab then Exit;
   if FTransition.IsActive then Exit;
-  if FAnimManager.IsActive then Exit;
+  if FSwitchingTabs then Exit;
 
   OldLabel := GetLabelForTab(FActiveTab);
   if OldLabel = nil then Exit;
 
   FAnimTargetTab := ATab;
   FPhaseDoneCount := 0;
+  FSwitchingTabs := True;
 
   FAnimManager.Clear;
 
