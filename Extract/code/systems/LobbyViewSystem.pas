@@ -6,7 +6,8 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleWindow, CastleUIControls, CastleKeysMouse, CastleColors, Interfaces,
+  CastleWindow, CastleUIControls, CastleControls, CastleKeysMouse, CastleColors,
+  CastleVectors, Interfaces,
   GameViewPlay, GameViewInventory, ViewTransitionManager;
 
 type
@@ -20,6 +21,7 @@ type
     FActiveView: TCastleView;
     FActiveTab: TLobbyViewTab;
     FTransition: TViewTransitionManager;
+    FTabIndicator: TCastleRectangleControl;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
     function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     procedure SetView(const AValue: TObject);
@@ -45,6 +47,7 @@ uses GameViewLobby;
 const
   ActiveColor: TCastleColor = (X: 0.75; Y: 0.75; Z: 0.75; W: 1.0);
   InactiveColor: TCastleColor = (X: 0.45; Y: 0.45; Z: 0.45; W: 1.0);
+  IndicatorColor: TCastleColor = (X: 0.55; Y: 0.10; Z: 0.10; W: 1.0);
   TransitionDuration: Single = 0.3;
 
 type
@@ -72,11 +75,15 @@ begin
   FActiveTab := lvtPlay;
   FTransition := TViewTransitionManager.Create;
   FTransition.OnCompleted := @TransitionCompleted;
+  FTabIndicator := TCastleRectangleControl.Create(nil);
+  FTabIndicator.Color := IndicatorColor;
+  FTabIndicator.Height := 3;
 end;
 
 destructor TLobbyViewSystem.Destroy;
 begin
   FTransition.Free;
+  FreeAndNil(FTabIndicator);
   inherited;
 end;
 
@@ -149,16 +156,49 @@ begin
 end;
 
 procedure TLobbyViewSystem.UpdateTabVisuals;
+var
+  ActiveLabel: TCastleLabel;
 begin
   LobbyView.TabPlay.Color := InactiveColor;
   LobbyView.TabInventory.Color := InactiveColor;
   LobbyView.TabHeroes.Color := InactiveColor;
   LobbyView.TabMarket.Color := InactiveColor;
+  ActiveLabel := nil;
   case FActiveTab of
-    lvtPlay: LobbyView.TabPlay.Color := ActiveColor;
-    lvtInventory: LobbyView.TabInventory.Color := ActiveColor;
-    lvtHeroes: LobbyView.TabHeroes.Color := ActiveColor;
-    lvtMarket: LobbyView.TabMarket.Color := ActiveColor;
+    lvtPlay:
+    begin
+      LobbyView.TabPlay.Color := ActiveColor;
+      ActiveLabel := LobbyView.TabPlay;
+    end;
+    lvtInventory:
+    begin
+      LobbyView.TabInventory.Color := ActiveColor;
+      ActiveLabel := LobbyView.TabInventory;
+    end;
+    lvtHeroes:
+    begin
+      LobbyView.TabHeroes.Color := ActiveColor;
+      ActiveLabel := LobbyView.TabHeroes;
+    end;
+    lvtMarket:
+    begin
+      LobbyView.TabMarket.Color := ActiveColor;
+      ActiveLabel := LobbyView.TabMarket;
+    end;
+  end;
+  if ActiveLabel <> nil then
+  begin
+    FTabIndicator.Height := 3;
+    FTabIndicator.Width := ActiveLabel.EffectiveWidth;
+    FTabIndicator.Anchor(hpLeft);
+    FTabIndicator.Anchor(vpTop, vpBottom, -6);
+    if FTabIndicator.Parent <> ActiveLabel then
+      ActiveLabel.InsertFront(FTabIndicator);
+  end
+  else
+  begin
+    if FTabIndicator.Parent <> nil then
+      FTabIndicator.Parent.RemoveControl(FTabIndicator);
   end;
 end;
 
