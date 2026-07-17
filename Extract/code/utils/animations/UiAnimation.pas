@@ -48,6 +48,17 @@ type
       const AFromColor, AToColor: TVector4);
   end;
 
+  TWidthAnimation = class(TUiAnimation)
+  private
+    FControl: TCastleUserInterface;
+    FFromWidth, FToWidth: Single;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(AControl: TCastleUserInterface; const ADuration: Single;
+      const AFromWidth, AToWidth: Single);
+  end;
+
 implementation
 
 { TUiAnimation }
@@ -128,6 +139,22 @@ begin
     FFromColor.Z + (FToColor.Z - FFromColor.Z) * Progress,
     FFromColor.W + (FToColor.W - FFromColor.W) * Progress
   );
+end;
+
+{ TWidthAnimation }
+
+constructor TWidthAnimation.Create(AControl: TCastleUserInterface;
+  const ADuration: Single; const AFromWidth, AToWidth: Single);
+begin
+  inherited Create(ADuration);
+  FControl := AControl;
+  FFromWidth := AFromWidth;
+  FToWidth := AToWidth;
+end;
+
+procedure TWidthAnimation.DoAnimate(const Progress: Single);
+begin
+  FControl.Width := FFromWidth + (FToWidth - FFromWidth) * Progress;
 end;
 
 end.
