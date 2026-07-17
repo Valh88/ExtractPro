@@ -54,7 +54,6 @@ end;
 procedure TViewInventory.Stop;
 begin
   inherited;
-  ViewInventory := nil;
 end;
 
 end.

@@ -51,7 +51,6 @@ end;
 procedure TViewPlay.Stop;
 begin
   inherited;
-  ViewPlay := nil;
 end;
 
 procedure TViewPlay.Update(const SecondsPassed: Single; var HandleInput: boolean);
