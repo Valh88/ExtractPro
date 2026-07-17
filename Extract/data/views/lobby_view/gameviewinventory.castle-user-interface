@@ -1,0 +1,18 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "Inventory",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Height" : 8.8000000000000000E+002,
+      "Name" : "InventoryPanelDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000000000000E+001,
+        "Y" : 1.0000000000000000E+001
+      },
+      "Width" : 1.6800000000000000E+003
+    }
+  ]
+}
