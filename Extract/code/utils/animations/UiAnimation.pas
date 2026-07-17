@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors, CastleColors;
 
 type
-  TUiAnimation = class
+  TBaseAnimation = class
   private
     FDuration: Single;
     FProgress: Single;
@@ -25,7 +25,7 @@ type
     property OnComplete: TNotifyEvent read FOnComplete write FOnComplete;
   end;
 
-  TFadeAnimation = class(TUiAnimation)
+  TFadeAnimation = class(TBaseAnimation)
   private
     FOverlay: TCastleRectangleControl;
     FFromAlpha: Single;
@@ -37,7 +37,7 @@ type
       const AFromAlpha, AToAlpha: Single);
   end;
 
-  TColorAnimation = class(TUiAnimation)
+  TColorAnimation = class(TBaseAnimation)
   private
     FLabel: TCastleLabel;
     FFromColor, FToColor: TVector4;
@@ -48,7 +48,7 @@ type
       const AFromColor, AToColor: TVector4);
   end;
 
-  TWidthAnimation = class(TUiAnimation)
+  TWidthAnimation = class(TBaseAnimation)
   private
     FControl: TCastleUserInterface;
     FFromWidth, FToWidth: Single;
@@ -61,9 +61,9 @@ type
 
 implementation
 
-{ TUiAnimation }
+{ TBaseAnimation }
 
-constructor TUiAnimation.Create(const ADuration: Single);
+constructor TBaseAnimation.Create(const ADuration: Single);
 begin
   inherited Create;
   FDuration := ADuration;
@@ -71,22 +71,22 @@ begin
   FOnComplete := nil;
 end;
 
-procedure TUiAnimation.Start;
+procedure TBaseAnimation.Start;
 begin
   FProgress := 0;
 end;
 
-procedure TUiAnimation.Stop;
+procedure TBaseAnimation.Stop;
 begin
   FProgress := 1;
 end;
 
-function TUiAnimation.IsComplete: Boolean;
+function TBaseAnimation.IsComplete: Boolean;
 begin
   Result := FProgress >= 1;
 end;
 
-procedure TUiAnimation.Update(const SecondsPassed: Single);
+procedure TBaseAnimation.Update(const SecondsPassed: Single);
 begin
   if IsComplete then Exit;
   FProgress := FProgress + SecondsPassed / FDuration;

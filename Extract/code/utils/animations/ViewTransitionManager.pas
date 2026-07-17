@@ -15,7 +15,7 @@ type
     FFromView: TCastleView;
     FToView: TCastleView;
     FOverlay: TCastleRectangleControl;
-    FCurrentAnimation: TUiAnimation;
+    FCurrentAnimation: TBaseAnimation;
     FFadeDuration: Single;
     FOnCompleted: TNotifyEvent;
     procedure FadeOutComplete(Sender: TObject);

@@ -5,17 +5,19 @@ unit AnimationManager;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, UiAnimation;
+  Classes, SysUtils, Generics.Collections, UiAnimation;
 
 type
+  TAnimationList = specialize TObjectList<TBaseAnimation>;
+
   TAnimationManager = class
   private
-    FList: TObjectList;
+    FList: TAnimationList;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Add(AAnim: TUiAnimation);
-    procedure Remove(AAnim: TUiAnimation);
+    procedure Add(AAnim: TBaseAnimation);
+    procedure Remove(AAnim: TBaseAnimation);
     procedure Update(const SecondsPassed: Single);
     procedure Clear;
     function Count: Integer;
@@ -29,7 +31,7 @@ implementation
 constructor TAnimationManager.Create;
 begin
   inherited;
-  FList := TObjectList.Create(True);
+  FList := TAnimationList.Create(True);
 end;
 
 destructor TAnimationManager.Destroy;
@@ -38,12 +40,12 @@ begin
   inherited;
 end;
 
-procedure TAnimationManager.Add(AAnim: TUiAnimation);
+procedure TAnimationManager.Add(AAnim: TBaseAnimation);
 begin
   FList.Add(AAnim);
 end;
 
-procedure TAnimationManager.Remove(AAnim: TUiAnimation);
+procedure TAnimationManager.Remove(AAnim: TBaseAnimation);
 begin
   FList.OwnsObjects := False;
   try
@@ -61,11 +63,11 @@ begin
   I := 0;
   while I < SavedCount do
   begin
-    (FList[I] as TUiAnimation).Update(SecondsPassed);
+    FList[I].Update(SecondsPassed);
     Inc(I);
   end;
   for I := FList.Count - 1 downto 0 do
-    if (FList[I] as TUiAnimation).IsComplete then
+    if FList[I].IsComplete then
       FList.Delete(I);
 end;
 
