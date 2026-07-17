@@ -8,7 +8,7 @@ uses
   SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleControls, CastleKeysMouse, CastleColors,
   CastleVectors, Interfaces,
-  GameViewPlay, GameViewInventory, ViewTransitionManager;
+  GameViewPlay, GameViewInventory, ViewTransitionManager, UiAnimation;
 
 type
   TLobbyViewTab = (lvtPlay, lvtInventory, lvtHeroes, lvtMarket);
@@ -22,10 +22,16 @@ type
     FActiveTab: TLobbyViewTab;
     FTransition: TViewTransitionManager;
     FTabIndicator: TCastleRectangleControl;
+    FColorAnim: TColorAnimation;
+    FAnimTargetTab: TLobbyViewTab;
+    FAnimStep: Integer;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
     function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     procedure SetView(const AValue: TObject);
     procedure TransitionCompleted(Sender: TObject);
+    procedure ColorFadeOutComplete(Sender: TObject);
+    procedure ColorFadeInComplete(Sender: TObject);
+    function GetLabelForTab(const ATab: TLobbyViewTab): TCastleLabel;
   public
     constructor Create(AView: TObject);
     destructor Destroy; override;
@@ -49,6 +55,7 @@ const
   InactiveColor: TCastleColor = (X: 0.45; Y: 0.45; Z: 0.45; W: 1.0);
   IndicatorColor: TCastleColor = (X: 0.55; Y: 0.10; Z: 0.10; W: 1.0);
   TransitionDuration: Single = 0.3;
+  AnimDuration: Single = 0.15;
 
 type
   TLobbyViewSystemHelper = class helper for TLobbyViewSystem
@@ -78,13 +85,26 @@ begin
   FTabIndicator := TCastleRectangleControl.Create(nil);
   FTabIndicator.Color := IndicatorColor;
   FTabIndicator.Height := 3;
+  FColorAnim := nil;
+  FAnimStep := 0;
 end;
 
 destructor TLobbyViewSystem.Destroy;
 begin
+  FreeAndNil(FColorAnim);
   FTransition.Free;
   FreeAndNil(FTabIndicator);
   inherited;
+end;
+
+function TLobbyViewSystem.GetLabelForTab(const ATab: TLobbyViewTab): TCastleLabel;
+begin
+  case ATab of
+    lvtPlay: Result := LobbyView.TabPlay;
+    lvtInventory: Result := LobbyView.TabInventory;
+    lvtHeroes: Result := LobbyView.TabHeroes;
+    lvtMarket: Result := LobbyView.TabMarket;
+  end;
 end;
 
 function TLobbyViewSystem.GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
@@ -110,12 +130,58 @@ begin
   FActiveView := GetOrCreateView(FActiveTab);
 end;
 
+procedure TLobbyViewSystem.ColorFadeOutComplete(Sender: TObject);
+var
+  NewLabel: TCastleLabel;
+begin
+  FreeAndNil(FColorAnim);
+  FAnimStep := 1;
+
+  NewLabel := GetLabelForTab(FAnimTargetTab);
+  if NewLabel <> nil then
+  begin
+    FColorAnim := TColorAnimation.Create(NewLabel, AnimDuration,
+      InactiveColor, ActiveColor);
+    FColorAnim.OnComplete := @ColorFadeInComplete;
+    FColorAnim.Start;
+  end
+  else
+    ColorFadeInComplete(nil);
+end;
+
+procedure TLobbyViewSystem.ColorFadeInComplete(Sender: TObject);
+var
+  OldView: TCastleView;
+  TargetView: TCastleView;
+  Container: TCastleContainer;
+begin
+  FreeAndNil(FColorAnim);
+  FAnimStep := 0;
+
+  FActiveTab := FAnimTargetTab;
+  UpdateTabVisuals;
+  FAnimTargetTab := lvtPlay;
+
+  OldView := FActiveView;
+  if (OldView <> nil) and (LobbyView <> nil) then
+  begin
+    Container := LobbyView.Container;
+    if Container = nil then Exit;
+    TargetView := GetOrCreateView(FActiveTab);
+    FActiveView := nil;
+    FTransition.StartTransition(Container, OldView, TargetView, TransitionDuration);
+  end;
+end;
+
 procedure TLobbyViewSystem.Update(const SecondsPassed: Single);
 var
   Container: TCastleContainer;
   TargetView: TCastleView;
 begin
   if FView = nil then Exit;
+
+  if FColorAnim <> nil then
+    FColorAnim.Update(SecondsPassed);
 
   if FTransition.IsActive then
   begin
@@ -157,72 +223,43 @@ end;
 
 procedure TLobbyViewSystem.UpdateTabVisuals;
 var
-  ActiveLabel: TCastleLabel;
+  i: TLobbyViewTab;
 begin
-  LobbyView.TabPlay.Color := InactiveColor;
-  LobbyView.TabInventory.Color := InactiveColor;
-  LobbyView.TabHeroes.Color := InactiveColor;
-  LobbyView.TabMarket.Color := InactiveColor;
-  ActiveLabel := nil;
-  case FActiveTab of
-    lvtPlay:
-    begin
-      LobbyView.TabPlay.Color := ActiveColor;
-      ActiveLabel := LobbyView.TabPlay;
-    end;
-    lvtInventory:
-    begin
-      LobbyView.TabInventory.Color := ActiveColor;
-      ActiveLabel := LobbyView.TabInventory;
-    end;
-    lvtHeroes:
-    begin
-      LobbyView.TabHeroes.Color := ActiveColor;
-      ActiveLabel := LobbyView.TabHeroes;
-    end;
-    lvtMarket:
-    begin
-      LobbyView.TabMarket.Color := ActiveColor;
-      ActiveLabel := LobbyView.TabMarket;
-    end;
-  end;
-  if ActiveLabel <> nil then
+  for i := Low(TLobbyViewTab) to High(TLobbyViewTab) do
   begin
-    FTabIndicator.Height := 3;
-    FTabIndicator.Width := ActiveLabel.EffectiveWidth;
-    FTabIndicator.Anchor(hpLeft);
-    FTabIndicator.Anchor(vpTop, vpBottom, -6);
-    if FTabIndicator.Parent <> ActiveLabel then
-      ActiveLabel.InsertFront(FTabIndicator);
-  end
-  else
-  begin
-    if FTabIndicator.Parent <> nil then
-      FTabIndicator.Parent.RemoveControl(FTabIndicator);
+    if i = FActiveTab then
+      GetLabelForTab(i).Color := ActiveColor
+    else
+      GetLabelForTab(i).Color := InactiveColor;
   end;
+
+  if FTabIndicator.Parent <> GetLabelForTab(FActiveTab) then
+    GetLabelForTab(FActiveTab).InsertFront(FTabIndicator);
+  FTabIndicator.Height := 3;
+  FTabIndicator.Width := GetLabelForTab(FActiveTab).EffectiveWidth;
+  FTabIndicator.Anchor(hpLeft);
+  FTabIndicator.Anchor(vpTop, vpBottom, -6);
 end;
 
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
 var
-  OldView: TCastleView;
-  TargetView: TCastleView;
-  Container: TCastleContainer;
+  OldLabel: TCastleLabel;
 begin
   if FActiveTab = ATab then Exit;
   if FTransition.IsActive then Exit;
+  if FColorAnim <> nil then Exit;
 
-  FActiveTab := ATab;
-  UpdateTabVisuals;
+  OldLabel := GetLabelForTab(FActiveTab);
+  if OldLabel = nil then Exit;
 
-  OldView := FActiveView;
-  if (OldView <> nil) and (LobbyView <> nil) then
-  begin
-    Container := LobbyView.Container;
-    if Container = nil then Exit;
-    TargetView := GetOrCreateView(ATab);
-    FActiveView := nil;
-    FTransition.StartTransition(Container, OldView, TargetView, TransitionDuration);
-  end;
+  FAnimTargetTab := ATab;
+  FAnimStep := 0;
+
+  FreeAndNil(FColorAnim);
+  FColorAnim := TColorAnimation.Create(OldLabel, AnimDuration,
+    ActiveColor, InactiveColor);
+  FColorAnim.OnComplete := @ColorFadeOutComplete;
+  FColorAnim.Start;
 end;
 
 end.

@@ -5,7 +5,7 @@ unit UiAnimation;
 interface
 
 uses
-  Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors;
+  Classes, SysUtils, CastleUIControls, CastleControls, CastleVectors, CastleColors;
 
 type
   TUiAnimation = class
@@ -35,6 +35,17 @@ type
   public
     constructor Create(AOverlay: TCastleRectangleControl; const ADuration: Single;
       const AFromAlpha, AToAlpha: Single);
+  end;
+
+  TColorAnimation = class(TUiAnimation)
+  private
+    FLabel: TCastleLabel;
+    FFromColor, FToColor: TVector4;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(ALabel: TCastleLabel; const ADuration: Single;
+      const AFromColor, AToColor: TVector4);
   end;
 
 implementation
@@ -96,6 +107,27 @@ begin
   Alpha := FFromAlpha + (FToAlpha - FFromAlpha) * Progress;
   FOverlay.Color := Vector4(FOverlay.Color.X, FOverlay.Color.Y,
     FOverlay.Color.Z, Alpha);
+end;
+
+{ TColorAnimation }
+
+constructor TColorAnimation.Create(ALabel: TCastleLabel;
+  const ADuration: Single; const AFromColor, AToColor: TVector4);
+begin
+  inherited Create(ADuration);
+  FLabel := ALabel;
+  FFromColor := AFromColor;
+  FToColor := AToColor;
+end;
+
+procedure TColorAnimation.DoAnimate(const Progress: Single);
+begin
+  FLabel.Color := Vector4(
+    FFromColor.X + (FToColor.X - FFromColor.X) * Progress,
+    FFromColor.Y + (FToColor.Y - FFromColor.Y) * Progress,
+    FFromColor.Z + (FToColor.Z - FFromColor.Z) * Progress,
+    FFromColor.W + (FToColor.W - FFromColor.W) * Progress
+  );
 end;
 
 end.
