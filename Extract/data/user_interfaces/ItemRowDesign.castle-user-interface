@@ -1,0 +1,100 @@
+{
+  "$$ClassName": "TCastleHorizontalGroup",
+  "Height": 56,
+  "Spacing": 6.0,
+  "WidthFraction": 1.0,
+  "HorizontalAnchorParent": "hpLeft",
+  "HorizontalAnchorSelf": "hpLeft",
+  "VerticalAnchorParent": "vpTop",
+  "VerticalAnchorSelf": "vpTop",
+  "$Children": [
+    {
+      "$$ClassName": "TCastleImageControl",
+      "Content": {
+        "$$ClassName": "TCastleImagePersistent",
+        "Url": "castle-data:/ui/slot_bg.png"
+      },
+      "Height": 56.0,
+      "Name": "Slot",
+      "VerticalAnchorParent": "vpMiddle",
+      "VerticalAnchorSelf": "vpMiddle",
+      "Width": 56.0
+    },
+    {
+      "$$ClassName": "TCastleLabel",
+      "AutoSize": false,
+      "ColorPersistent": {
+        "$$ClassName": "TCastleColorPersistent",
+        "Blue": 0.8500000238418579,
+        "Green": 0.8500000238418579,
+        "Red": 0.8500000238418579
+      },
+      "Height": 56,
+      "Name": "ItemName",
+      "Text": [
+        "Sword of Power"
+      ],
+      "VerticalAnchorParent": "vpMiddle",
+      "VerticalAnchorSelf": "vpMiddle",
+      "VerticalAlignment": "vpMiddle",
+      "Width": 160.0
+    },
+    {
+      "$$ClassName": "TCastleLabel",
+      "AutoSize": false,
+      "ColorPersistent": {
+        "$$ClassName": "TCastleColorPersistent",
+        "Blue": 0.6000000238418579,
+        "Green": 0.6000000238418579,
+        "Red": 0.6000000238418579
+      },
+      "Height": 56,
+      "Name": "ItemType",
+      "Text": [
+        "Weapon"
+      ],
+      "VerticalAnchorParent": "vpMiddle",
+      "VerticalAnchorSelf": "vpMiddle",
+      "VerticalAlignment": "vpMiddle",
+      "Width": 80.0
+    },
+    {
+      "$$ClassName": "TCastleLabel",
+      "AutoSize": false,
+      "ColorPersistent": {
+        "$$ClassName": "TCastleColorPersistent",
+        "Blue": 0.699999988079071,
+        "Green": 0.699999988079071,
+        "Red": 0.699999988079071
+      },
+      "Height": 56,
+      "Name": "ItemDesc",
+      "Text": [
+        "A legendary blade..."
+      ],
+      "VerticalAnchorParent": "vpMiddle",
+      "VerticalAnchorSelf": "vpMiddle",
+      "VerticalAlignment": "vpMiddle",
+      "Width": 200.0
+    },
+    {
+      "$$ClassName": "TCastleLabel",
+      "AutoSize": false,
+      "ColorPersistent": {
+        "$$ClassName": "TCastleColorPersistent",
+        "Blue": 0.30000001192092896,
+        "Green": 0.8500000238418579,
+        "Red": 1.0
+      },
+      "Height": 56,
+      "Name": "ItemPrice",
+      "Text": [
+        "1000g"
+      ],
+      "VerticalAnchorParent": "vpMiddle",
+      "VerticalAnchorSelf": "vpMiddle",
+      "VerticalAlignment": "vpMiddle",
+      "Width": 80.0
+    }
+  ]
+}

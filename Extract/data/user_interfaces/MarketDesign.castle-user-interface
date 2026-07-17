@@ -1,0 +1,1655 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "MarketDesign",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/panel_bg.png"
+      },
+      "Height" : 7.1000000000000000E+002,
+      "Name" : "MarketBg",
+      "Stretch" : true,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 2.4000000000000000E+002,
+        "Y" : -1.1000000000000000E+002
+      },
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 1.1200000000000000E+003,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleLabel",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 7.5000000000000000E-001,
+            "Green" : 7.5000000000000000E-001,
+            "Red" : 7.5000000000000000E-001
+          },
+          "Name" : "MarketTitle",
+          "Text" : [
+            "MARKET"
+          ],
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 5.2000000000000000E+002,
+            "Y" : 6.7000000000000000E+002
+          }
+        },
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "HorizontalAnchorParent" : "hpRight",
+          "HorizontalAnchorSelf" : "hpRight",
+          "Name" : "SearchRow",
+          "Spacing" : 8.0000000000000000E+000,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -2.0000000000000000E+001,
+            "Y" : -4.5000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleEdit",
+              "CaptureAllInput" : false,
+              "Height" : 4.0000000000000000E+001,
+              "Name" : "SearchEdit",
+              "Text" : "Search items...",
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 2.4000000000000000E+002
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "FIND",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 4.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "FindBtn",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 2.4800001525878906E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle"
+            }
+          ]
+        },
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "PaginationTop",
+          "Spacing" : 4.0000000000000000E+000,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -1.7000000000000000E+002,
+            "Y" : -9.0000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "<",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "PagePrev",
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "1",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page1",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 3.4000000000000000E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "2",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page2",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 6.8000000000000000E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "3",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page3",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.0200000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "4",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page4",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.3600000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "5",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page5",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.7000000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : ">",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "PageNext",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 2.0400000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            }
+          ]
+        },
+        {
+          "$$ClassName" : "TCastleScrollView",
+          "Height" : 4.6000000000000000E+002,
+          "Name" : "ItemsScroll",
+          "ScrollArea" : {
+            "$$ClassName" : "TCastleScrollArea",
+            "TranslationPersistent" : {
+              "$$ClassName" : "TCastleVector2Persistent",
+              "X" : 2.0000000000000000E+001
+            },
+            "$Children" : [
+              {
+                "$$ClassName" : "TCastleVerticalGroup",
+                "AutoSizeToChildren" : true,
+                "Name" : "ItemsList",
+                "Spacing" : 4.0000000000000000E+000,
+                "WidthFraction" : 1.0000000000000000E+000,
+                "$Children" : [
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow0",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot0",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName0",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType0",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc0",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice0",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow1",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -6.0000000000000000E+001
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot1",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName1",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType1",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc1",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice1",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow2",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.2000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot2",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName2",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType2",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc2",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice2",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow3",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -1.8000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot3",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName3",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType3",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc3",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice3",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  },
+                  {
+                    "$$ClassName" : "TCastleHorizontalGroup",
+                    "Height" : 5.6000000000000000E+001,
+                    "Name" : "ItemRow4",
+                    "Spacing" : 6.0000000000000000E+000,
+                    "TranslationPersistent" : {
+                      "$$ClassName" : "TCastleVector2Persistent",
+                      "Y" : -2.4000000000000000E+002
+                    },
+                    "VerticalAnchorParent" : "vpTop",
+                    "VerticalAnchorSelf" : "vpTop",
+                    "WidthFraction" : 1.0000000000000000E+000,
+                    "$Children" : [
+                      {
+                        "$$ClassName" : "TCastleImageControl",
+                        "Content" : {
+                          "$$ClassName" : "TCastleImagePersistent",
+                          "Url" : "castle-data:/ui/slot_bg.png"
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "Slot4",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 5.6000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 8.5000002384185791E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 8.5000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemName4",
+                        "Text" : [
+                          "Sword of Power"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 6.2000000000000000E+001
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 1.6000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.0000002384185791E-001,
+                          "Green" : 6.0000002384185791E-001,
+                          "Red" : 6.0000002384185791E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemType4",
+                        "Text" : [
+                          "Weapon"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 2.2800000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 6.9999998807907104E-001,
+                          "Green" : 6.9999998807907104E-001,
+                          "Red" : 6.9999998807907104E-001
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemDesc4",
+                        "Text" : [
+                          "A legendary blade..."
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 3.1400000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 2.0000000000000000E+002
+                      },
+                      {
+                        "$$ClassName" : "TCastleLabel",
+                        "AutoSize" : false,
+                        "ColorPersistent" : {
+                          "$$ClassName" : "TCastleColorPersistent",
+                          "Blue" : 3.0000001192092896E-001,
+                          "Green" : 8.5000002384185791E-001,
+                          "Red" : 1.0000000000000000E+000
+                        },
+                        "Height" : 5.6000000000000000E+001,
+                        "Name" : "ItemPrice4",
+                        "Text" : [
+                          "1000g"
+                        ],
+                        "TranslationPersistent" : {
+                          "$$ClassName" : "TCastleVector2Persistent",
+                          "X" : 5.2000000000000000E+002
+                        },
+                        "VerticalAlignment" : "vpMiddle",
+                        "VerticalAnchorParent" : "vpMiddle",
+                        "VerticalAnchorSelf" : "vpMiddle",
+                        "Width" : 8.0000000000000000E+001
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "ScrollBarWidth" : 1.0000000000000000E+001,
+          "ScrollbarFrame" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarFrame_thin.png"
+          },
+          "ScrollbarSlider" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/ScrollbarSlider_thin.png"
+          },
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 3.0000000000000000E+001,
+            "Y" : -1.3000000000000000E+002
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "Width" : 6.6000000000000000E+002
+        },
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "PaginationBottom",
+          "Spacing" : 4.0000000000000000E+000,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -1.8000000000000000E+002,
+            "Y" : -6.1000000000000000E+002
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "<",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "PagePrevB",
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "1",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page1B",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 3.4000000000000000E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "2",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page2B",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 6.8000000000000000E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "3",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page3B",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.0200000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "4",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page4B",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.3600000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : "5",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "Page5B",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.7000000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleButton",
+              "AutoSize" : false,
+              "Border" : {
+                "$$ClassName" : "TBorder",
+                "AllSides" : 1.0000000000000000E+000
+              },
+              "BorderColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 6.0000002384185791E-001,
+                "Green" : 6.0000002384185791E-001,
+                "Red" : 6.0000002384185791E-001
+              },
+              "Caption" : ">",
+              "CustomBackground" : true,
+              "CustomBackgroundDisabled" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomColorNormalPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 1.0000000149011612E-001,
+                "Green" : 1.0000000149011612E-001,
+                "Red" : 5.5000001192092896E-001
+              },
+              "CustomColorPressedPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 1.0000000000000000E+000,
+                "Blue" : 5.0000000745058060E-002,
+                "Green" : 5.0000000745058060E-002,
+                "Red" : 3.4999999403953552E-001
+              },
+              "CustomTextColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "CustomTextColorUse" : true,
+              "Height" : 3.0000000000000000E+001,
+              "Image" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "PageNextB",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 2.0400000000000000E+002
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 3.0000000000000000E+001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
