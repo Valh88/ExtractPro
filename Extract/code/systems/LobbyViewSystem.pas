@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleWindow, CastleUIControls, CastleKeysMouse, Interfaces,
+  CastleWindow, CastleUIControls, CastleKeysMouse, CastleColors, Interfaces,
   GameViewPlay, GameViewInventory;
 
 type
@@ -25,6 +25,7 @@ type
     constructor Create(AView: TObject);
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
+    procedure UpdateTabVisuals;
     procedure OnTabPress(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
     property ActiveTab: TLobbyViewTab read FActiveTab write SetActiveTab;
@@ -36,6 +37,10 @@ type
 implementation
 
 uses GameViewLobby;
+
+const
+  ActiveColor: TCastleColor = (X: 0.75; Y: 0.75; Z: 0.75; W: 1.0);
+  InactiveColor: TCastleColor = (X: 0.45; Y: 0.45; Z: 0.45; W: 1.0);
 
 type
   TLobbyViewSystemHelper = class helper for TLobbyViewSystem
@@ -115,10 +120,25 @@ begin
   FView := AValue;
 end;
 
+procedure TLobbyViewSystem.UpdateTabVisuals;
+begin
+  LobbyView.TabPlay.Color := InactiveColor;
+  LobbyView.TabInventory.Color := InactiveColor;
+  LobbyView.TabHeroes.Color := InactiveColor;
+  LobbyView.TabMarket.Color := InactiveColor;
+  case FActiveTab of
+    lvtPlay: LobbyView.TabPlay.Color := ActiveColor;
+    lvtInventory: LobbyView.TabInventory.Color := ActiveColor;
+    lvtHeroes: LobbyView.TabHeroes.Color := ActiveColor;
+    lvtMarket: LobbyView.TabMarket.Color := ActiveColor;
+  end;
+end;
+
 procedure TLobbyViewSystem.SetActiveTab(const ATab: TLobbyViewTab);
 begin
   if FActiveTab = ATab then Exit;
   FActiveTab := ATab;
+  UpdateTabVisuals;
 end;
 
 end.

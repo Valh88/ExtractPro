@@ -57,6 +57,7 @@ begin
   begin
     TabPlay.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
     TabInventory.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
+    FLobbyClient.ViewSystem.UpdateTabVisuals;
   end;
 end;
 
