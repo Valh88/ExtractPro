@@ -17,6 +17,7 @@
       <path value="../logic/src/auth_server/" />
       <path value="../logic/src/castle_bridges/" />
       <path value="../logic/src/world_systems/" />
+      <path value="../logic/src/fsm/" />
       <path value="../Extract/code/behaviours/" />
       <path value="src/systems/" />
       <path value="src/behaviours/" />

@@ -48,6 +48,7 @@ type
     property Database: TGameDatabase read FDatabase write SetDatabase;
     property AuthValidator: IAuthValidator read FValidator write FValidator;
     property OnLog: TNotifyEvent read FOnLog write FOnLog;
+    function GetGameLobbyPort: Word;
     property Lobbies: TLobbyArray read FLobbies;
     property Count: Integer read GetCount;
   end;
@@ -186,6 +187,13 @@ begin
     if FLobbies[i].World.NetSystem.Server.GetPeerEntityIdByPlayerId(APlayerId) <> 0 then
       Exit(FLobbies[i].World);
   Result := nil;
+end;
+
+function TLobbyManager.GetGameLobbyPort: Word;
+begin
+  if Length(FLobbies) = 0 then
+    raise Exception.Create('No game lobbies available');
+  Result := FLobbies[0].Port;
 end;
 
 function TLobbyManager.GetCount: Integer;
