@@ -55,21 +55,23 @@ procedure TViewLobby.Start;
 var
   MM: TClientMatchmakingSystem;
   VP: TViewPlay;
+  VS: TLobbyViewSystem;
 begin
   inherited;
   if FLobbyClient <> nil then
   begin
-    TabPlay.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
-    TabInventory.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
-    TabHeroes.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
-    TabMarket.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
-    FLobbyClient.ViewSystem.UpdateTabVisuals;
+    VS := FLobbyClient.ViewSystem;
+    TabPlay.OnPress := @VS.OnTabPress;
+    TabInventory.OnPress := @VS.OnTabPress;
+    TabHeroes.OnPress := @VS.OnTabPress;
+    TabMarket.OnPress := @VS.OnTabPress;
+    VS.UpdateTabVisuals;
 
     MM := FLobbyClient.MatchmakingSystem;
     if MM <> nil then
     begin
-      FLobbyClient.ViewSystem.GetOrCreateView(lvtPlay);
-      VP := FLobbyClient.ViewSystem.ViewPlay;
+      VS.GetOrCreateView(lvtPlay);
+      VP := VS.ViewPlay;
       if VP <> nil then
         VP.MatchmakingSystem := MM;
     end;
@@ -98,18 +100,30 @@ begin
 end;
 
 function TViewLobby.Motion(const Event: TInputMotion): Boolean;
+var
+  VS: TLobbyViewSystem;
 begin
   Result := inherited;
   if Result then Exit;
   if FLobbyClient <> nil then
-    FLobbyClient.ViewSystem.NotifyMotion(Event.Position);
+  begin
+    VS := FLobbyClient.ViewSystem;
+    if VS <> nil then
+      VS.NotifyMotion(Event.Position);
+  end;
 end;
 
 procedure TViewLobby.SetLobbyClient(const AValue: TLobbyClient);
+var
+  VS: TLobbyViewSystem;
 begin
   FLobbyClient := AValue;
-  if FLobbyClient.ViewSystem <> nil then
-    FLobbyClient.ViewSystem.View := Self;
+  if FLobbyClient <> nil then
+  begin
+    VS := FLobbyClient.ViewSystem;
+    if VS <> nil then
+      VS.View := Self;
+  end;
 end;
 
 end.
