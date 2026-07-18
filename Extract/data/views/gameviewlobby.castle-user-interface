@@ -391,6 +391,18 @@
           "WidthFraction" : 1.0000000000000000E+000
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Height" : 6.0000000000000000E+001,
+      "Name" : "SearchDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.4000000000000000E+002,
+        "Y" : 1.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
+      "Width" : 1.9000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
