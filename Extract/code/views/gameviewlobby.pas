@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
-  LobbyClient;
+  LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem;
 
 type
   TViewLobby = class(TCastleView)
@@ -52,6 +52,9 @@ begin
 end;
 
 procedure TViewLobby.Start;
+var
+  MM: TClientMatchmakingSystem;
+  VP: TViewPlay;
 begin
   inherited;
   if FLobbyClient <> nil then
@@ -61,6 +64,15 @@ begin
     TabHeroes.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
     TabMarket.OnPress := @FLobbyClient.ViewSystem.OnTabPress;
     FLobbyClient.ViewSystem.UpdateTabVisuals;
+
+    MM := FLobbyClient.MatchmakingSystem;
+    if MM <> nil then
+    begin
+      FLobbyClient.ViewSystem.GetOrCreateView(lvtPlay);
+      VP := FLobbyClient.ViewSystem.ViewPlay;
+      if VP <> nil then
+        VP.MatchmakingSystem := MM;
+    end;
   end;
 end;
 

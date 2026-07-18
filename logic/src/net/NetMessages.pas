@@ -88,6 +88,9 @@ const
   msgJoinRaidAccept = 21;
   msgJoinRaidDeny = 22;
 
+  rpcQueueJoin  = 30;
+  rpcQueueLeave = 31;
+
 type
   TJoinReqData = packed record
     LobbyId: UInt32;

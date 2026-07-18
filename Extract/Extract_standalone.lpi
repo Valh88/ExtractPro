@@ -128,7 +128,11 @@
       <Unit13>
         <Filename Value="code/LobbyClient.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit12>
+      </Unit13>
+      <Unit14>
+        <Filename Value="code/systems/ClientMatchmakingSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

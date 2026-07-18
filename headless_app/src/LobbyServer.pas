@@ -30,6 +30,7 @@ type
     procedure Stop; override;
     property RequireAuth: Boolean read GetRequireAuth write SetRequireAuth;
     property LobbyManager: TLobbyManager read GetLobbyManager;
+    property NetSystem: TLobbyNetSystem read FNetSystem;
   end;
 
 implementation

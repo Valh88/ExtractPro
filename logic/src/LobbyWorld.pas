@@ -26,7 +26,6 @@ type
     FSystems: TWorldSystemList;
     procedure AddSystem(ASystem: IWorldSystem);
     procedure RegisterSystems; virtual;
-    function FindPlayerIndex(const APlayerId: UInt32): Integer;
   public
     constructor Create;
     destructor Destroy; override;
@@ -36,9 +35,12 @@ type
     function Press(const Event: TInputPressRelease): Boolean; virtual;
     function AddPlayer(const APlayerId: UInt32; const ALogin: string): Boolean;
     procedure RemovePlayer(const APlayerId: UInt32);
+    function FindPlayerIndex(const APlayerId: UInt32): Integer;
 
     property Players: TLobbyPlayerArray read FPlayers;
     property AuthValidator: IAuthValidator read FAuthValidator write FAuthValidator;
+    property Systems: TWorldSystemList read FSystems;
+    function FindSystemByClass(AClass: TClass): TObject;
   end;
 
 implementation
@@ -90,6 +92,18 @@ end;
 
 procedure TLobbyWorldBase.RegisterSystems;
 begin
+end;
+
+function TLobbyWorldBase.FindSystemByClass(AClass: TClass): TObject;
+var
+  i: Integer;
+begin
+  for i := 0 to FSystems.Count - 1 do
+  begin
+    Result := TObject(Pointer(FSystems[i]));
+    if Result is AClass then Exit;
+  end;
+  Result := nil;
 end;
 
 procedure TLobbyWorldBase.AddSystem(ASystem: IWorldSystem);

@@ -32,7 +32,6 @@ type
     FMouseInContainer: Boolean;
     FSwitchingTabs: Boolean;
     procedure SetActiveTab(const ATab: TLobbyViewTab);
-    function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     procedure SetView(const AValue: TObject);
     procedure TransitionCompleted(Sender: TObject);
     procedure OnAnimComplete(Sender: TObject);
@@ -48,6 +47,7 @@ type
     procedure NotifyMotion(const Position: TVector2);
     procedure OnTabPress(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
+    function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     property ActiveTab: TLobbyViewTab read FActiveTab write SetActiveTab;
     property View: TObject read FView write SetView;
     property ViewPlay: TViewPlay read FViewPlay;

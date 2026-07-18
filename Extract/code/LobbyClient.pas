@@ -10,7 +10,7 @@ uses
   SysUtils, Classes,
   LobbyWorld, help_types, Interfaces,
   LobbyClientNetSystem, ClientAuthSystem, RpcClient, NetMessages,
-  LobbyViewSystem;
+  LobbyViewSystem, ClientMatchmakingSystem;
 
 type
   TLobbyClient = class(TLobbyWorldBase)
@@ -19,6 +19,7 @@ type
     FRpc: TRpcClient;
     FNetSystem: TLobbyClientNetSystem;
     FViewSystem: TLobbyViewSystem;
+    FMatchmakingSystem: TClientMatchmakingSystem;
   protected
     procedure RegisterSystems; override;
   public
@@ -30,6 +31,7 @@ type
     property Rpc: TRpcClient read FRpc;
     property NetSystem: TLobbyClientNetSystem read FNetSystem;
     property ViewSystem: TLobbyViewSystem read FViewSystem;
+    property MatchmakingSystem: TClientMatchmakingSystem read FMatchmakingSystem;
   end;
 
 implementation
@@ -61,6 +63,9 @@ begin
   begin
     FNetSystem.Send(M);
   end;
+  FNetSystem.Rpc := FRpc;
+  FMatchmakingSystem := TClientMatchmakingSystem.Create(Self, FRpc);
+  AddSystem(FMatchmakingSystem);
 end;
 
 procedure TLobbyClient.Connect(const AHost: string; APort: Word);

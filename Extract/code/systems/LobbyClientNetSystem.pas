@@ -7,12 +7,13 @@ interface
 uses
   SysUtils, Classes,
   LobbySystemBase, LobbyWorld,
-  RNL, NetMessages, NetClient;
+  RNL, NetMessages, NetClient, RpcClient;
 
 type
   TLobbyClientNetSystem = class(TLobbySystemBase)
   private
     FClient: TGameClient;
+    FRpc: TRpcClient;
     FHost: string;
     FPort: Word;
     FAuthToken: string;
@@ -35,6 +36,7 @@ type
     procedure RequestJoinRaid(const ARoomId: UInt32);
 
     property AuthToken: string read FAuthToken write FAuthToken;
+    property Rpc: TRpcClient read FRpc write FRpc;
     property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
     property OnDisconnected: TNotifyEvent read FOnDisconnected write FOnDisconnected;
     property OnRoomList: TNotifyEvent read FOnRoomList write FOnRoomList;
@@ -112,7 +114,13 @@ end;
 
 procedure TLobbyClientNetSystem.OnReceive(Sender: TObject; const Msg: TNetMessage);
 begin
-  // TODO: handle msgRoomList, msgJoinRaidAccept, msgJoinRaidDeny, msgChat
+  case Msg.Header.MsgType of
+    msgRpcResponse:
+    begin
+      if FRpc <> nil then
+        FRpc.DispatchResponse(Msg.Header.CorrelationId, Msg.Payload);
+    end;
+  end;
 end;
 
 procedure TLobbyClientNetSystem.RequestRoomList;

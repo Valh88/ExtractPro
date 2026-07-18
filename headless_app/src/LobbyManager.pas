@@ -143,16 +143,22 @@ begin
 end;
 
 procedure TLobbyManager.AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer; const ARequireAuth: Boolean);
+var
+  LS: TLobbyServer;
+  MgrSys: TLobbyManagerSystem;
 begin
   if FLobbyServer <> nil then
     raise Exception.Create('Matchmaking lobby already exists');
   FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
-  TLobbyServer(FLobbyServer).AddSystem(TLobbyManagerSystem.Create(Self));
-  TLobbyServer(FLobbyServer).RequireAuth := ARequireAuth;
+  LS := TLobbyServer(FLobbyServer);
+  MgrSys := TLobbyManagerSystem.Create(Self);
+  LS.AddSystem(MgrSys);
+  LS.RequireAuth := ARequireAuth;
+  LS.NetSystem.ManagerSystem := MgrSys;
   if FValidator <> nil then
-    TLobbyServer(FLobbyServer).AuthValidator := FValidator;
+    LS.AuthValidator := FValidator;
   if FLobbyDbSystem <> nil then
-    TLobbyServer(FLobbyServer).SetDbSystem(FLobbyDbSystem);
+    LS.SetDbSystem(FLobbyDbSystem);
 end;
 
 procedure TLobbyManager.RemoveLobby(const AId: UInt32);

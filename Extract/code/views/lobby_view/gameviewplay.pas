@@ -3,7 +3,8 @@ unit GameViewPlay;
 interface
 
 uses Classes,
-  CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse;
+  CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
+  ClientMatchmakingSystem;
 
 type
   TViewPlay = class(TCastleView)
@@ -18,10 +19,15 @@ type
     SoloIcon: TCastleImageControl;
     PartyIcon: TCastleImageControl;
     SearchBtn: TCastleButton;
+    FMatchmakingSystem: TClientMatchmakingSystem;
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
+    procedure OnSearchPress(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
+    procedure OnQueueStateChanged(Sender: TObject);
+    property MatchmakingSystem: TClientMatchmakingSystem read FMatchmakingSystem write FMatchmakingSystem;
   end;
 
 var
@@ -46,17 +52,40 @@ begin
   SoloIcon := PlayPanel.DesignedComponent('SoloIcon') as TCastleImageControl;
   PartyIcon := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
   SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
+  SearchBtn.OnPress := @OnSearchPress;
+  if FMatchmakingSystem <> nil then
+    FMatchmakingSystem.OnStateChanged := @OnQueueStateChanged;
 end;
 
 procedure TViewPlay.Stop;
 begin
   inherited;
+  if FMatchmakingSystem <> nil then
+    FMatchmakingSystem.OnStateChanged := nil;
 end;
 
 procedure TViewPlay.Update(const SecondsPassed: Single; var HandleInput: boolean);
 begin
   inherited;
-  { Executed every frame. }
+end;
+
+procedure TViewPlay.OnSearchPress(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if FMatchmakingSystem = nil then Exit;
+  if FMatchmakingSystem.State = msSearching then
+    FMatchmakingSystem.Dequeue
+  else
+    FMatchmakingSystem.Enqueue;
+  Handled := True;
+end;
+
+procedure TViewPlay.OnQueueStateChanged(Sender: TObject);
+begin
+  if FMatchmakingSystem.State = msSearching then
+    SearchBtn.Caption := 'CANCEL'
+  else
+    SearchBtn.Caption := 'SEARCH';
 end;
 
 end.
