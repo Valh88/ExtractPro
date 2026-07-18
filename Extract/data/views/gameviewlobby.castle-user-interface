@@ -393,6 +393,22 @@
           "WidthFraction" : 1.0000000000000000E+000
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Height" : 5.6000000000000000E+001,
+      "HorizontalAnchorParent" : "hpRight",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Name" : "SearchDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : -1.3577753906250000E+003,
+        "Y" : -3.9300000000000000E+002
+      },
+      "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle",
+      "Width" : 2.4000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {

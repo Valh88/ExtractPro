@@ -1,0 +1,130 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : false,
+  "Height" : 56,
+  "Name" : "SearchLobbyDesign",
+  "Width" : 240,
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "BorderColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 1,
+        "Blue" : 0.5,
+        "Green" : 0.8,
+        "Red" : 0.2
+      },
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 0.25,
+        "Blue" : 0.15,
+        "Green" : 0.15,
+        "Red" : 0.05
+      },
+      "CornerRadius" : 8,
+      "FullSize" : true,
+      "Name" : "SearchFrame",
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "HorizontalAnchorParent" : "hpMiddle",
+          "HorizontalAnchorSelf" : "hpMiddle",
+          "Name" : "SearchGroup",
+          "Spacing" : 20,
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 0.95,
+                "Green" : 0.95,
+                "Red" : 0.95
+              },
+              "FontSize" : 22,
+              "Name" : "SearchLabel",
+              "Text" : [
+                "ПОИСК"
+              ],
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle"
+            },
+            {
+              "$$ClassName" : "TCastleUserInterface",
+              "Height" : 48,
+              "Name" : "SpinnerContainer",
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 48,
+              "$Children" : [
+                {
+                  "$$ClassName" : "TCastleImageControl",
+                  "Content" : {
+                    "$$ClassName" : "TCastleImagePersistent",
+                    "Url" : "castle-data:/ui/spinner_dot.png"
+                  },
+                  "Height" : 18,
+                  "Name" : "Dot0",
+                  "TranslationPersistent" : {
+                    "$$ClassName" : "TCastleVector2Persistent",
+                    "X" : -12,
+                    "Y" : 12
+                  },
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "Width" : 18
+                },
+                {
+                  "$$ClassName" : "TCastleImageControl",
+                  "Content" : {
+                    "$$ClassName" : "TCastleImagePersistent",
+                    "Url" : "castle-data:/ui/spinner_dot.png"
+                  },
+                  "ColorPersistent" : {
+                    "$$ClassName" : "TCastleColorPersistent",
+                    "Blue" : 0.3,
+                    "Green" : 0.7,
+                    "Red" : 0.3
+                  },
+                  "Height" : 18,
+                  "Name" : "Dot1",
+                  "TranslationPersistent" : {
+                    "$$ClassName" : "TCastleVector2Persistent",
+                    "X" : 12,
+                    "Y" : 12
+                  },
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "Width" : 18
+                },
+                {
+                  "$$ClassName" : "TCastleImageControl",
+                  "Content" : {
+                    "$$ClassName" : "TCastleImagePersistent",
+                    "Url" : "castle-data:/ui/spinner_dot.png"
+                  },
+                  "ColorPersistent" : {
+                    "$$ClassName" : "TCastleColorPersistent",
+                    "Blue" : 0.8,
+                    "Green" : 0.8,
+                    "Red" : 0.8
+                  },
+                  "Height" : 18,
+                  "Name" : "Dot2",
+                  "TranslationPersistent" : {
+                    "$$ClassName" : "TCastleVector2Persistent",
+                    "Y" : -12
+                  },
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "Width" : 18
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

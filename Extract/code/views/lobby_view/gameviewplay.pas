@@ -54,7 +54,10 @@ begin
   SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
   SearchBtn.OnPress := @OnSearchPress;
   if FMatchmakingSystem <> nil then
+  begin
     FMatchmakingSystem.OnStateChanged := @OnQueueStateChanged;
+    OnQueueStateChanged(nil);
+  end;
 end;
 
 procedure TViewPlay.Stop;
