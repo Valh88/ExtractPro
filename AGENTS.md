@@ -49,11 +49,49 @@ lazbuild fpcunitproject1.lpi   # Build test runner
 - `../logic/src/` is shared by both client and server
 - `castle-engine-output/` is build artifact directory (gitignored)
 - `*.res`, `*.lps`, `backup/`, `*.db` are gitignored
+- **Design files** (`*.castle-user-interface`) are loaded at runtime — no recompile needed after edits
 
 ## Testing
 - Tests use fpcunit framework
 - Test file: `test/TestCase1.pas` (RPC tests)
 - Run via Lazarus or CLI as shown above
+
+## Architecture: Loose Coupling via EventBus
+
+### Principle
+Systems must be **loosely coupled** — no direct references between systems or from views to system callbacks. Communication happens through **EventBus** (pub/sub).
+
+### Two EventBus Layers
+
+| Layer | Unit | Location | Purpose |
+|-------|------|----------|---------|
+| **Base** | `EventBus.pas` | `logic/src/` | Core game events (damage, death, extraction, etc.) — shared by client and server |
+| **Client** | `ClientEventBus.pas` | `Extract/code/` | Client-only events (matchmaking state, UI, etc.) — `GlobalClientEventBus: TClientEventBus` singleton via lazy init |
+
+### Lazy Singleton Pattern (no initialization/finalization)
+```pascal
+function GlobalClientEventBus: TClientEventBus;
+```
+Creates on first call, never freed (OS reclaims on exit). Avoids AV from module finalization order in FPC.
+
+### Communication Flow
+```
+Publisher ──Queue+Flush──→ EventBus ──Subscribe──→ Consumer(s)
+```
+- Publishers call `GlobalClientEventBus.Queue(E); GlobalClientEventBus.Flush;`
+- Consumers subscribe in `Start`, unsubscribe in `Stop`
+- Event types and consumers are fully decoupled — publisher doesn't know who listens
+
+### Current Client Events (`TClientGameEventType`)
+| Event | Published By | Consumed By | Payload (`Amount`) |
+|-------|-------------|-------------|-------------------|
+| `cgeMatchmakingStateChanged` | `TClientMatchmakingSystem.Enqueue/Dequeue` | `TViewLobby` (show/hide SearchDesign), `TViewPlay` (SEARCH/CANCEL btn) | `1.0` = searching, `0.0` = idle |
+
+### Adding a New Client Event
+1. Add value to `TClientGameEventType` in `ClientEventBus.pas`
+2. Fill `TClientGameEvent` record (use `Amount: Single` for simple state, `Data: Pointer` for payload)
+3. Publish via `GlobalClientEventBus.Queue(E); GlobalClientEventBus.Flush;`
+4. Subscribe via `GlobalClientEventBus.Subscribe(cgeYourEvent, @YourHandler);`
 
 ## Development Notes
 - Uses `{$mode objfpc}{$H+}` and modern Pascal features (anonymous functions, function references)
