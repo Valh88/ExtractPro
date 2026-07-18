@@ -4,7 +4,7 @@ interface
 
 uses Classes,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
-  ClientMatchmakingSystem;
+  ClientMatchmakingSystem, EventBus;
 
 type
   TViewPlay = class(TCastleView)
@@ -26,7 +26,7 @@ type
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
     procedure OnSearchPress(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
-    procedure OnQueueStateChanged(Sender: TObject);
+    procedure OnMMState(const Event: TGameEvent);
     property MatchmakingSystem: TClientMatchmakingSystem read FMatchmakingSystem write FMatchmakingSystem;
   end;
 
@@ -53,12 +53,17 @@ begin
   PartyIcon := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
   SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
   SearchBtn.OnPress := @OnSearchPress;
+  GlobalEventBus.Subscribe(geMatchmakingStateChanged, @OnMMState);
   if FMatchmakingSystem <> nil then
-    OnQueueStateChanged(nil);
+    if FMatchmakingSystem.State = msSearching then
+      SearchBtn.Caption := 'CANCEL'
+    else
+      SearchBtn.Caption := 'SEARCH';
 end;
 
 procedure TViewPlay.Stop;
 begin
+  GlobalEventBus.Unsubscribe(@OnMMState);
   inherited;
 end;
 
@@ -78,9 +83,9 @@ begin
   Handled := True;
 end;
 
-procedure TViewPlay.OnQueueStateChanged(Sender: TObject);
+procedure TViewPlay.OnMMState(const Event: TGameEvent);
 begin
-  if FMatchmakingSystem.State = msSearching then
+  if Event.Amount > 0 then
     SearchBtn.Caption := 'CANCEL'
   else
     SearchBtn.Caption := 'SEARCH';

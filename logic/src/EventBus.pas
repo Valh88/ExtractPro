@@ -17,7 +17,8 @@ type
     geRaidPhaseChanged,
     geRaidTimeWarning,
     geExtractionStarted,
-    geItemPickedUp
+    geItemPickedUp,
+    geMatchmakingStateChanged
   );
 
   TGameEvent = record
@@ -31,7 +32,6 @@ type
 
   TGameEventProc = procedure(const Event: TGameEvent) of object;
 
-  { Подписчик }
   TEventSubscriber = class
   private
     FProc: TGameEventProc;
@@ -56,7 +56,19 @@ type
     procedure Flush;
   end;
 
+function GlobalEventBus: TEventBus;
+
 implementation
+
+var
+  _EventBus: TEventBus = nil;
+
+function GlobalEventBus: TEventBus;
+begin
+  if _EventBus = nil then
+    _EventBus := TEventBus.Create;
+  Result := _EventBus;
+end;
 
 { TEventSubscriber }
 
@@ -122,6 +134,5 @@ procedure TEventBus.ClearQueue;
 begin
   FQueue := nil;
 end;
-
 
 end.

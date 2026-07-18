@@ -8,7 +8,8 @@ interface
 
 uses
   SysUtils, Classes,
-  LobbySystemBase, LobbyWorld, NetMessages, RpcClient;
+  LobbySystemBase, LobbyWorld, NetMessages, RpcClient,
+  EventBus;
 
 type
   TMatchmakingState = (msIdle, msSearching);
@@ -17,14 +18,13 @@ type
   private
     FRpc: TRpcClient;
     FState: TMatchmakingState;
-    FOnStateChanged: TNotifyEvent;
+    procedure PublishState;
   public
     constructor Create(ALobbyWorld: TLobbyWorldBase; ARpc: TRpcClient);
     procedure Update(const SecondsPassed: Single); override;
     procedure Enqueue;
     procedure Dequeue;
     property State: TMatchmakingState read FState;
-    property OnStateChanged: TNotifyEvent read FOnStateChanged write FOnStateChanged;
   end;
 
 implementation
@@ -37,6 +37,18 @@ begin
   FState := msIdle;
 end;
 
+procedure TClientMatchmakingSystem.PublishState;
+var
+  E: TGameEvent;
+begin
+  E.EventType := geMatchmakingStateChanged;
+  E.Amount := 0.0;
+  if FState = msSearching then
+    E.Amount := 1.0;
+  GlobalEventBus.Queue(E);
+  GlobalEventBus.Flush;
+end;
+
 procedure TClientMatchmakingSystem.Update(const SecondsPassed: Single);
 begin
 end;
@@ -45,12 +57,11 @@ procedure TClientMatchmakingSystem.Enqueue;
 begin
   if FState = msSearching then Exit;
   FState := msSearching;
+  PublishState;
   FRpc.SendRequest(rpcQueueJoin, nil,
     procedure(const ResponsePayload: TBytes)
     begin
-      if Assigned(FOnStateChanged) then FOnStateChanged(Self);
     end);
-  if Assigned(FOnStateChanged) then FOnStateChanged(Self);
 end;
 
 procedure TClientMatchmakingSystem.Dequeue;
@@ -60,7 +71,7 @@ begin
     procedure(const ResponsePayload: TBytes)
     begin
       FState := msIdle;
-      if Assigned(FOnStateChanged) then FOnStateChanged(Self);
+      PublishState;
     end);
 end;
 

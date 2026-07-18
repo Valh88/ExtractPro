@@ -394,6 +394,7 @@
     },
     {
       "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
       "Height" : 6.0000000000000000E+001,
       "Name" : "SearchDesign",
       "TranslationPersistent" : {

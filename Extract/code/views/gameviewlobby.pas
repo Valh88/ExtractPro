@@ -5,7 +5,8 @@ interface
 uses
   SysUtils, Classes, Math,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
-  LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem;
+  LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
+  EventBus;
 
 type
   TViewLobby = class(TCastleView)
@@ -40,7 +41,7 @@ type
   private
     FLobbyClient: TLobbyClient;
     FSpinnerImage: TCastleImageControl;
-    procedure OnMatchmakingStateChanged(Sender: TObject);
+    procedure OnMMState(const Event: TGameEvent);
   end;
 
 const
@@ -75,23 +76,21 @@ begin
 
     FSpinnerImage := SearchDesign.DesignedComponent('SpinnerImage') as TCastleImageControl;
 
-    MM := FLobbyClient.MatchmakingSystem;
-    if MM <> nil then
+    GlobalEventBus.Subscribe(geMatchmakingStateChanged, @OnMMState);
+
+    VS.GetOrCreateView(lvtPlay);
+    VP := VS.ViewPlay;
+    if VP <> nil then
     begin
-      VS.GetOrCreateView(lvtPlay);
-      VP := VS.ViewPlay;
-      if VP <> nil then
-        VP.MatchmakingSystem := MM;
-      MM.OnStateChanged := @OnMatchmakingStateChanged;
-      OnMatchmakingStateChanged(nil);
+      MM := FLobbyClient.MatchmakingSystem;
+      VP.MatchmakingSystem := MM;
     end;
   end;
 end;
 
 procedure TViewLobby.Stop;
 begin
-  if (FLobbyClient <> nil) and (FLobbyClient.MatchmakingSystem <> nil) then
-    FLobbyClient.MatchmakingSystem.OnStateChanged := nil;
+  GlobalEventBus.Unsubscribe(@OnMMState);
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -142,22 +141,9 @@ begin
   end;
 end;
 
-procedure TViewLobby.OnMatchmakingStateChanged(Sender: TObject);
-var
-  MM: TClientMatchmakingSystem;
-  VP: TViewPlay;
-  VS: TLobbyViewSystem;
+procedure TViewLobby.OnMMState(const Event: TGameEvent);
 begin
-  MM := FLobbyClient.MatchmakingSystem;
-  if MM = nil then Exit;
-  SearchDesign.Exists := MM.State = msSearching;
-  VS := FLobbyClient.ViewSystem;
-  if VS <> nil then
-  begin
-    VP := VS.ViewPlay;
-    if (VP <> nil) and (VP.PlayPanel <> nil) then
-      VP.OnQueueStateChanged(nil);
-  end;
+  SearchDesign.Exists := Event.Amount > 0;
 end;
 
 end.
