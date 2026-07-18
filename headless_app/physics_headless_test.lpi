@@ -104,7 +104,7 @@
         <PackageName Value="castle_engine_window"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="physics_headless_test.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -149,6 +149,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ServerDbSystem"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="src/MatchmakingSM.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MatchmakingSM"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -188,8 +188,6 @@ procedure TLobbyNetSystem.HandleRpcQueueJoin(const RequestPayload: TBytes;
 var
   Idx, PIdx: Integer;
   Mgr: TLobbyManagerSystem;
-  Q: TQueuedPlayerArray;
-  i: Integer;
 begin
   Idx := FindRpcCaller(CorrelationId);
   if Idx < 0 then Exit;
@@ -203,21 +201,8 @@ begin
 
   PIdx := LobbyWorld.FindPlayerIndex(FRpcCallers[Idx].PlayerId);
   if PIdx >= 0 then
-  begin
     Mgr.EnqueuePlayer(FRpcCallers[Idx].PlayerId,
       LobbyWorld.Players[PIdx].Login, 1);
-    WriteLn(StdErr, '[LobbyServer] Player ', FRpcCallers[Idx].PlayerId,
-      ' (', LobbyWorld.Players[PIdx].Login, ') joined queue');
-  end;
-
-  Q := Mgr.GetQueue;
-  Write(StdErr, '[LobbyServer] Queue [');
-  for i := 0 to High(Q) do
-  begin
-    if i > 0 then Write(StdErr, ', ');
-    Write(StdErr, Q[i].PlayerId, ':', Q[i].Login);
-  end;
-  WriteLn(StdErr, '] (', Length(Q), '/', Mgr.GetPartiesPerMatch, ')');
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
@@ -228,26 +213,13 @@ procedure TLobbyNetSystem.HandleRpcQueueLeave(const RequestPayload: TBytes;
 var
   Idx: Integer;
   Mgr: TLobbyManagerSystem;
-  Q: TQueuedPlayerArray;
-  i: Integer;
 begin
   Idx := FindRpcCaller(CorrelationId);
   if Idx < 0 then Exit;
 
   Mgr := TLobbyManagerSystem(FManagerSystem);
   if Mgr <> nil then
-  begin
     Mgr.DequeuePlayer(FRpcCallers[Idx].PlayerId);
-    WriteLn(StdErr, '[LobbyServer] Player ', FRpcCallers[Idx].PlayerId, ' left queue');
-    Q := Mgr.GetQueue;
-    Write(StdErr, '[LobbyServer] Queue [');
-    for i := 0 to High(Q) do
-    begin
-      if i > 0 then Write(StdErr, ', ');
-      Write(StdErr, Q[i].PlayerId, ':', Q[i].Login);
-    end;
-    WriteLn(StdErr, '] (', Length(Q), '/', Mgr.GetPartiesPerMatch, ')');
-  end;
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
@@ -297,6 +269,7 @@ end;
 procedure TLobbyNetSystem.OnPlayerDisconnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
 var
   Idx: Integer;
+  Mgr: TLobbyManagerSystem;
 begin
   Idx := FindPendingAuth(Peer);
   if Idx <> -1 then
@@ -305,7 +278,14 @@ begin
     SetLength(FPendingAuth, Length(FPendingAuth) - 1);
   end
   else
+  begin
     LobbyWorld.RemovePlayer(PlayerId);
+    if FManagerSystem <> nil then
+    begin
+      Mgr := TLobbyManagerSystem(FManagerSystem);
+      Mgr.DequeuePlayer(PlayerId);
+    end;
+  end;
 end;
 
 procedure TLobbyNetSystem.OnPlayerReceive(Sender: TObject; Peer: TRNLPeer;

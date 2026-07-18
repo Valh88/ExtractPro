@@ -47,6 +47,7 @@ begin
   FFsm := TMatchStateMachine.Create;
   FFsm.RegisterState(msWaiting, TWaitingState.Create(Self as IMatchmakingHost));
   FFsm.RegisterState(msGenerating, TGeneratingState.Create(Self as IMatchmakingHost));
+  FFsm.ChangeState(msWaiting);
 end;
 
 destructor TLobbyManagerSystem.Destroy;
