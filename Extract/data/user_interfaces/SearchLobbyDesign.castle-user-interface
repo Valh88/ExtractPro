@@ -51,76 +51,25 @@
               "VerticalAnchorSelf" : "vpMiddle"
             },
             {
-              "$$ClassName" : "TCastleUserInterface",
+              "$$ClassName" : "TCastleImageControl",
+              "Content" : {
+                "$$ClassName" : "TCastleImagePersistent",
+                "Url" : "castle-data:/ui/spinner_dots.png"
+              },
               "Height" : 48,
-              "Name" : "SpinnerContainer",
+              "Name" : "SpinnerImage",
+              "RotationPersistent" : {
+                "$$ClassName" : "TCastleFloatPersistent",
+                "Value" : 0
+              },
+              "RotationCenterPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 0.5,
+                "Y" : 0.5
+              },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
-              "Width" : 48,
-              "$Children" : [
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/spinner_dot.png"
-                  },
-                  "Height" : 18,
-                  "Name" : "Dot0",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : -12,
-                    "Y" : 12
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 18
-                },
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/spinner_dot.png"
-                  },
-                  "ColorPersistent" : {
-                    "$$ClassName" : "TCastleColorPersistent",
-                    "Blue" : 0.3,
-                    "Green" : 0.7,
-                    "Red" : 0.3
-                  },
-                  "Height" : 18,
-                  "Name" : "Dot1",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 12,
-                    "Y" : 12
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 18
-                },
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/spinner_dot.png"
-                  },
-                  "ColorPersistent" : {
-                    "$$ClassName" : "TCastleColorPersistent",
-                    "Blue" : 0.8,
-                    "Green" : 0.8,
-                    "Red" : 0.8
-                  },
-                  "Height" : 18,
-                  "Name" : "Dot2",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "Y" : -12
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 18
-                }
-              ]
+              "Width" : 48
             }
           ]
         }
