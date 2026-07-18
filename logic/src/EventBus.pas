@@ -17,8 +17,7 @@ type
     geRaidPhaseChanged,
     geRaidTimeWarning,
     geExtractionStarted,
-    geItemPickedUp,
-    geMatchmakingStateChanged
+    geItemPickedUp
   );
 
   TGameEvent = record
@@ -56,19 +55,7 @@ type
     procedure Flush;
   end;
 
-function GlobalEventBus: TEventBus;
-
 implementation
-
-var
-  _EventBus: TEventBus = nil;
-
-function GlobalEventBus: TEventBus;
-begin
-  if _EventBus = nil then
-    _EventBus := TEventBus.Create;
-  Result := _EventBus;
-end;
 
 { TEventSubscriber }
 

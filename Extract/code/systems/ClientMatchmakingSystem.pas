@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, Classes,
   LobbySystemBase, LobbyWorld, NetMessages, RpcClient,
-  EventBus;
+  ClientEventBus;
 
 type
   TMatchmakingState = (msIdle, msSearching);
@@ -39,14 +39,14 @@ end;
 
 procedure TClientMatchmakingSystem.PublishState;
 var
-  E: TGameEvent;
+  E: TClientGameEvent;
 begin
-  E.EventType := geMatchmakingStateChanged;
+  E.EventType := cgeMatchmakingStateChanged;
   E.Amount := 0.0;
   if FState = msSearching then
     E.Amount := 1.0;
-  GlobalEventBus.Queue(E);
-  GlobalEventBus.Flush;
+  GlobalClientEventBus.Queue(E);
+  GlobalClientEventBus.Flush;
 end;
 
 procedure TClientMatchmakingSystem.Update(const SecondsPassed: Single);

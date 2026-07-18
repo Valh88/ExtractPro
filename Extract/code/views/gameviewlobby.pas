@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Math,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
-  EventBus;
+  ClientEventBus;
 
 type
   TViewLobby = class(TCastleView)
@@ -41,7 +41,7 @@ type
   private
     FLobbyClient: TLobbyClient;
     FSpinnerImage: TCastleImageControl;
-    procedure OnMMState(const Event: TGameEvent);
+    procedure OnMMState(const Event: TClientGameEvent);
   end;
 
 const
@@ -76,7 +76,7 @@ begin
 
     FSpinnerImage := SearchDesign.DesignedComponent('SpinnerImage') as TCastleImageControl;
 
-    GlobalEventBus.Subscribe(geMatchmakingStateChanged, @OnMMState);
+    GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
 
     VS.GetOrCreateView(lvtPlay);
     VP := VS.ViewPlay;
@@ -90,7 +90,7 @@ end;
 
 procedure TViewLobby.Stop;
 begin
-  GlobalEventBus.Unsubscribe(@OnMMState);
+  GlobalClientEventBus.Unsubscribe(@OnMMState);
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -141,7 +141,7 @@ begin
   end;
 end;
 
-procedure TViewLobby.OnMMState(const Event: TGameEvent);
+procedure TViewLobby.OnMMState(const Event: TClientGameEvent);
 begin
   SearchDesign.Exists := Event.Amount > 0;
 end;
