@@ -169,92 +169,91 @@
           "$Children" : [
             {
               "$$ClassName" : "TCastleLabel",
+              "Alignment" : "hpMiddle",
+              "AutoSize" : false,
               "ColorPersistent" : {
                 "$$ClassName" : "TCastleColorPersistent",
                 "Blue" : 7.5000000000000000E-001,
                 "Green" : 7.5000000000000000E-001,
                 "Red" : 7.5000000000000000E-001
               },
+              "Height" : 2.2000000000000000E+001,
               "Name" : "TabPlay",
               "Text" : [
                 "PLAY"
               ],
-              "AutoSize" : false,
-              "Width" : 50,
-              "Height" : 22,
-              "Alignment" : "hpMiddle",
               "VerticalAnchorParent" : "vpMiddle",
-              "VerticalAnchorSelf" : "vpMiddle"
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 5.0000000000000000E+001
             },
             {
               "$$ClassName" : "TCastleLabel",
+              "Alignment" : "hpMiddle",
+              "AutoSize" : false,
               "ColorPersistent" : {
                 "$$ClassName" : "TCastleColorPersistent",
                 "Blue" : 4.4999998807907104E-001,
                 "Green" : 4.4999998807907104E-001,
                 "Red" : 4.4999998807907104E-001
               },
+              "Height" : 2.2000000000000000E+001,
               "Name" : "TabInventory",
               "Text" : [
                 "INVENTORY"
               ],
-              "AutoSize" : false,
-              "Width" : 90,
-              "Height" : 22,
-              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 7.9000000000000000E+001
+                "X" : 8.0000000000000000E+001
               },
               "VerticalAnchorParent" : "vpMiddle",
-              "VerticalAnchorSelf" : "vpMiddle"
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 9.0000000000000000E+001
             },
             {
               "$$ClassName" : "TCastleLabel",
+              "Alignment" : "hpMiddle",
+              "AutoSize" : false,
               "ColorPersistent" : {
                 "$$ClassName" : "TCastleColorPersistent",
                 "Blue" : 4.4999998807907104E-001,
                 "Green" : 4.4999998807907104E-001,
                 "Red" : 4.4999998807907104E-001
               },
+              "Height" : 2.2000000000000000E+001,
               "Name" : "TabHeroes",
               "Text" : [
                 "HEROES"
               ],
-              "AutoSize" : false,
-              "Width" : 70,
-              "Height" : 22,
-              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 2.2600000000000000E+002
+                "X" : 2.0000000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
-              "VerticalAnchorSelf" : "vpMiddle"
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 7.0000000000000000E+001
             },
             {
               "$$ClassName" : "TCastleLabel",
+              "Alignment" : "hpMiddle",
+              "AutoSize" : false,
               "ColorPersistent" : {
                 "$$ClassName" : "TCastleColorPersistent",
                 "Blue" : 4.4999998807907104E-001,
                 "Green" : 4.4999998807907104E-001,
                 "Red" : 4.4999998807907104E-001
               },
-              "FontScale" : 1.0,
+              "Height" : 2.2000000000000000E+001,
               "Name" : "TabMarket",
               "Text" : [
                 "MARKET"
               ],
-              "AutoSize" : false,
-              "Width" : 70,
-              "Height" : 22,
-              "Alignment" : "hpMiddle",
               "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 3.4000000000000000E+002
+                "X" : 3.0000000000000000E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
-              "VerticalAnchorSelf" : "vpMiddle"
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 7.0000000000000000E+001
             }
           ]
         },
@@ -367,7 +366,6 @@
         }
       ]
     },
-
     {
       "$$ClassName" : "TCastleRectangleControl",
       "ColorPersistent" : {
@@ -393,22 +391,6 @@
           "WidthFraction" : 1.0000000000000000E+000
         }
       ]
-    },
-    {
-      "$$ClassName" : "TCastleDesign",
-      "Height" : 5.6000000000000000E+001,
-      "HorizontalAnchorParent" : "hpRight",
-      "HorizontalAnchorSelf" : "hpRight",
-      "Name" : "SearchDesign",
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector2Persistent",
-        "X" : -1.3577753906250000E+003,
-        "Y" : -3.9300000000000000E+002
-      },
-      "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
-      "VerticalAnchorParent" : "vpMiddle",
-      "VerticalAnchorSelf" : "vpMiddle",
-      "Width" : 2.4000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {

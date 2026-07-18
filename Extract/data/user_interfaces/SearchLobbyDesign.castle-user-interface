@@ -1,27 +1,30 @@
 {
   "$$ClassName" : "TCastleUserInterface",
-  "FullSize" : false,
-  "Height" : 56,
+  "Height" : 5.6000000000000000E+001,
   "Name" : "SearchLobbyDesign",
-  "Width" : 240,
+  "TranslationPersistent" : {
+    "$$ClassName" : "TCastleVector2Persistent",
+    "X" : 2.8000000000000000E+002,
+    "Y" : 2.1000000000000000E+002
+  },
+  "Width" : 2.4000000000000000E+002,
   "$Children" : [
     {
       "$$ClassName" : "TCastleRectangleControl",
       "BorderColorPersistent" : {
         "$$ClassName" : "TCastleColorPersistent",
-        "Alpha" : 1,
-        "Blue" : 0.5,
-        "Green" : 0.8,
-        "Red" : 0.2
+        "Alpha" : 1.0000000000000000E+000,
+        "Blue" : 5.0000000000000000E-001,
+        "Green" : 8.0000001192092896E-001,
+        "Red" : 2.0000000298023224E-001
       },
       "ColorPersistent" : {
         "$$ClassName" : "TCastleColorPersistent",
-        "Alpha" : 0.25,
-        "Blue" : 0.15,
-        "Green" : 0.15,
-        "Red" : 0.05
+        "Alpha" : 2.5000000000000000E-001,
+        "Blue" : 1.5000000596046448E-001,
+        "Green" : 1.5000000596046448E-001,
+        "Red" : 5.0000000745058060E-002
       },
-      "CornerRadius" : 8,
       "FullSize" : true,
       "Name" : "SearchFrame",
       "$Children" : [
@@ -30,7 +33,7 @@
           "HorizontalAnchorParent" : "hpMiddle",
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "SearchGroup",
-          "Spacing" : 20,
+          "Spacing" : 2.0000000000000000E+001,
           "VerticalAnchorParent" : "vpMiddle",
           "VerticalAnchorSelf" : "vpMiddle",
           "$Children" : [
@@ -38,11 +41,11 @@
               "$$ClassName" : "TCastleLabel",
               "ColorPersistent" : {
                 "$$ClassName" : "TCastleColorPersistent",
-                "Blue" : 0.95,
-                "Green" : 0.95,
-                "Red" : 0.95
+                "Blue" : 9.4999998807907104E-001,
+                "Green" : 9.4999998807907104E-001,
+                "Red" : 9.4999998807907104E-001
               },
-              "FontSize" : 22,
+              "FontSize" : 2.2000000000000000E+001,
               "Name" : "SearchLabel",
               "Text" : [
                 "ПОИСК"
@@ -56,20 +59,15 @@
                 "$$ClassName" : "TCastleImagePersistent",
                 "Url" : "castle-data:/ui/spinner_dots.png"
               },
-              "Height" : 48,
+              "Height" : 4.8000000000000000E+001,
               "Name" : "SpinnerImage",
-              "RotationPersistent" : {
-                "$$ClassName" : "TCastleFloatPersistent",
-                "Value" : 0
-              },
-              "RotationCenterPersistent" : {
+              "TranslationPersistent" : {
                 "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 0.5,
-                "Y" : 0.5
+                "X" : 1.0140000915527344E+002
               },
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
-              "Width" : 48
+              "Width" : 4.8000000000000000E+001
             }
           ]
         }

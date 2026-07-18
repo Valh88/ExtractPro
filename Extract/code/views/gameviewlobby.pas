@@ -3,7 +3,7 @@ unit GameViewLobby;
 interface
 
 uses
-  SysUtils, Classes,
+  SysUtils, Classes, Math,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem;
 
@@ -28,6 +28,7 @@ type
     IconExit: TCastleImageControl;
     BottomPanel: TCastleRectangleControl;
     BottomGradient: TCastleImageControl;
+    SearchDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -38,7 +39,12 @@ type
     procedure SetLobbyClient(const AValue: TLobbyClient);
   private
     FLobbyClient: TLobbyClient;
+    FSpinnerImage: TCastleImageControl;
+    procedure OnMatchmakingStateChanged(Sender: TObject);
   end;
+
+const
+  SpinnerRotationSpeed = 5.0;
 
 var
   ViewLobby: TViewLobby;
@@ -67,6 +73,8 @@ begin
     TabMarket.OnPress := @VS.OnTabPress;
     VS.UpdateTabVisuals;
 
+    FSpinnerImage := SearchDesign.DesignedComponent('SpinnerImage') as TCastleImageControl;
+
     MM := FLobbyClient.MatchmakingSystem;
     if MM <> nil then
     begin
@@ -74,12 +82,16 @@ begin
       VP := VS.ViewPlay;
       if VP <> nil then
         VP.MatchmakingSystem := MM;
+      MM.OnStateChanged := @OnMatchmakingStateChanged;
+      OnMatchmakingStateChanged(nil);
     end;
   end;
 end;
 
 procedure TViewLobby.Stop;
 begin
+  if (FLobbyClient <> nil) and (FLobbyClient.MatchmakingSystem <> nil) then
+    FLobbyClient.MatchmakingSystem.OnStateChanged := nil;
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -88,7 +100,11 @@ procedure TViewLobby.Update(const SecondsPassed: Single; var HandleInput: boolea
 begin
   inherited;
   if FLobbyClient <> nil then
+  begin
     FLobbyClient.Update(SecondsPassed);
+    if (FSpinnerImage <> nil) and SearchDesign.Exists then
+      FSpinnerImage.Rotation := FSpinnerImage.Rotation + SecondsPassed * SpinnerRotationSpeed;
+  end;
 end;
 
 function TViewLobby.Press(const Event: TInputPressRelease): Boolean;
@@ -124,6 +140,15 @@ begin
     if VS <> nil then
       VS.View := Self;
   end;
+end;
+
+procedure TViewLobby.OnMatchmakingStateChanged(Sender: TObject);
+var
+  MM: TClientMatchmakingSystem;
+begin
+  MM := FLobbyClient.MatchmakingSystem;
+  if MM = nil then Exit;
+  SearchDesign.Exists := MM.State = msSearching;
 end;
 
 end.
