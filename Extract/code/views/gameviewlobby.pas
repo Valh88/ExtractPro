@@ -145,10 +145,19 @@ end;
 procedure TViewLobby.OnMatchmakingStateChanged(Sender: TObject);
 var
   MM: TClientMatchmakingSystem;
+  VP: TViewPlay;
+  VS: TLobbyViewSystem;
 begin
   MM := FLobbyClient.MatchmakingSystem;
   if MM = nil then Exit;
   SearchDesign.Exists := MM.State = msSearching;
+  VS := FLobbyClient.ViewSystem;
+  if VS <> nil then
+  begin
+    VP := VS.ViewPlay;
+    if (VP <> nil) and (VP.PlayPanel <> nil) then
+      VP.OnQueueStateChanged(nil);
+  end;
 end;
 
 end.
