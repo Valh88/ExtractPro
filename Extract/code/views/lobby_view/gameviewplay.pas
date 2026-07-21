@@ -55,10 +55,11 @@ begin
   SearchBtn.OnPress := @OnSearchPress;
   GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
   if FMatchmakingSystem <> nil then
-    if FMatchmakingSystem.State = msSearching then
-      SearchBtn.Caption := 'CANCEL'
-    else
-      SearchBtn.Caption := 'SEARCH';
+    case FMatchmakingSystem.State of
+      msIdle:     SearchBtn.Caption := 'SEARCH';
+      msPending:  SearchBtn.Caption := '...';
+      msSearching: SearchBtn.Caption := 'CANCEL';
+    end;
 end;
 
 procedure TViewPlay.Stop;
@@ -76,17 +77,20 @@ procedure TViewPlay.OnSearchPress(const Sender: TCastleUserInterface;
   const Event: TInputPressRelease; var Handled: Boolean);
 begin
   if FMatchmakingSystem = nil then Exit;
-  if FMatchmakingSystem.State = msSearching then
-    FMatchmakingSystem.Dequeue
-  else
-    FMatchmakingSystem.Enqueue;
+  case FMatchmakingSystem.State of
+    msIdle:      FMatchmakingSystem.Enqueue;
+    msPending:   ;
+    msSearching: FMatchmakingSystem.Dequeue;
+  end;
   Handled := True;
 end;
 
 procedure TViewPlay.OnMMState(const Event: TClientGameEvent);
 begin
-  if Event.Amount > 0 then
+  if Event.Amount > 0.7 then
     SearchBtn.Caption := 'CANCEL'
+  else if Event.Amount > 0.2 then
+    SearchBtn.Caption := '...'
   else
     SearchBtn.Caption := 'SEARCH';
 end;

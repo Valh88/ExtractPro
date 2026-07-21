@@ -12,7 +12,7 @@ uses
   ClientEventBus;
 
 type
-  TMatchmakingState = (msIdle, msSearching);
+  TMatchmakingState = (msIdle, msPending, msSearching);
 
   TClientMatchmakingSystem = class(TLobbySystemBase)
   private
@@ -42,9 +42,11 @@ var
   E: TClientGameEvent;
 begin
   E.EventType := cgeMatchmakingStateChanged;
-  E.Amount := 0.0;
-  if FState = msSearching then
-    E.Amount := 1.0;
+  case FState of
+    msIdle:     E.Amount := 0.0;
+    msPending:  E.Amount := 0.5;
+    msSearching: E.Amount := 1.0;
+  end;
   GlobalClientEventBus.Queue(E);
   GlobalClientEventBus.Flush;
 end;
@@ -55,18 +57,22 @@ end;
 
 procedure TClientMatchmakingSystem.Enqueue;
 begin
-  if FState = msSearching then Exit;
-  FState := msSearching;
+  if FState <> msIdle then Exit;
+  FState := msPending;
   PublishState;
   FRpc.SendRequest(rpcQueueJoin, nil,
     procedure(const ResponsePayload: TBytes)
     begin
+      FState := msSearching;
+      PublishState;
     end);
 end;
 
 procedure TClientMatchmakingSystem.Dequeue;
 begin
   if FState <> msSearching then Exit;
+  FState := msPending;
+  PublishState;
   FRpc.SendRequest(rpcQueueLeave, nil,
     procedure(const ResponsePayload: TBytes)
     begin
