@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils,
-  CastleKeysMouse, Interfaces, LobbyManager, MatchmakingSM;
+  CastleKeysMouse, Interfaces, LobbyManager, MatchmakingSM, GameConfig;
 
 type
   TLobbyManagerSystem = class(TInterfacedObject, IWorldSystem, IMatchmakingHost)
@@ -14,10 +14,8 @@ type
     FManager: TLobbyManager;
     FFsm: TMatchStateMachine;
     FQueue: TQueuedPlayerArray;
-    FPartiesPerMatch: Integer;
   public
-    constructor Create(AManager: TLobbyManager;
-      APartiesPerMatch: Integer = DefaultPartiesPerMatch);
+    constructor Create(AManager: TLobbyManager);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
@@ -38,12 +36,10 @@ implementation
 
 { TLobbyManagerSystem }
 
-constructor TLobbyManagerSystem.Create(AManager: TLobbyManager;
-  APartiesPerMatch: Integer = DefaultPartiesPerMatch);
+constructor TLobbyManagerSystem.Create(AManager: TLobbyManager);
 begin
   inherited Create;
   FManager := AManager;
-  FPartiesPerMatch := APartiesPerMatch;
   FFsm := TMatchStateMachine.Create;
   FFsm.RegisterState(msWaiting, TWaitingState.Create(Self as IMatchmakingHost));
   FFsm.RegisterState(msGenerating, TGeneratingState.Create(Self as IMatchmakingHost));
@@ -95,13 +91,23 @@ end;
 
 function TLobbyManagerSystem.TakePlayers(ACount: Integer): TQueuedPlayerArray;
 var
-  TakeLen, RemainLen, i: Integer;
+  i, TakenSize, TakeLen, RemainLen: Integer;
 begin
-  if ACount <= 0 then
+  if (ACount <= 0) or (Length(FQueue) = 0) then
     Exit(nil);
-  TakeLen := Length(FQueue);
-  if TakeLen > ACount then
-    TakeLen := ACount;
+
+  TakenSize := 0;
+  TakeLen := 0;
+  for i := 0 to Length(FQueue) - 1 do
+  begin
+    TakenSize := TakenSize + FQueue[i].PartySize;
+    Inc(TakeLen);
+    if TakenSize >= ACount then
+      Break;
+  end;
+
+  if TakenSize < ACount then
+    Exit(nil);
 
   SetLength(Result, TakeLen);
   for i := 0 to TakeLen - 1 do
@@ -126,7 +132,7 @@ end;
 
 function TLobbyManagerSystem.GetPartiesPerMatch: Integer;
 begin
-  Result := FPartiesPerMatch;
+  Result := GlobalConfig.PartiesPerMatch;
 end;
 
 end.

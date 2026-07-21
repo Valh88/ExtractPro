@@ -59,7 +59,7 @@ type
 
 implementation
 
-uses LobbyManagerSystem, MatchmakingSM;
+uses LobbyManagerSystem, MatchmakingSM, GameConfig;
 
 type
   TRpcReplyCtx = class
@@ -188,6 +188,7 @@ procedure TLobbyNetSystem.HandleRpcQueueJoin(const RequestPayload: TBytes;
 var
   Idx, PIdx: Integer;
   Mgr: TLobbyManagerSystem;
+  PartySize: Byte;
 begin
   Idx := FindRpcCaller(CorrelationId);
   if Idx < 0 then Exit;
@@ -199,10 +200,15 @@ begin
     Exit;
   end;
 
+  if Length(RequestPayload) > 0 then
+    PartySize := RequestPayload[0]
+  else
+    PartySize := GlobalConfig.DefaultPartySize;
+
   PIdx := LobbyWorld.FindPlayerIndex(FRpcCallers[Idx].PlayerId);
   if PIdx >= 0 then
     Mgr.EnqueuePlayer(FRpcCallers[Idx].PlayerId,
-      LobbyWorld.Players[PIdx].Login, 1);
+      LobbyWorld.Players[PIdx].Login, PartySize);
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);

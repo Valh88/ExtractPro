@@ -41,6 +41,10 @@ type
     { Броня (формула: урон * (1 - Armor / (Armor + ArmorFormulaDiv))) }
     ArmorFormulaDiv: Single;
 
+    { Матчмейкинг }
+    PartiesPerMatch: Integer;   // сколько отрядов в одном матче
+    DefaultPartySize: Byte;     // размер отряда по умолчанию (1 или 3)
+
     procedure Init;
   end;
 
@@ -69,6 +73,8 @@ begin
   SpawnWaveCount := 5;
   SpawnWaveInterval := 2;
   ArmorFormulaDiv := 100;
+  PartiesPerMatch := 3;
+  DefaultPartySize := 1;
 end;
 
 initialization

@@ -7,9 +7,6 @@ interface
 uses
   Classes, SysUtils, State, StateMachine;
 
-const
-  DefaultPartiesPerMatch = 3;
-
 type
   TMatchState = (msWaiting, msGenerating);
 
@@ -60,8 +57,15 @@ begin
 end;
 
 procedure TWaitingState.Update(DeltaTime: single);
+var
+  Queue: TQueuedPlayerArray;
+  TotalSize, i: Integer;
 begin
-  if Length(FHost.GetQueue) >= FHost.GetPartiesPerMatch then
+  Queue := FHost.GetQueue;
+  TotalSize := 0;
+  for i := 0 to Length(Queue) - 1 do
+    TotalSize := TotalSize + Queue[i].PartySize;
+  if TotalSize >= FHost.GetPartiesPerMatch then
     ChangeState(msGenerating);
 end;
 
