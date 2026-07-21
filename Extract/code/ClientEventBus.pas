@@ -10,7 +10,8 @@ uses
 type
   TClientGameEventType = (
     cgeMatchmakingStateChanged,
-    cgePartySizeChanged
+    cgePartySizeChanged,
+    cgeReadyCheck        // Amount=1.0: показать дизайн, 0.0: скрыть
   );
 
   TClientGameEvent = record
@@ -112,11 +113,14 @@ end;
 procedure TClientEventBus.Flush;
 var
   i, j: Integer;
+  QueueCopy: array of TClientGameEvent;
 begin
-  for i := 0 to High(FQueue) do
+  if Length(FQueue) = 0 then Exit;
+  QueueCopy := FQueue;
+  FQueue := nil;
+  for i := 0 to High(QueueCopy) do
     for j := 0 to FSubscribers.Count - 1 do
-      TClientEventSubscriber(FSubscribers[j]).Invoke(FQueue[i]);
-  ClearQueue;
+      TClientEventSubscriber(FSubscribers[j]).Invoke(QueueCopy[i]);
 end;
 
 procedure TClientEventBus.ClearQueue;

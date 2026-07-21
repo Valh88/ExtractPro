@@ -395,15 +395,16 @@
     {
       "$$ClassName" : "TCastleDesign",
       "Exists" : false,
-      "Height" : 6.0000000000000000E+001,
       "Name" : "SearchDesign",
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector2Persistent",
-        "X" : 1.4000000000000000E+002,
-        "Y" : 1.0000000000000000E+001
-      },
       "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
       "Width" : 1.9000000000000000E+002
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "FullSize" : true,
+      "Name" : "ReadyDesign",
+      "Url" : "castle-data:/user_interfaces/ReadyGameDesign.castle-user-interface"
     }
   ],
   "InternalDesignCamera" : {
@@ -429,9 +430,9 @@
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 7.9124155044555664E+000,
-      "Y" : 3.7136361598968506E+000,
-      "Z" : 9.3437938690185547E+000
+      "X" : 8.1585235595703125E+000,
+      "Y" : 3.7409219741821289E+000,
+      "Z" : 9.4266519546508789E+000
     }
   },
   "InternalDesignNavigations[dnFly]" : {

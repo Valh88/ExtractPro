@@ -87,7 +87,9 @@ const
   msgJoinRaid     = 20;
   msgJoinRaidAccept = 21;
   msgJoinRaidDeny = 22;
-  msgReadyCheck = 23;   // server→client: показать панель готовности
+  msgReadyCheck = 23;       // server→client: показать панель готовности
+  msgReadyCheckUpdate = 24; // server→client: статус готовности игроков
+  msgReadyCheckEnd = 25;    // server→client: ready check завершён (0=rollback, 1=game start)
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;

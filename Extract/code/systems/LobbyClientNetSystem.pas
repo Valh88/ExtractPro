@@ -7,7 +7,8 @@ interface
 uses
   SysUtils, Classes,
   LobbySystemBase, LobbyWorld,
-  RNL, NetMessages, NetClient, RpcClient;
+  RNL, NetMessages, NetClient, RpcClient,
+  ClientEventBus;
 
 type
   TLobbyClientNetSystem = class(TLobbySystemBase)
@@ -17,6 +18,7 @@ type
     FHost: string;
     FPort: Word;
     FAuthToken: string;
+    FConnected: Boolean;
     FOnConnected: TNotifyEvent;
     FOnDisconnected: TNotifyEvent;
     FOnRoomList: TNotifyEvent;
@@ -113,6 +115,12 @@ begin
 end;
 
 procedure TLobbyClientNetSystem.OnReceive(Sender: TObject; const Msg: TNetMessage);
+var
+  E: TClientGameEvent;
+  i, Count: Integer;
+  PlayerId: UInt32;
+  Ready: Byte;
+  S: string;
 begin
   case Msg.Header.MsgType of
     msgRpcResponse:
@@ -123,6 +131,43 @@ begin
     msgReadyCheck:
     begin
       WriteLn(StdErr, '[Client] Received msgReadyCheck — match found, waiting for ready confirmation');
+      E.EventType := cgeReadyCheck;
+      E.Amount := 1.0;
+      GlobalClientEventBus.Queue(E);
+      GlobalClientEventBus.Flush;
+    end;
+    msgReadyCheckUpdate:
+    begin
+      S := '[Client] Ready status: ';
+      if Length(Msg.Payload) >= 1 then
+      begin
+        Count := Msg.Payload[0];
+        for i := 0 to Count - 1 do
+        begin
+          if 1 + i * 5 + 4 > Length(Msg.Payload) then Break;
+          PlayerId := Msg.Payload[1 + i * 5] or
+                      (Msg.Payload[2 + i * 5] shl 8) or
+                      (Msg.Payload[3 + i * 5] shl 16) or
+                      (Msg.Payload[4 + i * 5] shl 24);
+          Ready := Msg.Payload[5 + i * 5];
+          S := S + Format('[%d:%s] ', [PlayerId, BoolToStr(Ready = 1, True)]);
+        end;
+      end;
+      WriteLn(StdErr, S);
+    end;
+    msgReadyCheckEnd:
+    begin
+      if Length(Msg.Payload) >= 1 then
+      begin
+        if Msg.Payload[0] = 0 then
+          WriteLn(StdErr, '[Client] Ready check failed (timeout), back to queue')
+        else
+          WriteLn(StdErr, '[Client] Ready check passed, game starting');
+      end;
+      E.EventType := cgeReadyCheck;
+      E.Amount := 0.0;
+      GlobalClientEventBus.Queue(E);
+      GlobalClientEventBus.Flush;
     end;
   end;
 end;

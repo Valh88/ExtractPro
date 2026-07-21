@@ -30,6 +30,8 @@ type
     function GetReadyPartySize: Byte;
     procedure StartReadyCheck(const Players: TQueuedPlayerArray);
     procedure NotifyReadyCheck(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheckUpdate(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheckEnd(AResult: Byte);
     procedure SetPlayerReady(const APlayerId: UInt32);
     procedure CancelPlayerMatch(const APlayerId: UInt32);
     function IsEveryoneReady: Boolean;
@@ -131,6 +133,7 @@ procedure TReadyCheckState.Enter(FromState: TMatchState);
 begin
   FElapsed := 0;
   FHost.NotifyReadyCheck(FHost.GetMatchPlayers);
+  FHost.NotifyReadyCheckUpdate(FHost.GetMatchPlayers);
 end;
 
 procedure TReadyCheckState.Update(DeltaTime: single);
@@ -141,6 +144,7 @@ begin
   FElapsed := FElapsed + DeltaTime;
   if FElapsed >= FHost.GetReadyCheckTimeout then
   begin
+    FHost.NotifyReadyCheckEnd(0);
     FHost.RollbackMatch;
     ChangeState(msWaiting);
     System.Exit;
@@ -149,6 +153,7 @@ begin
   if FHost.IsEveryoneReady then
   begin
     Players := FHost.GetMatchPlayers;
+    FHost.NotifyReadyCheckEnd(1);
     FHost.DistributeGame(Players, GamePort);
     ChangeState(msWaiting);
   end;

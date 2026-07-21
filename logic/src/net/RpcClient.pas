@@ -94,7 +94,8 @@ begin
   if Idx < Last then
     FPending[Idx] := FPending[Last];
   SetLength(FPending, Last);
-  CB(APayload);
+  if Assigned(CB) then
+    CB(APayload);
 end;
 
 procedure TRpcClient.Cancel(const ACorrelationId: TGuid);

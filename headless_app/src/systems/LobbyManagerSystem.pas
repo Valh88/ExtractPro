@@ -38,6 +38,8 @@ type
     function GetReadyPartySize: Byte;
     procedure StartReadyCheck(const Players: TQueuedPlayerArray);
     procedure NotifyReadyCheck(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheckUpdate(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheckEnd(AResult: Byte);
     procedure SetPlayerReady(const APlayerId: UInt32);
     procedure CancelPlayerMatch(const APlayerId: UInt32);
     function IsEveryoneReady: Boolean;
@@ -181,6 +183,44 @@ var
 begin
   M.Init(msgReadyCheck);
   for p in Players do
+    if Assigned(FOnSendToPlayer) then
+      FOnSendToPlayer(p.PlayerId, M);
+end;
+
+procedure TLobbyManagerSystem.NotifyReadyCheckUpdate(const Players: TQueuedPlayerArray);
+var
+  M: TNetMessage;
+  Payload: TBytes;
+  i, Off: Integer;
+  p: TQueuedPlayer;
+begin
+  SetLength(Payload, 1 + Length(Players) * 5);
+  Payload[0] := Byte(Length(Players));
+  for i := 0 to High(Players) do
+  begin
+    Off := 1 + i * 5;
+    Payload[Off] := Byte(Players[i].PlayerId);
+    Payload[Off + 1] := Byte(Players[i].PlayerId shr 8);
+    Payload[Off + 2] := Byte(Players[i].PlayerId shr 16);
+    Payload[Off + 3] := Byte(Players[i].PlayerId shr 24);
+    if Players[i].Ready then
+      Payload[Off + 4] := 1
+    else
+      Payload[Off + 4] := 0;
+  end;
+  M.Init(msgReadyCheckUpdate, Payload);
+  for p in Players do
+    if Assigned(FOnSendToPlayer) then
+      FOnSendToPlayer(p.PlayerId, M);
+end;
+
+procedure TLobbyManagerSystem.NotifyReadyCheckEnd(AResult: Byte);
+var
+  M: TNetMessage;
+  p: TQueuedPlayer;
+begin
+  M.Init(msgReadyCheckEnd, [AResult]);
+  for p in FPendingMatch do
     if Assigned(FOnSendToPlayer) then
       FOnSendToPlayer(p.PlayerId, M);
 end;

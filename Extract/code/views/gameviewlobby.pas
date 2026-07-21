@@ -30,6 +30,7 @@ type
     BottomPanel: TCastleRectangleControl;
     BottomGradient: TCastleImageControl;
     SearchDesign: TCastleDesign;
+    ReadyDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -42,6 +43,11 @@ type
     FLobbyClient: TLobbyClient;
     FSpinnerImage: TCastleImageControl;
     procedure OnMMState(const Event: TClientGameEvent);
+    procedure OnReadyCheck(const Event: TClientGameEvent);
+    procedure OnReadyBtn(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
+    procedure OnCancelBtn(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
   end;
 
 const
@@ -76,7 +82,14 @@ begin
 
     FSpinnerImage := SearchDesign.DesignedComponent('SpinnerImage') as TCastleImageControl;
 
+    if ReadyDesign <> nil then
+    begin
+      (ReadyDesign.DesignedComponent('BtnReady') as TCastleButton).OnPress := @Self.OnReadyBtn;
+      (ReadyDesign.DesignedComponent('BtnCancel') as TCastleButton).OnPress := @Self.OnCancelBtn;
+    end;
+
     GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
+    GlobalClientEventBus.Subscribe(cgeReadyCheck, @OnReadyCheck);
 
     VS.GetOrCreateView(lvtPlay);
     VP := VS.ViewPlay;
@@ -91,6 +104,7 @@ end;
 procedure TViewLobby.Stop;
 begin
   GlobalClientEventBus.Unsubscribe(@OnMMState);
+  GlobalClientEventBus.Unsubscribe(@OnReadyCheck);
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -144,6 +158,33 @@ end;
 procedure TViewLobby.OnMMState(const Event: TClientGameEvent);
 begin
   SearchDesign.Exists := Event.Amount > 0;
+end;
+
+procedure TViewLobby.OnReadyCheck(const Event: TClientGameEvent);
+begin
+  ReadyDesign.Exists := Event.Amount > 0.5;
+end;
+
+procedure TViewLobby.OnReadyBtn(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if FLobbyClient <> nil then
+  begin
+    WriteLn(StdErr, '[Client] Player confirmed ready');
+    FLobbyClient.MatchmakingSystem.SendReadyCheck;
+  end;
+  Handled := True;
+end;
+
+procedure TViewLobby.OnCancelBtn(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if FLobbyClient <> nil then
+  begin
+    WriteLn(StdErr, '[Client] Player cancelled ready check');
+    FLobbyClient.MatchmakingSystem.SendReadyCancel;
+  end;
+  Handled := True;
 end;
 
 end.

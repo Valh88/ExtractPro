@@ -250,7 +250,10 @@ begin
 
   Mgr := TLobbyManagerSystem(FManagerSystem);
   if Mgr <> nil then
+  begin
     Mgr.SetPlayerReady(FRpcCallers[Idx].PlayerId);
+    Mgr.NotifyReadyCheckUpdate(Mgr.GetMatchPlayers);
+  end;
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
@@ -267,7 +270,10 @@ begin
 
   Mgr := TLobbyManagerSystem(FManagerSystem);
   if Mgr <> nil then
+  begin
     Mgr.CancelPlayerMatch(FRpcCallers[Idx].PlayerId);
+    Mgr.NotifyReadyCheckUpdate(Mgr.GetMatchPlayers);
+  end;
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
