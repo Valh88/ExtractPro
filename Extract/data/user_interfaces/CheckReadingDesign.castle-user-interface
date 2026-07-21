@@ -53,182 +53,31 @@
           "VerticalAnchorSelf" : "vpMiddle",
           "$Children" : [
             {
-              "$$ClassName" : "TCastleUserInterface",
+              "$$ClassName" : "TCastleDesign",
               "Height" : 1.0400000000000000E+002,
               "Name" : "Player1",
+              "Url" : "castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
-              "Width" : 7.2000000000000000E+001,
-              "$Children" : [
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/frame_rounded.png"
-                  },
-                  "FullSize" : true,
-                  "Name" : "Player1Frame",
-                  "Stretch" : true
-                },
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/party_main.png"
-                  },
-                  "Height" : 4.8000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player1Icon",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "Y" : 8.0000000000000000E+000
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 4.8000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleLabel",
-                  "ColorPersistent" : {
-                    "$$ClassName" : "TCastleColorPersistent",
-                    "Blue" : 1.0000000149011612E-001,
-                    "Green" : 8.0000001192092896E-001,
-                    "Red" : 1.0000000149011612E-001
-                  },
-                  "FontSize" : 1.2000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player1Status",
-                  "Text" : [
-                    "ГОТОВ"
-                  ]
-                }
-              ]
+              "Width" : 7.2000000000000000E+001
             },
             {
-              "$$ClassName" : "TCastleUserInterface",
+              "$$ClassName" : "TCastleDesign",
               "Height" : 1.0400000000000000E+002,
               "Name" : "Player2",
-              "TranslationPersistent" : {
-                "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 1.0200000000000000E+002
-              },
+              "Url" : "castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
-              "Width" : 7.2000000000000000E+001,
-              "$Children" : [
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "ColorPersistent" : {
-                      "$$ClassName" : "TCastleColorPersistent",
-                      "Alpha" : 6.0000002384185791E-001
-                    },
-                    "Url" : "castle-data:/ui/frame_rounded.png"
-                  },
-                  "FullSize" : true,
-                  "Name" : "Player2Frame",
-                  "Stretch" : true
-                },
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/party1.png"
-                  },
-                  "Height" : 4.8000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player2Icon",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "Y" : 8.0000000000000000E+000
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 4.8000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleLabel",
-                  "ColorPersistent" : {
-                    "$$ClassName" : "TCastleColorPersistent",
-                    "Blue" : 1.0000000149011612E-001,
-                    "Green" : 6.9999998807907104E-001,
-                    "Red" : 6.9999998807907104E-001
-                  },
-                  "FontSize" : 1.2000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player2Status",
-                  "Text" : [
-                    "ОЖИДАНИЕ"
-                  ]
-                }
-              ]
+              "Width" : 7.2000000000000000E+001
             },
             {
-              "$$ClassName" : "TCastleUserInterface",
+              "$$ClassName" : "TCastleDesign",
               "Height" : 1.0400000000000000E+002,
               "Name" : "Player3",
-              "TranslationPersistent" : {
-                "$$ClassName" : "TCastleVector2Persistent",
-                "X" : 2.0400000000000000E+002
-              },
+              "Url" : "castle-data:/user_interfaces/Player3NotReadyDesign.castle-user-interface",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
-              "Width" : 7.2000000000000000E+001,
-              "$Children" : [
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "ColorPersistent" : {
-                      "$$ClassName" : "TCastleColorPersistent",
-                      "Alpha" : 5.0000000000000000E-001
-                    },
-                    "Url" : "castle-data:/ui/frame_rounded.png"
-                  },
-                  "FullSize" : true,
-                  "Name" : "Player3Frame",
-                  "Stretch" : true
-                },
-                {
-                  "$$ClassName" : "TCastleImageControl",
-                  "Content" : {
-                    "$$ClassName" : "TCastleImagePersistent",
-                    "Url" : "castle-data:/ui/party2.png"
-                  },
-                  "Height" : 4.8000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player3Icon",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "Y" : 8.0000000000000000E+000
-                  },
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 4.8000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleLabel",
-                  "ColorPersistent" : {
-                    "$$ClassName" : "TCastleColorPersistent",
-                    "Blue" : 2.0000000298023224E-001,
-                    "Green" : 2.0000000298023224E-001,
-                    "Red" : 6.9999998807907104E-001
-                  },
-                  "FontSize" : 1.2000000000000000E+001,
-                  "HorizontalAnchorParent" : "hpMiddle",
-                  "HorizontalAnchorSelf" : "hpMiddle",
-                  "Name" : "Player3Status",
-                  "Text" : [
-                    "НЕ ГОТОВ"
-                  ]
-                }
-              ]
+              "Width" : 7.2000000000000000E+001
             }
           ]
         }

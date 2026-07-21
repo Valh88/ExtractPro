@@ -1,0 +1,68 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "Height" : 104.0,
+  "Name" : "Player3NotReady",
+  "Width" : 72.0,
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 0.5,
+        "Blue" : 1.0,
+        "Green" : 1.0,
+        "Red" : 1.0
+      },
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/frame_rounded.png"
+      },
+      "FullSize" : true,
+      "Name" : "Frame",
+      "Stretch" : true
+    },
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/party2.png"
+      },
+      "Height" : 48.0,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "Icon",
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 0.0,
+        "Y" : 8.0
+      },
+      "Width" : 48.0
+    },
+    {
+      "$$ClassName" : "TCastleLabel",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 1.0,
+        "Blue" : 0.2,
+        "Green" : 0.2,
+        "Red" : 0.7
+      },
+      "FontSize" : 12.0,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "Status",
+      "Text" : [
+        "НЕ ГОТОВ"
+      ],
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 0.0,
+        "Y" : -4.0
+      },
+      "VerticalAnchorParent" : "vpBottom",
+      "VerticalAnchorSelf" : "vpBottom"
+    }
+  ]
+}
