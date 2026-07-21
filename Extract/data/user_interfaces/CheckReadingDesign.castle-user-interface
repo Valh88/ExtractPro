@@ -5,9 +5,16 @@
   "$Children" : [
     {
       "$$ClassName" : "TCastleImageControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 1.2000000476837158E-001,
+        "Blue" : 1.0000000000000000E+000,
+        "Green" : 1.0000000000000000E+000,
+        "Red" : 1.0000000000000000E+000
+      },
       "Content" : {
         "$$ClassName" : "TCastleImagePersistent",
-        "Url" : "castle-data:/ui/panel_bg.png"
+        "Url" : "castle-data:/ui/panel_bg_bright.png"
       },
       "Height" : 1.9000000000000000E+002,
       "HorizontalAnchorParent" : "hpMiddle",
