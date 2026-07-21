@@ -20,13 +20,15 @@ type
     FState: TMatchmakingState;
     FPendingPartySize: Byte;
     procedure PublishState;
+    procedure OnPartySizeChanged(const Event: TClientGameEvent);
   public
     constructor Create(ALobbyWorld: TLobbyWorldBase; ARpc: TRpcClient);
+    destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
     procedure Enqueue;
     procedure Dequeue;
     property State: TMatchmakingState read FState;
-    property PartySize: Byte read FPendingPartySize write FPendingPartySize;
+    property PartySize: Byte read FPendingPartySize;
   end;
 
 implementation
@@ -38,6 +40,13 @@ begin
   FRpc := ARpc;
   FState := msIdle;
   FPendingPartySize := 1;
+  GlobalClientEventBus.Subscribe(cgePartySizeChanged, @OnPartySizeChanged);
+end;
+
+destructor TClientMatchmakingSystem.Destroy;
+begin
+  GlobalClientEventBus.Unsubscribe(@OnPartySizeChanged);
+  inherited;
 end;
 
 procedure TClientMatchmakingSystem.PublishState;
@@ -56,6 +65,11 @@ end;
 
 procedure TClientMatchmakingSystem.Update(const SecondsPassed: Single);
 begin
+end;
+
+procedure TClientMatchmakingSystem.OnPartySizeChanged(const Event: TClientGameEvent);
+begin
+  FPendingPartySize := Round(Event.Amount);
 end;
 
 procedure TClientMatchmakingSystem.Enqueue;

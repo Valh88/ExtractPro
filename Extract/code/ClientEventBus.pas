@@ -9,7 +9,8 @@ uses
 
 type
   TClientGameEventType = (
-    cgeMatchmakingStateChanged
+    cgeMatchmakingStateChanged,
+    cgePartySizeChanged
   );
 
   TClientGameEvent = record

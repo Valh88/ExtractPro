@@ -115,19 +115,29 @@ end;
 
 procedure TViewPlay.OnSoloClick(const Sender: TCastleUserInterface;
   const Event: TInputPressRelease; var Handled: Boolean);
+var
+  E: TClientGameEvent;
 begin
   if FMatchmakingSystem = nil then Exit;
   if FMatchmakingSystem.State <> msIdle then Exit;
-  FMatchmakingSystem.PartySize := 1;
+  E.EventType := cgePartySizeChanged;
+  E.Amount := 1;
+  GlobalClientEventBus.Queue(E);
+  GlobalClientEventBus.Flush;
   UpdatePartySizeUI;
 end;
 
 procedure TViewPlay.OnPartyClick(const Sender: TCastleUserInterface;
   const Event: TInputPressRelease; var Handled: Boolean);
+var
+  E: TClientGameEvent;
 begin
   if FMatchmakingSystem = nil then Exit;
   if FMatchmakingSystem.State <> msIdle then Exit;
-  FMatchmakingSystem.PartySize := 3;
+  E.EventType := cgePartySizeChanged;
+  E.Amount := 3;
+  GlobalClientEventBus.Queue(E);
+  GlobalClientEventBus.Flush;
   UpdatePartySizeUI;
 end;
 
