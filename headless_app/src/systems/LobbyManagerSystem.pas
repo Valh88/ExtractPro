@@ -13,7 +13,9 @@ type
   private
     FManager: TLobbyManager;
     FFsm: TMatchStateMachine;
-    FQueue: TQueuedPlayerArray;
+    FQueues: array[1..3] of TQueuedPlayerArray;
+    FReadyPartySize: Byte;
+    function GetQueueSize(APartySize: Byte): Integer;
   public
     constructor Create(AManager: TLobbyManager);
     destructor Destroy; override;
@@ -23,10 +25,11 @@ type
     procedure EnqueuePlayer(const APlayerId: UInt32; const ALogin: string; APartySize: Byte);
     function DequeuePlayer(const APlayerId: UInt32): Boolean;
 
-    function TakePlayers(ACount: Integer): TQueuedPlayerArray;
+    function TakePlayers(ACount: Integer; APartySize: Byte): TQueuedPlayerArray;
     procedure DistributeGame(const Players: array of TQueuedPlayer; out GamePort: Word);
-    function GetQueue: TQueuedPlayerArray;
     function GetPartiesPerMatch: Integer;
+    procedure SetReadyPartySize(APartySize: Byte);
+    function GetReadyPartySize: Byte;
 
     property Manager: TLobbyManager read FManager;
     property Fsm: TMatchStateMachine read FFsm;
@@ -67,72 +70,80 @@ procedure TLobbyManagerSystem.EnqueuePlayer(const APlayerId: UInt32;
 var
   QP: TQueuedPlayer;
 begin
+  if (APartySize < Low(FQueues)) or (APartySize > High(FQueues)) then
+    APartySize := 1;
   QP.PlayerId := APlayerId;
   QP.Login := ShortString(ALogin);
   QP.PartySize := APartySize;
-  SetLength(FQueue, Length(FQueue) + 1);
-  FQueue[High(FQueue)] := QP;
+  SetLength(FQueues[APartySize], Length(FQueues[APartySize]) + 1);
+  FQueues[APartySize][High(FQueues[APartySize])] := QP;
 end;
 
 function TLobbyManagerSystem.DequeuePlayer(const APlayerId: UInt32): Boolean;
 var
   i, Len: Integer;
+  PS: Byte;
 begin
-  Len := Length(FQueue);
-  for i := 0 to Len - 1 do
-    if FQueue[i].PlayerId = APlayerId then
-    begin
-      FQueue[i] := FQueue[Len - 1];
-      SetLength(FQueue, Len - 1);
-      Exit(True);
-    end;
+  for PS := Low(FQueues) to High(FQueues) do
+  begin
+    Len := Length(FQueues[PS]);
+    for i := 0 to Len - 1 do
+      if FQueues[PS][i].PlayerId = APlayerId then
+      begin
+        FQueues[PS][i] := FQueues[PS][Len - 1];
+        SetLength(FQueues[PS], Len - 1);
+        Exit(True);
+      end;
+  end;
   Result := False;
 end;
 
-function TLobbyManagerSystem.TakePlayers(ACount: Integer): TQueuedPlayerArray;
+function TLobbyManagerSystem.TakePlayers(ACount: Integer; APartySize: Byte): TQueuedPlayerArray;
 var
-  i, TakenSize, TakeLen, RemainLen: Integer;
+  i, TakeLen, RemainLen: Integer;
 begin
-  if (ACount <= 0) or (Length(FQueue) = 0) then
-    Exit(nil);
-
-  TakenSize := 0;
-  TakeLen := 0;
-  for i := 0 to Length(FQueue) - 1 do
-  begin
-    TakenSize := TakenSize + FQueue[i].PartySize;
-    Inc(TakeLen);
-    if TakenSize >= ACount then
-      Break;
-  end;
-
-  if TakenSize < ACount then
+  TakeLen := ACount * APartySize;
+  if (ACount <= 0) or (Length(FQueues[APartySize]) < TakeLen) then
     Exit(nil);
 
   SetLength(Result, TakeLen);
   for i := 0 to TakeLen - 1 do
-    Result[i] := FQueue[i];
+    Result[i] := FQueues[APartySize][i];
 
-  RemainLen := Length(FQueue) - TakeLen;
+  RemainLen := Length(FQueues[APartySize]) - TakeLen;
   for i := 0 to RemainLen - 1 do
-    FQueue[i] := FQueue[i + TakeLen];
-  SetLength(FQueue, RemainLen);
+    FQueues[APartySize][i] := FQueues[APartySize][i + TakeLen];
+  SetLength(FQueues[APartySize], RemainLen);
 end;
 
 procedure TLobbyManagerSystem.DistributeGame(const Players: array of TQueuedPlayer;
   out GamePort: Word);
 begin
   GamePort := FManager.GetGameLobbyPort;
+  GamePort := FManager.GetGameLobbyPort;
 end;
 
-function TLobbyManagerSystem.GetQueue: TQueuedPlayerArray;
+function TLobbyManagerSystem.GetQueueSize(APartySize: Byte): Integer;
 begin
-  Result := FQueue;
+  if (APartySize >= Low(FQueues)) and (APartySize <= High(FQueues)) then
+    Result := Length(FQueues[APartySize])
+  else
+    Result := 0;
 end;
 
 function TLobbyManagerSystem.GetPartiesPerMatch: Integer;
 begin
   Result := GlobalConfig.PartiesPerMatch;
+end;
+
+procedure TLobbyManagerSystem.SetReadyPartySize(APartySize: Byte);
+begin
+  FReadyPartySize := APartySize;
+end;
+
+function TLobbyManagerSystem.GetReadyPartySize: Byte;
+begin
+  Result := FReadyPartySize;
 end;
 
 end.

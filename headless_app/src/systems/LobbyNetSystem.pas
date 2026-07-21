@@ -207,8 +207,10 @@ begin
 
   PIdx := LobbyWorld.FindPlayerIndex(FRpcCallers[Idx].PlayerId);
   if PIdx >= 0 then
+  begin
     Mgr.EnqueuePlayer(FRpcCallers[Idx].PlayerId,
       LobbyWorld.Players[PIdx].Login, PartySize);
+  end;
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
