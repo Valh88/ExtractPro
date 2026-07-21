@@ -15,6 +15,7 @@ type
     FFsm: TMatchStateMachine;
     FQueues: array[1..3] of TQueuedPlayerArray;
     FReadyPartySize: Byte;
+    FPendingMatch: TQueuedPlayerArray;
     function GetQueueSize(APartySize: Byte): Integer;
   public
     constructor Create(AManager: TLobbyManager);
@@ -30,6 +31,13 @@ type
     function GetPartiesPerMatch: Integer;
     procedure SetReadyPartySize(APartySize: Byte);
     function GetReadyPartySize: Byte;
+    procedure StartReadyCheck(const Players: TQueuedPlayerArray);
+    procedure SetPlayerReady(const APlayerId: UInt32);
+    procedure CancelPlayerMatch(const APlayerId: UInt32);
+    function IsEveryoneReady: Boolean;
+    function GetMatchPlayers: TQueuedPlayerArray;
+    function GetReadyCheckTimeout: Single;
+    procedure RollbackMatch;
 
     property Manager: TLobbyManager read FManager;
     property Fsm: TMatchStateMachine read FFsm;
@@ -46,6 +54,7 @@ begin
   FFsm := TMatchStateMachine.Create;
   FFsm.RegisterState(msWaiting, TWaitingState.Create(Self as IMatchmakingHost));
   FFsm.RegisterState(msGenerating, TGeneratingState.Create(Self as IMatchmakingHost));
+  FFsm.RegisterState(msReadyCheck, TReadyCheckState.Create(Self as IMatchmakingHost));
   FFsm.ChangeState(msWaiting);
 end;
 
@@ -75,6 +84,7 @@ begin
   QP.PlayerId := APlayerId;
   QP.Login := ShortString(ALogin);
   QP.PartySize := APartySize;
+  QP.Ready := False;
   SetLength(FQueues[APartySize], Length(FQueues[APartySize]) + 1);
   FQueues[APartySize][High(FQueues[APartySize])] := QP;
 end;
@@ -120,7 +130,6 @@ procedure TLobbyManagerSystem.DistributeGame(const Players: array of TQueuedPlay
   out GamePort: Word);
 begin
   GamePort := FManager.GetGameLobbyPort;
-  GamePort := FManager.GetGameLobbyPort;
 end;
 
 function TLobbyManagerSystem.GetQueueSize(APartySize: Byte): Integer;
@@ -144,6 +153,74 @@ end;
 function TLobbyManagerSystem.GetReadyPartySize: Byte;
 begin
   Result := FReadyPartySize;
+end;
+
+procedure TLobbyManagerSystem.StartReadyCheck(const Players: TQueuedPlayerArray);
+var
+  i: Integer;
+begin
+  SetLength(FPendingMatch, Length(Players));
+  for i := 0 to High(Players) do
+  begin
+    FPendingMatch[i] := Players[i];
+    FPendingMatch[i].Ready := False;
+  end;
+end;
+
+procedure TLobbyManagerSystem.SetPlayerReady(const APlayerId: UInt32);
+var
+  i: Integer;
+begin
+  for i := 0 to High(FPendingMatch) do
+    if FPendingMatch[i].PlayerId = APlayerId then
+    begin
+      FPendingMatch[i].Ready := True;
+      Exit;
+    end;
+end;
+
+procedure TLobbyManagerSystem.CancelPlayerMatch(const APlayerId: UInt32);
+var
+  i, Len: Integer;
+begin
+  Len := Length(FPendingMatch);
+  for i := 0 to Len - 1 do
+    if FPendingMatch[i].PlayerId = APlayerId then
+    begin
+      FPendingMatch[i] := FPendingMatch[Len - 1];
+      SetLength(FPendingMatch, Len - 1);
+      Exit;
+    end;
+end;
+
+function TLobbyManagerSystem.IsEveryoneReady: Boolean;
+var
+  i: Integer;
+begin
+  for i := 0 to High(FPendingMatch) do
+    if not FPendingMatch[i].Ready then
+      Exit(False);
+  Result := Length(FPendingMatch) > 0;
+end;
+
+function TLobbyManagerSystem.GetMatchPlayers: TQueuedPlayerArray;
+begin
+  Result := FPendingMatch;
+end;
+
+function TLobbyManagerSystem.GetReadyCheckTimeout: Single;
+begin
+  Result := GlobalConfig.ReadyCheckTimeout;
+end;
+
+procedure TLobbyManagerSystem.RollbackMatch;
+var
+  p: TQueuedPlayer;
+begin
+  for p in FPendingMatch do
+    if p.Ready then
+      EnqueuePlayer(p.PlayerId, string(p.Login), p.PartySize);
+  SetLength(FPendingMatch, 0);
 end;
 
 end.

@@ -44,6 +44,7 @@ type
     { Матчмейкинг }
     PartiesPerMatch: Integer;   // сколько отрядов в одном матче
     DefaultPartySize: Byte;     // размер отряда по умолчанию (1 или 3)
+    ReadyCheckTimeout: Single;  // таймаут подтверждения готовности (сек)
 
     procedure Init;
   end;
@@ -75,6 +76,7 @@ begin
   ArmorFormulaDiv := 100;
   PartiesPerMatch := 3;
   DefaultPartySize := 1;
+  ReadyCheckTimeout := 10.0;
 end;
 
 initialization

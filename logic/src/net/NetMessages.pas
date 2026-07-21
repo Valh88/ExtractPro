@@ -90,6 +90,8 @@ const
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;
+  rpcReadyCheck = 32;
+  rpcReadyCancel = 33;
 
 type
   TJoinReqData = packed record

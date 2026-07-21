@@ -44,6 +44,10 @@ type
       const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
     procedure HandleRpcQueueLeave(const RequestPayload: TBytes;
       const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
+    procedure HandleRpcReadyCheck(const RequestPayload: TBytes;
+      const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
+    procedure HandleRpcReadyCancel(const RequestPayload: TBytes;
+      const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
   public
     constructor Create(ALobbyWorld: TLobbyWorldBase; APort: Word; AMaxPlayers: Integer = 64);
     destructor Destroy; override;
@@ -98,6 +102,8 @@ begin
   FRpc := TRpcServer.Create;
   FRpc.RegisterHandler(rpcQueueJoin, @HandleRpcQueueJoin);
   FRpc.RegisterHandler(rpcQueueLeave, @HandleRpcQueueLeave);
+  FRpc.RegisterHandler(rpcReadyCheck, @HandleRpcReadyCheck);
+  FRpc.RegisterHandler(rpcReadyCancel, @HandleRpcReadyCancel);
 end;
 
 destructor TLobbyNetSystem.Destroy;
@@ -233,6 +239,40 @@ begin
   ReplyProc(nil);
 end;
 
+procedure TLobbyNetSystem.HandleRpcReadyCheck(const RequestPayload: TBytes;
+  const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
+var
+  Idx: Integer;
+  Mgr: TLobbyManagerSystem;
+begin
+  Idx := FindRpcCaller(CorrelationId);
+  if Idx < 0 then Exit;
+
+  Mgr := TLobbyManagerSystem(FManagerSystem);
+  if Mgr <> nil then
+    Mgr.SetPlayerReady(FRpcCallers[Idx].PlayerId);
+
+  RemoveRpcCaller(CorrelationId);
+  ReplyProc(nil);
+end;
+
+procedure TLobbyNetSystem.HandleRpcReadyCancel(const RequestPayload: TBytes;
+  const CorrelationId: TGuid; const ReplyProc: TRpcReplyProc);
+var
+  Idx: Integer;
+  Mgr: TLobbyManagerSystem;
+begin
+  Idx := FindRpcCaller(CorrelationId);
+  if Idx < 0 then Exit;
+
+  Mgr := TLobbyManagerSystem(FManagerSystem);
+  if Mgr <> nil then
+    Mgr.CancelPlayerMatch(FRpcCallers[Idx].PlayerId);
+
+  RemoveRpcCaller(CorrelationId);
+  ReplyProc(nil);
+end;
+
 procedure TLobbyNetSystem.Update(const SecondsPassed: Single);
 var
   i: Integer;
@@ -292,6 +332,7 @@ begin
     begin
       Mgr := TLobbyManagerSystem(FManagerSystem);
       Mgr.DequeuePlayer(PlayerId);
+      Mgr.CancelPlayerMatch(PlayerId);
     end;
   end;
 end;

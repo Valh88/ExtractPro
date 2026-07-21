@@ -5,15 +5,16 @@ unit MatchmakingSM;
 interface
 
 uses
-  Classes, SysUtils, State, StateMachine;
+  Classes, SysUtils, State, StateMachine, GameConfig;
 
 type
-  TMatchState = (msWaiting, msGenerating);
+  TMatchState = (msWaiting, msGenerating, msReadyCheck);
 
   TQueuedPlayer = record
     PlayerId: UInt32;
     Login: ShortString;
     PartySize: Byte;
+    Ready: Boolean;
   end;
 
   TQueuedPlayerArray = array of TQueuedPlayer;
@@ -27,6 +28,13 @@ type
     function GetPartiesPerMatch: Integer;
     procedure SetReadyPartySize(APartySize: Byte);
     function GetReadyPartySize: Byte;
+    procedure StartReadyCheck(const Players: TQueuedPlayerArray);
+    procedure SetPlayerReady(const APlayerId: UInt32);
+    procedure CancelPlayerMatch(const APlayerId: UInt32);
+    function IsEveryoneReady: Boolean;
+    function GetMatchPlayers: TQueuedPlayerArray;
+    function GetReadyCheckTimeout: Single;
+    procedure RollbackMatch;
   end;
 
   TMatchStateBase = specialize TState<TMatchState>;
@@ -46,6 +54,16 @@ type
   public
     constructor Create(AHost: IMatchmakingHost); reintroduce;
     procedure Enter(FromState: TMatchState); override;
+  end;
+
+  TReadyCheckState = class(TMatchStateBase)
+  private
+    FHost: IMatchmakingHost;
+    FElapsed: Single;
+  public
+    constructor Create(AHost: IMatchmakingHost); reintroduce;
+    procedure Enter(FromState: TMatchState); override;
+    procedure Update(DeltaTime: single); override;
   end;
 
 implementation
@@ -86,7 +104,6 @@ end;
 procedure TGeneratingState.Enter(FromState: TMatchState);
 var
   Players: TQueuedPlayerArray;
-  GamePort: Word;
   PartySize: Byte;
 begin
   PartySize := FHost.GetReadyPartySize;
@@ -97,8 +114,42 @@ begin
     System.Exit;
   end;
 
-  FHost.DistributeGame(Players, GamePort);
-  ChangeState(msWaiting);
+  FHost.StartReadyCheck(Players);
+  ChangeState(msReadyCheck);
+end;
+
+{ TReadyCheckState }
+
+constructor TReadyCheckState.Create(AHost: IMatchmakingHost);
+begin
+  inherited Create;
+  FHost := AHost;
+end;
+
+procedure TReadyCheckState.Enter(FromState: TMatchState);
+begin
+  FElapsed := 0;
+end;
+
+procedure TReadyCheckState.Update(DeltaTime: single);
+var
+  Players: TQueuedPlayerArray;
+  GamePort: Word;
+begin
+  FElapsed := FElapsed + DeltaTime;
+  if FElapsed >= FHost.GetReadyCheckTimeout then
+  begin
+    FHost.RollbackMatch;
+    ChangeState(msWaiting);
+    System.Exit;
+  end;
+
+  if FHost.IsEveryoneReady then
+  begin
+    Players := FHost.GetMatchPlayers;
+    FHost.DistributeGame(Players, GamePort);
+    ChangeState(msWaiting);
+  end;
 end;
 
 end.
