@@ -395,7 +395,13 @@
     {
       "$$ClassName" : "TCastleDesign",
       "Exists" : false,
+      "Height" : 6.0000000000000000E+001,
       "Name" : "SearchDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 3.0000000000000000E+001,
+        "Y" : 1.0000000000000000E+001
+      },
       "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
       "Width" : 1.9000000000000000E+002
     },
@@ -405,6 +411,19 @@
       "FullSize" : true,
       "Name" : "ReadyDesign",
       "Url" : "castle-data:/user_interfaces/ReadyGameDesign.castle-user-interface"
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 2.3000000000000000E+002,
+      "Name" : "CheckReadingPlayersDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 5.4000000000000000E+002,
+        "Y" : 4.0000000000000000E+002
+      },
+      "Url" : "castle-data:/user_interfaces/CheckReadingDesign.castle-user-interface",
+      "Width" : 5.2000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
