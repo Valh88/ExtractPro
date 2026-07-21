@@ -37,6 +37,7 @@ type
     function IsEveryoneReady: Boolean;
     function GetMatchPlayers: TQueuedPlayerArray;
     function GetReadyCheckTimeout: Single;
+    procedure HandleReadyCheckTimeout;
     procedure RollbackMatch;
   end;
 
@@ -144,8 +145,7 @@ begin
   FElapsed := FElapsed + DeltaTime;
   if FElapsed >= FHost.GetReadyCheckTimeout then
   begin
-    FHost.NotifyReadyCheckEnd(0);
-    FHost.RollbackMatch;
+    FHost.HandleReadyCheckTimeout;
     ChangeState(msWaiting);
     System.Exit;
   end;

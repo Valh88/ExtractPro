@@ -46,6 +46,7 @@ type
     function IsEveryoneReady: Boolean;
     function GetMatchPlayers: TQueuedPlayerArray;
     function GetReadyCheckTimeout: Single;
+    procedure HandleReadyCheckTimeout;
     procedure RollbackMatch;
 
     property Manager: TLobbyManager read FManager;
@@ -301,6 +302,26 @@ end;
 function TLobbyManagerSystem.GetReadyCheckTimeout: Single;
 begin
   Result := GlobalConfig.ReadyCheckTimeout;
+end;
+
+procedure TLobbyManagerSystem.HandleReadyCheckTimeout;
+var
+  p: TQueuedPlayer;
+  M: TNetMessage;
+begin
+  for p in FPendingMatch do
+  begin
+    if p.Ready then
+    begin
+      EnqueuePlayer(p.PlayerId, string(p.Login), p.PartySize);
+      M.Init(msgReadyCheckEnd, [2]);
+    end
+    else
+      M.Init(msgReadyCheckEnd, [0]);
+    if Assigned(FOnSendToPlayer) then
+      FOnSendToPlayer(p.PlayerId, M);
+  end;
+  SetLength(FPendingMatch, 0);
 end;
 
 procedure TLobbyManagerSystem.RollbackMatch;
