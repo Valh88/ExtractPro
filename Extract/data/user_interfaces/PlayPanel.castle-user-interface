@@ -95,20 +95,22 @@
           "VerticalAnchorSelf" : "vpTop",
           "$Children" : [
             {
-              "$$ClassName" : "TCastleRectangleControl",
-              "ColorPersistent" : {
-                "$$ClassName" : "TCastleColorPersistent",
-                "Alpha" : 1.0000000000000000E+000,
-                "Blue" : 0.0000000000000000E+000,
-                "Green" : 0.0000000000000000E+000,
-                "Red" : 5.0000000745058060E-001
-              },
+              "$$ClassName" : "TCastleUserInterface",
               "Height" : 5.6000000000000000E+001,
-              "Name" : "SoloFrame",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
               "Width" : 5.6000000000000000E+001,
               "$Children" : [
+                {
+                  "$$ClassName" : "TCastleImageControl",
+                  "Content" : {
+                    "$$ClassName" : "TCastleImagePersistent",
+                    "Url" : "castle-data:/ui/frame_rounded.png"
+                  },
+                  "FullSize" : true,
+                  "Name" : "SoloFrame",
+                  "Stretch" : true
+                },
                 {
                   "$$ClassName" : "TCastleImageControl",
                   "Content" : {
@@ -126,20 +128,23 @@
               ]
             },
             {
-              "$$ClassName" : "TCastleRectangleControl",
-              "ColorPersistent" : {
-                "$$ClassName" : "TCastleColorPersistent",
-                "Alpha" : 0.0000000000000000E+000,
-                "Blue" : 0.0000000000000000E+000,
-                "Green" : 0.0000000000000000E+000,
-                "Red" : 5.0000000745058060E-001
-              },
+              "$$ClassName" : "TCastleUserInterface",
               "Height" : 5.6000000000000000E+001,
-              "Name" : "PartyFrame",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
               "Width" : 5.6000000000000000E+001,
               "$Children" : [
+                {
+                  "$$ClassName" : "TCastleImageControl",
+                  "Content" : {
+                    "$$ClassName" : "TCastleImagePersistent",
+                    "Url" : "castle-data:/ui/frame_rounded.png"
+                  },
+                  "FullSize" : true,
+                  "Name" : "PartyFrame",
+                  "Exists" : false,
+                  "Stretch" : true
+                },
                 {
                   "$$ClassName" : "TCastleImageControl",
                   "Content" : {

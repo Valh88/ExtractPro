@@ -27,8 +27,8 @@ type
     procedure OnMMState(const Event: TClientGameEvent);
     property MatchmakingSystem: TClientMatchmakingSystem read FMatchmakingSystem write FMatchmakingSystem;
   private
-    FSoloFrame: TCastleRectangleControl;
-    FPartyFrame: TCastleRectangleControl;
+    FSoloFrame: TCastleImageControl;
+    FPartyFrame: TCastleImageControl;
     procedure OnSoloClick(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
     procedure OnPartyClick(const Sender: TCastleUserInterface;
@@ -60,8 +60,8 @@ begin
   SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
   SearchBtn.OnPress := @OnSearchPress;
 
-  FSoloFrame := PlayPanel.DesignedComponent('SoloFrame') as TCastleRectangleControl;
-  FPartyFrame := PlayPanel.DesignedComponent('PartyFrame') as TCastleRectangleControl;
+  FSoloFrame := PlayPanel.DesignedComponent('SoloFrame') as TCastleImageControl;
+  FPartyFrame := PlayPanel.DesignedComponent('PartyFrame') as TCastleImageControl;
   SI := PlayPanel.DesignedComponent('SoloIcon') as TCastleImageControl;
   SI.OnPress := @OnSoloClick;
   PI := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
@@ -134,16 +134,8 @@ end;
 procedure TViewPlay.UpdatePartySizeUI;
 begin
   if FMatchmakingSystem = nil then Exit;
-  if FMatchmakingSystem.PartySize = 1 then
-  begin
-    FSoloFrame.Color := Vector4(0.5, 0, 0, 1);
-    FPartyFrame.Color := Vector4(0.5, 0, 0, 0);
-  end
-  else
-  begin
-    FSoloFrame.Color := Vector4(0.5, 0, 0, 0);
-    FPartyFrame.Color := Vector4(0.5, 0, 0, 1);
-  end;
+  FSoloFrame.Exists := FMatchmakingSystem.PartySize = 1;
+  FPartyFrame.Exists := FMatchmakingSystem.PartySize = 3;
 end;
 
 end.
