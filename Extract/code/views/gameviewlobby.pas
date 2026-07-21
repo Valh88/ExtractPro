@@ -49,7 +49,8 @@ type
     var
       FLobbyClient: TLobbyClient;
       FSpinnerImage: TCastleImageControl;
-      FPlayerGroup: TCastleHorizontalGroup;
+      FPlayerGroup: TCastleVerticalGroup;
+      FCheckPanelBg: TCastleImageControl;
       FCheckSlots: array of TCheckSlot;
     procedure OnMMState(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
@@ -63,6 +64,7 @@ type
 
 const
   SpinnerRotationSpeed = 5.0;
+  MaxSlotsPerRow = 6;
 
 var
   ViewLobby: TViewLobby;
@@ -100,7 +102,10 @@ begin
     end;
 
     if CheckReadingPlayersDesign <> nil then
-      FPlayerGroup := CheckReadingPlayersDesign.DesignedComponent('PlayerGroup') as TCastleHorizontalGroup;
+    begin
+      FPlayerGroup := CheckReadingPlayersDesign.DesignedComponent('PlayerGroup') as TCastleVerticalGroup;
+      FCheckPanelBg := CheckReadingPlayersDesign.DesignedComponent('CheckPanelBg') as TCastleImageControl;
+    end;
 
     GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
     GlobalClientEventBus.Subscribe(cgeReadyCheck, @OnReadyCheck);
@@ -179,20 +184,28 @@ end;
 
 procedure TViewLobby.OnReadyCheck(const Event: TClientGameEvent);
 begin
-  ReadyDesign.Exists := (Event.Amount > 0.5) and (Event.Amount < 1.5);
-  if CheckReadingPlayersDesign <> nil then
+  if (Event.Amount > 0.5) and (Event.Amount < 1.5) then
   begin
-    CheckReadingPlayersDesign.Exists := (Event.Amount > 0.5) and (Event.Amount < 1.5);
-    if not CheckReadingPlayersDesign.Exists then
+    ReadyDesign.Exists := True;
+    // CheckReadingPlayersDesign показывается только после нажатия "В ИГРУ"
+  end
+  else
+  begin
+    ReadyDesign.Exists := False;
+    if CheckReadingPlayersDesign <> nil then
+    begin
+      CheckReadingPlayersDesign.Exists := False;
       ClearCheckSlots;
+    end;
   end;
 end;
 
 procedure TViewLobby.OnReadyCheckUpdate(const Event: TClientGameEvent);
 var
   Payload: TReadyCheckUpdatePayload;
-  i: Integer;
+  i, j, TotalPlayers, InRow, RowCount: Integer;
   Slot: TCastleDesign;
+  Row: TCastleHorizontalGroup;
 begin
   Payload := TReadyCheckUpdatePayload(Event.Data);
   if Payload = nil then Exit;
@@ -204,41 +217,55 @@ begin
     Exit;
   end;
 
-  SetLength(FCheckSlots, Length(Payload.Players));
-  for i := 0 to High(Payload.Players) do
+  TotalPlayers := Length(Payload.Players);
+  if TotalPlayers = 0 then
   begin
-    FCheckSlots[i].PlayerId := Payload.Players[i].PlayerId;
-    Slot := TCastleDesign.Create(Self);
-    FCheckSlots[i].Design := Slot;
-    if Payload.Players[i].Ready then
-      Slot.Url := 'castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface'
-    else
-      Slot.Url := 'castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface';
-    Slot.Width := 72;
-    Slot.Height := 104;
-    Slot.VerticalAnchorParent := vpMiddle;
-    Slot.VerticalAnchorSelf := vpMiddle;
-    FPlayerGroup.InsertFront(Slot);
+    Payload.Free;
+    Exit;
+  end;
+
+  RowCount := (TotalPlayers + MaxSlotsPerRow - 1) div MaxSlotsPerRow;
+  SetLength(FCheckSlots, TotalPlayers);
+
+  for i := 0 to RowCount - 1 do
+  begin
+    Row := TCastleHorizontalGroup.Create(Self);
+    Row.Spacing := 10;
+    Row.VerticalAnchorParent := vpMiddle;
+    Row.VerticalAnchorSelf := vpMiddle;
+    FPlayerGroup.InsertFront(Row);
+
+    for j := 0 to MaxSlotsPerRow - 1 do
+    begin
+      InRow := i * MaxSlotsPerRow + j;
+      if InRow >= TotalPlayers then Break;
+
+      FCheckSlots[InRow].PlayerId := Payload.Players[InRow].PlayerId;
+      Slot := TCastleDesign.Create(Self);
+      FCheckSlots[InRow].Design := Slot;
+      if Payload.Players[InRow].Ready then
+        Slot.Url := 'castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface'
+      else
+        Slot.Url := 'castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface';
+      Slot.Width := 72;
+      Slot.Height := 104;
+      Slot.VerticalAnchorParent := vpMiddle;
+      Slot.VerticalAnchorSelf := vpMiddle;
+      Row.InsertFront(Slot);
+    end;
   end;
   Payload.Free;
+
+  if FCheckPanelBg <> nil then
+    FCheckPanelBg.Height := 40 + RowCount * 114;
 end;
 
 procedure TViewLobby.ClearCheckSlots;
-var
-  i: Integer;
-  D: TCastleDesign;
 begin
-  for i := 0 to High(FCheckSlots) do
-  begin
-    D := FCheckSlots[i].Design;
-    if D <> nil then
-    begin
-      if D.Parent <> nil then
-        D.Parent.RemoveControl(D);
-      D.Free;
-    end;
-  end;
   FCheckSlots := nil;
+  if FPlayerGroup <> nil then
+    while FPlayerGroup.ControlsCount > 0 do
+      FPlayerGroup.Controls[0].Free;
 end;
 
 procedure TViewLobby.OnReadyBtn(const Sender: TCastleUserInterface;
@@ -248,6 +275,9 @@ begin
   begin
     WriteLn(StdErr, '[Client] Player confirmed ready');
     FLobbyClient.MatchmakingSystem.SendReadyCheck;
+    ReadyDesign.Exists := False;
+    if CheckReadingPlayersDesign <> nil then
+      CheckReadingPlayersDesign.Exists := True;
   end;
   Handled := True;
 end;
