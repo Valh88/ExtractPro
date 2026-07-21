@@ -44,7 +44,7 @@
           "HorizontalAnchorParent" : "hpMiddle",
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "PlayerGroup",
-          "Spacing" : 3.0000000000000000E+001,
+          "Spacing" : 1.0000000000000000E+001,
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
             "Y" : 8.0000000000000000E+000
@@ -65,6 +65,10 @@
               "$$ClassName" : "TCastleDesign",
               "Height" : 1.0400000000000000E+002,
               "Name" : "Player2",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 8.2000000000000000E+001
+              },
               "Url" : "castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",
@@ -74,6 +78,10 @@
               "$$ClassName" : "TCastleDesign",
               "Height" : 1.0400000000000000E+002,
               "Name" : "Player3",
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 1.6400000000000000E+002
+              },
               "Url" : "castle-data:/user_interfaces/Player3NotReadyDesign.castle-user-interface",
               "VerticalAnchorParent" : "vpMiddle",
               "VerticalAnchorSelf" : "vpMiddle",

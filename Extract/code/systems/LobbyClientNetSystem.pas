@@ -159,13 +159,17 @@ begin
     begin
       if Length(Msg.Payload) >= 1 then
       begin
-        if Msg.Payload[0] = 0 then
-          WriteLn(StdErr, '[Client] Ready check failed (timeout), back to queue')
-        else
-          WriteLn(StdErr, '[Client] Ready check passed, game starting');
+        case Msg.Payload[0] of
+          0: WriteLn(StdErr, '[Client] Ready check failed (timeout), back to queue');
+          1: WriteLn(StdErr, '[Client] Ready check passed, game starting');
+          2: WriteLn(StdErr, '[Client] Match cancelled, re-enqueued');
+        end;
       end;
       E.EventType := cgeReadyCheck;
-      E.Amount := 0.0;
+      if (Length(Msg.Payload) >= 1) and (Msg.Payload[0] = 2) then
+        E.Amount := 2.0
+      else
+        E.Amount := 0.0;
       GlobalClientEventBus.Queue(E);
       GlobalClientEventBus.Flush;
     end;

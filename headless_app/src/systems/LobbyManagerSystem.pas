@@ -42,6 +42,7 @@ type
     procedure NotifyReadyCheckEnd(AResult: Byte);
     procedure SetPlayerReady(const APlayerId: UInt32);
     procedure CancelPlayerMatch(const APlayerId: UInt32);
+    procedure CancelCurrentMatch(ACancellingPlayerId: UInt32);
     function IsEveryoneReady: Boolean;
     function GetMatchPlayers: TQueuedPlayerArray;
     function GetReadyCheckTimeout: Single;
@@ -249,6 +250,37 @@ begin
       SetLength(FPendingMatch, Len - 1);
       Exit;
     end;
+end;
+
+procedure TLobbyManagerSystem.CancelCurrentMatch(ACancellingPlayerId: UInt32);
+var
+  p: TQueuedPlayer;
+  M: TNetMessage;
+begin
+  if Length(FPendingMatch) = 0 then Exit;
+
+  // Notify cancelling player: result=0 (out of queue)
+  M.Init(msgReadyCheckEnd, [0]);
+  for p in FPendingMatch do
+    if p.PlayerId = ACancellingPlayerId then
+    begin
+      if Assigned(FOnSendToPlayer) then
+        FOnSendToPlayer(p.PlayerId, M);
+      Break;
+    end;
+
+  // Re-enqueue and notify remaining players: result=2 (re-enqueued)
+  M.Init(msgReadyCheckEnd, [2]);
+  for p in FPendingMatch do
+    if p.PlayerId <> ACancellingPlayerId then
+    begin
+      EnqueuePlayer(p.PlayerId, string(p.Login), p.PartySize);
+      if Assigned(FOnSendToPlayer) then
+        FOnSendToPlayer(p.PlayerId, M);
+    end;
+
+  SetLength(FPendingMatch, 0);
+  FFsm.ChangeState(msWaiting);
 end;
 
 function TLobbyManagerSystem.IsEveryoneReady: Boolean;

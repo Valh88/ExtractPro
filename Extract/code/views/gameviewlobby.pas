@@ -157,12 +157,12 @@ end;
 
 procedure TViewLobby.OnMMState(const Event: TClientGameEvent);
 begin
-  SearchDesign.Exists := Event.Amount > 0;
+  SearchDesign.Exists := (Event.Amount > 0) and (Event.Amount < 2.0);
 end;
 
 procedure TViewLobby.OnReadyCheck(const Event: TClientGameEvent);
 begin
-  ReadyDesign.Exists := Event.Amount > 0.5;
+  ReadyDesign.Exists := (Event.Amount > 0.5) and (Event.Amount < 1.5);
 end;
 
 procedure TViewLobby.OnReadyBtn(const Sender: TCastleUserInterface;

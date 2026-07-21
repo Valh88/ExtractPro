@@ -270,10 +270,7 @@ begin
 
   Mgr := TLobbyManagerSystem(FManagerSystem);
   if Mgr <> nil then
-  begin
-    Mgr.CancelPlayerMatch(FRpcCallers[Idx].PlayerId);
-    Mgr.NotifyReadyCheckUpdate(Mgr.GetMatchPlayers);
-  end;
+    Mgr.CancelCurrentMatch(FRpcCallers[Idx].PlayerId);
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
@@ -337,8 +334,8 @@ begin
     if FManagerSystem <> nil then
     begin
       Mgr := TLobbyManagerSystem(FManagerSystem);
-      Mgr.DequeuePlayer(PlayerId);
-      Mgr.CancelPlayerMatch(PlayerId);
+    Mgr.DequeuePlayer(PlayerId);
+    Mgr.CancelCurrentMatch(PlayerId);
     end;
   end;
 end;

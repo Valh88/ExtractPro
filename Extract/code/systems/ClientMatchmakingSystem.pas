@@ -82,7 +82,12 @@ end;
 
 procedure TClientMatchmakingSystem.OnReadyCheck(const Event: TClientGameEvent);
 begin
-  if Event.Amount > 0.5 then
+  if Event.Amount > 1.5 then
+  begin
+    FState := msSearching;
+    PublishState;
+  end
+  else if Event.Amount > 0.5 then
     StartConfirm
   else
     EndConfirm;
