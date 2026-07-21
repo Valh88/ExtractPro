@@ -9,37 +9,38 @@
         "$$ClassName" : "TCastleImagePersistent",
         "Url" : "castle-data:/ui/panel_bg.png"
       },
-      "Height" : 1.9000000000000000E+002,
+      "Height" : 190.0,
       "HorizontalAnchorParent" : "hpMiddle",
       "HorizontalAnchorSelf" : "hpMiddle",
       "Name" : "CheckPanelBg",
       "Stretch" : true,
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
-        "X" : -3.0000000000000000E+001,
-        "Y" : 1.6500000000000000E+002
+        "X" : -30.0,
+        "Y" : 165.0
       },
       "VerticalAnchorParent" : "vpMiddle",
       "VerticalAnchorSelf" : "vpMiddle",
-      "Width" : 6.0000000000000000E+002,
+      "Width" : 600.0,
       "$Children" : [
         {
           "$$ClassName" : "TCastleLabel",
           "ColorPersistent" : {
             "$$ClassName" : "TCastleColorPersistent",
-            "Blue" : 7.5000000000000000E-001,
-            "Green" : 7.5000000000000000E-001,
-            "Red" : 7.5000000000000000E-001
+            "Blue" : 0.75,
+            "Green" : 0.75,
+            "Red" : 0.75
           },
-          "FontSize" : 1.8000000000000000E+001,
+          "FontSize" : 18.0,
           "HorizontalAnchorParent" : "hpMiddle",
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "Title",
           "Text" : [
+            "ГОТОВНОСТЬ"
           ],
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
-            "Y" : -1.2000000000000000E+001
+            "Y" : -12.0
           },
           "VerticalAnchorParent" : "vpTop",
           "VerticalAnchorSelf" : "vpTop"
@@ -49,98 +50,13 @@
           "HorizontalAnchorParent" : "hpMiddle",
           "HorizontalAnchorSelf" : "hpMiddle",
           "Name" : "PlayerGroup",
-          "Spacing" : 1.0000000000000000E+001,
+          "Spacing" : 10.0,
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
-            "Y" : 1.8000000000000000E+001
+            "Y" : 18.0
           },
           "VerticalAnchorParent" : "vpMiddle",
-          "VerticalAnchorSelf" : "vpMiddle",
-          "$Children" : [
-            {
-              "$$ClassName" : "TCastleHorizontalGroup",
-              "Name" : "Group",
-              "Spacing" : 1.0000000000000000E+001,
-              "VerticalAnchorParent" : "vpMiddle",
-              "VerticalAnchorSelf" : "vpMiddle",
-              "$Children" : [
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player1",
-                  "Url" : "castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player2",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 8.2000000000000000E+001
-                  },
-                  "Url" : "castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player3",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 1.6400000000000000E+002
-                  },
-                  "Url" : "castle-data:/user_interfaces/Player3NotReadyDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player4",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 2.4600000000000000E+002
-                  },
-                  "Url" : "castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player5",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 3.2800000000000000E+002
-                  },
-                  "Url" : "castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                },
-                {
-                  "$$ClassName" : "TCastleDesign",
-                  "Height" : 1.0400000000000000E+002,
-                  "Name" : "Player6",
-                  "TranslationPersistent" : {
-                    "$$ClassName" : "TCastleVector2Persistent",
-                    "X" : 4.1000000000000000E+002
-                  },
-                  "Url" : "castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface",
-                  "VerticalAnchorParent" : "vpMiddle",
-                  "VerticalAnchorSelf" : "vpMiddle",
-                  "Width" : 7.2000000000000000E+001
-                }
-              ]
-            }
-          ]
+          "VerticalAnchorSelf" : "vpMiddle"
         }
       ]
     }

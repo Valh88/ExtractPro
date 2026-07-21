@@ -121,6 +121,7 @@ var
   PlayerId: UInt32;
   Ready: Byte;
   S: string;
+  Payload: TReadyCheckUpdatePayload;
 begin
   case Msg.Header.MsgType of
     msgRpcResponse:
@@ -138,22 +139,30 @@ begin
     end;
     msgReadyCheckUpdate:
     begin
-      S := '[Client] Ready status: ';
       if Length(Msg.Payload) >= 1 then
       begin
         Count := Msg.Payload[0];
+        S := '[Client] Ready status: ';
+        Payload := TReadyCheckUpdatePayload.Create;
+        SetLength(Payload.Players, Count);
         for i := 0 to Count - 1 do
         begin
           if 1 + i * 5 + 4 > Length(Msg.Payload) then Break;
-          PlayerId := Msg.Payload[1 + i * 5] or
-                      (Msg.Payload[2 + i * 5] shl 8) or
-                      (Msg.Payload[3 + i * 5] shl 16) or
-                      (Msg.Payload[4 + i * 5] shl 24);
-          Ready := Msg.Payload[5 + i * 5];
-          S := S + Format('[%d:%s] ', [PlayerId, BoolToStr(Ready = 1, True)]);
+          Payload.Players[i].PlayerId := Msg.Payload[1 + i * 5] or
+                                        (Msg.Payload[2 + i * 5] shl 8) or
+                                        (Msg.Payload[3 + i * 5] shl 16) or
+                                        (Msg.Payload[4 + i * 5] shl 24);
+          Payload.Players[i].Ready := Msg.Payload[5 + i * 5] = 1;
+          S := S + Format('[%d:%s] ', [Payload.Players[i].PlayerId,
+            BoolToStr(Payload.Players[i].Ready, True)]);
         end;
+        WriteLn(StdErr, S);
+        E.EventType := cgeReadyCheckUpdate;
+        E.Amount := 0.0;
+        E.Data := Payload;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
       end;
-      WriteLn(StdErr, S);
     end;
     msgReadyCheckEnd:
     begin

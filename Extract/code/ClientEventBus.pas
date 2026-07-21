@@ -11,8 +11,19 @@ type
   TClientGameEventType = (
     cgeMatchmakingStateChanged,
     cgePartySizeChanged,
-    cgeReadyCheck        // Amount=1.0: показать дизайн, 0.0: скрыть
+    cgeReadyCheck,        // Amount=1.0: показать дизайн, 0.0: скрыть
+    cgeReadyCheckUpdate
   );
+
+  TReadyCheckPlayerInfo = record
+    PlayerId: UInt32;
+    Ready: Boolean;
+  end;
+
+  TReadyCheckUpdatePayload = class
+  public
+    Players: array of TReadyCheckPlayerInfo;
+  end;
 
   TClientGameEvent = record
     EventType: TClientGameEventType;

@@ -31,6 +31,7 @@ type
     BottomGradient: TCastleImageControl;
     SearchDesign: TCastleDesign;
     ReadyDesign: TCastleDesign;
+    CheckReadingPlayersDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -40,14 +41,24 @@ type
     function Motion(const Event: TInputMotion): Boolean; override;
     procedure SetLobbyClient(const AValue: TLobbyClient);
   private
-    FLobbyClient: TLobbyClient;
-    FSpinnerImage: TCastleImageControl;
+    type
+      TCheckSlot = record
+        PlayerId: UInt32;
+        Design: TCastleDesign;
+      end;
+    var
+      FLobbyClient: TLobbyClient;
+      FSpinnerImage: TCastleImageControl;
+      FPlayerGroup: TCastleHorizontalGroup;
+      FCheckSlots: array of TCheckSlot;
     procedure OnMMState(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
+    procedure OnReadyCheckUpdate(const Event: TClientGameEvent);
     procedure OnReadyBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
     procedure OnCancelBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
+    procedure ClearCheckSlots;
   end;
 
 const
@@ -88,8 +99,12 @@ begin
       (ReadyDesign.DesignedComponent('BtnCancel') as TCastleButton).OnPress := @Self.OnCancelBtn;
     end;
 
+    if CheckReadingPlayersDesign <> nil then
+      FPlayerGroup := CheckReadingPlayersDesign.DesignedComponent('PlayerGroup') as TCastleHorizontalGroup;
+
     GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
     GlobalClientEventBus.Subscribe(cgeReadyCheck, @OnReadyCheck);
+    GlobalClientEventBus.Subscribe(cgeReadyCheckUpdate, @OnReadyCheckUpdate);
 
     VS.GetOrCreateView(lvtPlay);
     VP := VS.ViewPlay;
@@ -105,6 +120,8 @@ procedure TViewLobby.Stop;
 begin
   GlobalClientEventBus.Unsubscribe(@OnMMState);
   GlobalClientEventBus.Unsubscribe(@OnReadyCheck);
+  GlobalClientEventBus.Unsubscribe(@OnReadyCheckUpdate);
+  ClearCheckSlots;
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -163,6 +180,65 @@ end;
 procedure TViewLobby.OnReadyCheck(const Event: TClientGameEvent);
 begin
   ReadyDesign.Exists := (Event.Amount > 0.5) and (Event.Amount < 1.5);
+  if CheckReadingPlayersDesign <> nil then
+  begin
+    CheckReadingPlayersDesign.Exists := (Event.Amount > 0.5) and (Event.Amount < 1.5);
+    if not CheckReadingPlayersDesign.Exists then
+      ClearCheckSlots;
+  end;
+end;
+
+procedure TViewLobby.OnReadyCheckUpdate(const Event: TClientGameEvent);
+var
+  Payload: TReadyCheckUpdatePayload;
+  i: Integer;
+  Slot: TCastleDesign;
+begin
+  Payload := TReadyCheckUpdatePayload(Event.Data);
+  if Payload = nil then Exit;
+
+  ClearCheckSlots;
+  if FPlayerGroup = nil then
+  begin
+    Payload.Free;
+    Exit;
+  end;
+
+  SetLength(FCheckSlots, Length(Payload.Players));
+  for i := 0 to High(Payload.Players) do
+  begin
+    FCheckSlots[i].PlayerId := Payload.Players[i].PlayerId;
+    Slot := TCastleDesign.Create(Self);
+    FCheckSlots[i].Design := Slot;
+    if Payload.Players[i].Ready then
+      Slot.Url := 'castle-data:/user_interfaces/Player1ReadyDesign.castle-user-interface'
+    else
+      Slot.Url := 'castle-data:/user_interfaces/Player2WaitingDesign.castle-user-interface';
+    Slot.Width := 72;
+    Slot.Height := 104;
+    Slot.VerticalAnchorParent := vpMiddle;
+    Slot.VerticalAnchorSelf := vpMiddle;
+    FPlayerGroup.InsertFront(Slot);
+  end;
+  Payload.Free;
+end;
+
+procedure TViewLobby.ClearCheckSlots;
+var
+  i: Integer;
+  D: TCastleDesign;
+begin
+  for i := 0 to High(FCheckSlots) do
+  begin
+    D := FCheckSlots[i].Design;
+    if D <> nil then
+    begin
+      if D.Parent <> nil then
+        D.Parent.RemoveControl(D);
+      D.Free;
+    end;
+  end;
+  FCheckSlots := nil;
 end;
 
 procedure TViewLobby.OnReadyBtn(const Sender: TCastleUserInterface;
