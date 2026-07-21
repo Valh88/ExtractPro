@@ -134,8 +134,16 @@ end;
 procedure TViewPlay.UpdatePartySizeUI;
 begin
   if FMatchmakingSystem = nil then Exit;
-  FSoloFrame.Exists := FMatchmakingSystem.PartySize = 1;
-  FPartyFrame.Exists := FMatchmakingSystem.PartySize = 3;
+  if FMatchmakingSystem.PartySize = 1 then
+  begin
+    FSoloFrame.Color := Vector4(0.5, 0, 0, 1);
+    FPartyFrame.Color := Vector4(0.5, 0, 0, 0);
+  end
+  else
+  begin
+    FSoloFrame.Color := Vector4(0.5, 0, 0, 0);
+    FPartyFrame.Color := Vector4(0.5, 0, 0, 1);
+  end;
 end;
 
 end.
