@@ -54,7 +54,7 @@
       "HorizontalAnchorSelf" : "hpMiddle",
       "Name" : "Status",
       "Text" : [
-        "НЕ ГОТОВ"
+        "NOT READY"
       ],
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",

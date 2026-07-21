@@ -36,7 +36,7 @@ type
     property BottomZoneFraction: Single read FBottomZoneFraction write FBottomZoneFraction;
     { Радиус джойстика в пикселях: ход стика и размер отрисовки. По умолчанию 80. Увеличьте (например 120–150) для более крупного джойстика. }
     property MaxRadius: Single read FMaxRadius write FMaxRadius;
-    { Инверсия верха и низа: true = вверх по экрану даёт "назад", вниз — "вперёд". По умолчанию false. }
+    { Invert top/bottom: true = moving up on screen goes "back", down = "forward". Default false. }
     property InvertVertical: Boolean read FInvertVertical write FInvertVertical;
   end;
 

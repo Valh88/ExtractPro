@@ -187,7 +187,7 @@ begin
   if (Event.Amount > 0.5) and (Event.Amount < 1.5) then
   begin
     ReadyDesign.Exists := True;
-    // CheckReadingPlayersDesign показывается только после нажатия "В ИГРУ"
+    // CheckReadingPlayersDesign shown only after clicking "PLAY"
   end
   else
   begin
