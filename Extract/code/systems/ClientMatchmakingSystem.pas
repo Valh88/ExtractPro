@@ -18,6 +18,7 @@ type
   private
     FRpc: TRpcClient;
     FState: TMatchmakingState;
+    FPendingPartySize: Byte;
     procedure PublishState;
   public
     constructor Create(ALobbyWorld: TLobbyWorldBase; ARpc: TRpcClient);
@@ -25,6 +26,7 @@ type
     procedure Enqueue;
     procedure Dequeue;
     property State: TMatchmakingState read FState;
+    property PartySize: Byte read FPendingPartySize write FPendingPartySize;
   end;
 
 implementation
@@ -35,6 +37,7 @@ begin
   inherited Create(ALobbyWorld);
   FRpc := ARpc;
   FState := msIdle;
+  FPendingPartySize := 1;
 end;
 
 procedure TClientMatchmakingSystem.PublishState;
@@ -56,11 +59,15 @@ begin
 end;
 
 procedure TClientMatchmakingSystem.Enqueue;
+var
+  Payload: TBytes;
 begin
   if FState <> msIdle then Exit;
   FState := msPending;
   PublishState;
-  FRpc.SendRequest(rpcQueueJoin, nil,
+  SetLength(Payload, 1);
+  Payload[0] := FPendingPartySize;
+  FRpc.SendRequest(rpcQueueJoin, Payload,
     procedure(const ResponsePayload: TBytes)
     begin
       FState := msSearching;

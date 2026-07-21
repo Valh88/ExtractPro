@@ -16,8 +16,6 @@ type
     MapImage: TCastleImageControl;
     Duration: TCastleLabel;
     ModeIcons: TCastleHorizontalGroup;
-    SoloIcon: TCastleImageControl;
-    PartyIcon: TCastleImageControl;
     SearchBtn: TCastleButton;
     FMatchmakingSystem: TClientMatchmakingSystem;
     constructor Create(AOwner: TComponent); override;
@@ -28,6 +26,14 @@ type
       const Event: TInputPressRelease; var Handled: Boolean);
     procedure OnMMState(const Event: TClientGameEvent);
     property MatchmakingSystem: TClientMatchmakingSystem read FMatchmakingSystem write FMatchmakingSystem;
+  private
+    FSoloFrame: TCastleRectangleControl;
+    FPartyFrame: TCastleRectangleControl;
+    procedure OnSoloClick(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
+    procedure OnPartyClick(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
+    procedure UpdatePartySizeUI;
   end;
 
 var
@@ -42,6 +48,8 @@ begin
 end;
 
 procedure TViewPlay.Start;
+var
+  SI, PI: TCastleImageControl;
 begin
   inherited;
   LeftPanel := PlayPanel.DesignedComponent('LeftPanel') as TCastleImageControl;
@@ -49,17 +57,27 @@ begin
   MapImage := PlayPanel.DesignedComponent('MapImage') as TCastleImageControl;
   Duration := PlayPanel.DesignedComponent('Duration') as TCastleLabel;
   ModeIcons := PlayPanel.DesignedComponent('ModeIcons') as TCastleHorizontalGroup;
-  SoloIcon := PlayPanel.DesignedComponent('SoloIcon') as TCastleImageControl;
-  PartyIcon := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
   SearchBtn := PlayPanel.DesignedComponent('SearchBtn') as TCastleButton;
   SearchBtn.OnPress := @OnSearchPress;
-  GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
+
+  FSoloFrame := PlayPanel.DesignedComponent('SoloFrame') as TCastleRectangleControl;
+  FPartyFrame := PlayPanel.DesignedComponent('PartyFrame') as TCastleRectangleControl;
+  SI := PlayPanel.DesignedComponent('SoloIcon') as TCastleImageControl;
+  SI.OnPress := @OnSoloClick;
+  PI := PlayPanel.DesignedComponent('PartyIcon') as TCastleImageControl;
+  PI.OnPress := @OnPartyClick;
+
   if FMatchmakingSystem <> nil then
+  begin
+    UpdatePartySizeUI;
     case FMatchmakingSystem.State of
       msIdle:     SearchBtn.Caption := 'SEARCH';
       msPending:  SearchBtn.Caption := '...';
       msSearching: SearchBtn.Caption := 'CANCEL';
     end;
+  end;
+
+  GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
 end;
 
 procedure TViewPlay.Stop;
@@ -93,6 +111,31 @@ begin
     SearchBtn.Caption := '...'
   else
     SearchBtn.Caption := 'SEARCH';
+end;
+
+procedure TViewPlay.OnSoloClick(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if FMatchmakingSystem = nil then Exit;
+  if FMatchmakingSystem.State <> msIdle then Exit;
+  FMatchmakingSystem.PartySize := 1;
+  UpdatePartySizeUI;
+end;
+
+procedure TViewPlay.OnPartyClick(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  if FMatchmakingSystem = nil then Exit;
+  if FMatchmakingSystem.State <> msIdle then Exit;
+  FMatchmakingSystem.PartySize := 3;
+  UpdatePartySizeUI;
+end;
+
+procedure TViewPlay.UpdatePartySizeUI;
+begin
+  if FMatchmakingSystem = nil then Exit;
+  FSoloFrame.Exists := FMatchmakingSystem.PartySize = 1;
+  FPartyFrame.Exists := FMatchmakingSystem.PartySize = 3;
 end;
 
 end.
