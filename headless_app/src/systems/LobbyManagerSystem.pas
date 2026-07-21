@@ -6,7 +6,11 @@ interface
 
 uses
   Classes, SysUtils,
-  CastleKeysMouse, Interfaces, LobbyManager, MatchmakingSM, GameConfig;
+  CastleKeysMouse, Interfaces, LobbyManager, MatchmakingSM, GameConfig,
+  NetMessages;
+
+type
+  TSendToPlayerEvent = function(APlayerId: UInt32; const Msg: TNetMessage): Boolean of object;
 
 type
   TLobbyManagerSystem = class(TInterfacedObject, IWorldSystem, IMatchmakingHost)
@@ -16,6 +20,7 @@ type
     FQueues: array[1..3] of TQueuedPlayerArray;
     FReadyPartySize: Byte;
     FPendingMatch: TQueuedPlayerArray;
+    FOnSendToPlayer: TSendToPlayerEvent;
     function GetQueueSize(APartySize: Byte): Integer;
   public
     constructor Create(AManager: TLobbyManager);
@@ -32,6 +37,7 @@ type
     procedure SetReadyPartySize(APartySize: Byte);
     function GetReadyPartySize: Byte;
     procedure StartReadyCheck(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheck(const Players: TQueuedPlayerArray);
     procedure SetPlayerReady(const APlayerId: UInt32);
     procedure CancelPlayerMatch(const APlayerId: UInt32);
     function IsEveryoneReady: Boolean;
@@ -41,6 +47,7 @@ type
 
     property Manager: TLobbyManager read FManager;
     property Fsm: TMatchStateMachine read FFsm;
+    property OnSendToPlayer: TSendToPlayerEvent read FOnSendToPlayer write FOnSendToPlayer;
   end;
 
 implementation
@@ -165,6 +172,17 @@ begin
     FPendingMatch[i] := Players[i];
     FPendingMatch[i].Ready := False;
   end;
+end;
+
+procedure TLobbyManagerSystem.NotifyReadyCheck(const Players: TQueuedPlayerArray);
+var
+  M: TNetMessage;
+  p: TQueuedPlayer;
+begin
+  M.Init(msgReadyCheck);
+  for p in Players do
+    if Assigned(FOnSendToPlayer) then
+      FOnSendToPlayer(p.PlayerId, M);
 end;
 
 procedure TLobbyManagerSystem.SetPlayerReady(const APlayerId: UInt32);

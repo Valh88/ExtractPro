@@ -29,6 +29,7 @@ type
     procedure SetReadyPartySize(APartySize: Byte);
     function GetReadyPartySize: Byte;
     procedure StartReadyCheck(const Players: TQueuedPlayerArray);
+    procedure NotifyReadyCheck(const Players: TQueuedPlayerArray);
     procedure SetPlayerReady(const APlayerId: UInt32);
     procedure CancelPlayerMatch(const APlayerId: UInt32);
     function IsEveryoneReady: Boolean;
@@ -129,6 +130,7 @@ end;
 procedure TReadyCheckState.Enter(FromState: TMatchState);
 begin
   FElapsed := 0;
+  FHost.NotifyReadyCheck(FHost.GetMatchPlayers);
 end;
 
 procedure TReadyCheckState.Update(DeltaTime: single);

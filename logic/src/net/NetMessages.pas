@@ -87,6 +87,7 @@ const
   msgJoinRaid     = 20;
   msgJoinRaidAccept = 21;
   msgJoinRaidDeny = 22;
+  msgReadyCheck = 23;   // server→client: показать панель готовности
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;

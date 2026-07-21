@@ -155,6 +155,7 @@ begin
   LS.AddSystem(MgrSys);
   LS.RequireAuth := ARequireAuth;
   LS.NetSystem.ManagerSystem := MgrSys;
+  MgrSys.OnSendToPlayer := @LS.NetSystem.SendToPlayer;
   if FValidator <> nil then
     LS.AuthValidator := FValidator;
   if FLobbyDbSystem <> nil then

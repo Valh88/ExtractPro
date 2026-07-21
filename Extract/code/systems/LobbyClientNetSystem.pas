@@ -120,6 +120,10 @@ begin
       if FRpc <> nil then
         FRpc.DispatchResponse(Msg.Header.CorrelationId, Msg.Payload);
     end;
+    msgReadyCheck:
+    begin
+      WriteLn(StdErr, '[Client] Received msgReadyCheck — match found, waiting for ready confirmation');
+    end;
   end;
 end;
 
