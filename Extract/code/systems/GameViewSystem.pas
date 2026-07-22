@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleWindow, CastleUIControls, CastleControls, CastleKeysMouse,
+  CastleUIControls, CastleControls, CastleKeysMouse,
   Interfaces;
 
 type

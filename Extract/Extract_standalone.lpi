@@ -47,7 +47,7 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
-            <CustomOptions Value="-dRELEASE"/>
+            <CustomOptions Value="-dRELEASE -dFPC_NO_WINSOCK2_GAI_STRERROR"/>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -69,7 +69,7 @@
         <PackageName Value="castle_engine_base"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="20">
       <Unit0>
         <Filename Value="Extract_standalone.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -96,6 +96,7 @@
       <Unit5>
         <Filename Value="code/views/startview.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="StartView"/>
       </Unit5>
       <Unit6>
         <Filename Value="code/views/gameviewlobby.pas"/>
@@ -126,13 +127,33 @@
         <IsPartOfProject Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="code/LobbyClient.pas"/>
+        <Filename Value="code/systems/ClientNetSystem.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="code/systems/ClientMatchmakingSystem.pas"/>
+        <Filename Value="code/systems/ClientSnapshotSystem.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="code/systems/GameViewSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="code/systems/ClientAuthSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="code/systems/ClientMatchmakingSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="code/systems/ClientOutbox.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="code/systems/LobbyClientNetSystem.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit19>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -169,7 +190,8 @@
         <ShowHints Value="False"/>
       </Verbosity>
       <CustomOptions Value="-dDEBUG 
--dVISUAL"/>
+-dVISUAL
+-dFPC_NO_WINSOCK2_GAI_STRERROR"/>
     </Other>
   </CompilerOptions>
   <Debugging>
