@@ -185,7 +185,12 @@ begin
     msgStartGame:
     begin
       if Length(Msg.Payload) >= 2 then
-        WriteLn(StdErr, '[Client] Game server port: ', Msg.Payload[0] or (Msg.Payload[1] shl 8));
+      begin
+        E.EventType := cgeStartGame;
+        E.Amount := Msg.Payload[0] or (Msg.Payload[1] shl 8);
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
+      end;
     end;
   end;
 end;

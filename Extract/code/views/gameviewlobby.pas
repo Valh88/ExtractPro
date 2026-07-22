@@ -6,7 +6,7 @@ uses
   SysUtils, Classes, Math,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
-  ClientEventBus;
+  ClientEventBus, GameViewMain;
 
 type
   TViewLobby = class(TCastleView)
@@ -59,6 +59,7 @@ type
       const Event: TInputPressRelease; var Handled: Boolean);
     procedure OnCancelBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
+    procedure OnStartGame(const Event: TClientGameEvent);
     procedure ClearCheckSlots;
   end;
 
@@ -110,6 +111,7 @@ begin
     GlobalClientEventBus.Subscribe(cgeMatchmakingStateChanged, @OnMMState);
     GlobalClientEventBus.Subscribe(cgeReadyCheck, @OnReadyCheck);
     GlobalClientEventBus.Subscribe(cgeReadyCheckUpdate, @OnReadyCheckUpdate);
+    GlobalClientEventBus.Subscribe(cgeStartGame, @OnStartGame);
 
     VS.GetOrCreateView(lvtPlay);
     VP := VS.ViewPlay;
@@ -126,6 +128,7 @@ begin
   GlobalClientEventBus.Unsubscribe(@OnMMState);
   GlobalClientEventBus.Unsubscribe(@OnReadyCheck);
   GlobalClientEventBus.Unsubscribe(@OnReadyCheckUpdate);
+  GlobalClientEventBus.Unsubscribe(@OnStartGame);
   ClearCheckSlots;
   FreeAndNil(FLobbyClient);
   inherited;
@@ -291,6 +294,23 @@ begin
     FLobbyClient.MatchmakingSystem.SendReadyCancel;
   end;
   Handled := True;
+end;
+
+procedure TViewLobby.OnStartGame(const Event: TClientGameEvent);
+var
+  Port: Word;
+  Token: string;
+begin
+  Port := Round(Event.Amount);
+  Token := '';
+  if FLobbyClient <> nil then
+  begin
+    Token := FLobbyClient.NetSystem.AuthToken;
+    FLobbyClient.NetSystem.Disconnect;
+  end;
+  WriteLn(StdErr, '[Client] Starting game on port ', Port, ' token="', Token, '"');
+  ViewMain.StartGame('127.0.0.1', Port, Token);
+  Container.View := ViewMain;
 end;
 
 end.
