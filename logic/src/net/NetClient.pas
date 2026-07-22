@@ -120,7 +120,10 @@ begin
   FHostAddr := AHost;
   FPort := APort;
   FHost.Start;
-  Addr := TRNLAddress.CreateFromString(AHost + ':' + IntToStr(APort));
+  if Pos(':', AHost) > 0 then
+    Addr := TRNLAddress.CreateFromString('[' + AHost + ']:' + IntToStr(APort))
+  else
+    Addr := TRNLAddress.CreateFromString(AHost + ':' + IntToStr(APort));
   FPeer := FHost.Connect(Addr, 2);
   if FPeer <> nil then
     FState := csConnecting;

@@ -143,7 +143,7 @@ procedure TGameServer.Start;
 var
   Addr: TRNLAddress;
 begin
-  Addr := TRNLAddress.CreateFromString('0.0.0.0:' + IntToStr(FPort));
+  Addr := TRNLAddress.CreateFromString('::' + ':' + IntToStr(FPort));
   FHost.Address^ := Addr;
   FHost.Start;
 end;
