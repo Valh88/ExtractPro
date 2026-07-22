@@ -163,6 +163,9 @@
     </Files>
     <RequiredPkgs>
       <Item>
+        <PackageName Value="castle_engine_window"/>
+      </Item>
+      <Item>
         <PackageName Value="mormot2"/>
       </Item>
       <Item>
