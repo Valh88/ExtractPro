@@ -70,7 +70,7 @@ begin
   FLobbyPort := 7776;
   FMaxPlayers := 8;
   FAuthPort := AUTH_SERVER_DEFAULT_PORT;
-  FAuthHost := '::';
+  FAuthHost := '0.0.0.0';
   FRequireAuth := False;
   FDBFileName := 'server.db';
   FRunning := False;

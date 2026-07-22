@@ -319,7 +319,7 @@ begin
     FLobbyClient.NetSystem.Disconnect;
   end;
   WriteLn(StdErr, '[Client] Starting game on port ', Port, ' lobby=', LobbyId, ' token="', Token, '"');
-  ViewMain.StartGame('::1', Port, LobbyId, Token);
+  ViewMain.StartGame('127.0.0.1', Port, LobbyId, Token);
   Container.View := ViewMain;
 end;
 
