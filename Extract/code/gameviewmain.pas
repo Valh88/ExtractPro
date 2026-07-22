@@ -59,6 +59,7 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
+  FGameClient.ViewSystem.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
 end;

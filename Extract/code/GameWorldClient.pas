@@ -11,7 +11,8 @@ uses
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
   MouseLookOverlay, FirstPersonCameraBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
-  ClientAuthSystem, RpcClient, JobQueueSystem;
+  ClientAuthSystem, RpcClient, JobQueueSystem,
+  GameViewSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -25,6 +26,7 @@ type
     FAuthSystem: TClientAuthSystem;
     FRpc: TRpcClient;
     FLobbyId: UInt32;
+    FViewSystem: TGameViewSystem;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -39,6 +41,7 @@ type
     property AuthSystem: TClientAuthSystem read FAuthSystem;
     property Rpc: TRpcClient read FRpc;
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
+    property ViewSystem: TGameViewSystem read FViewSystem;
   end;
 
 implementation
@@ -146,6 +149,8 @@ begin
   AddSystem(FSnapSystem);
   AddSystem(FOutbox);
   AddSystem(TJobQueueSystem.Create(Self));
+  FViewSystem := TGameViewSystem.Create(nil);
+  AddSystem(FViewSystem);
 end;
 
 end.
