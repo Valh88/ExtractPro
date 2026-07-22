@@ -37,6 +37,7 @@ See https://castle-engine.io/project_manifest for documentation of this file.
     <library_paths>
       <path value="../../../mORMot2/static" />
       <path value="../../../mORMot2/static/x86_64-linux" />
+      <path value="../../../mORMot2/static/aarch64-android" />
     </library_paths>
   </compiler_options>
 </project>
