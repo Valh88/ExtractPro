@@ -123,6 +123,63 @@ Publisher ──Queue+Flush──→ EventBus ──Subscribe──→ Consumer(
 - Validation is synchronous (local SQLite). For remote DB — convert to async with `TTask.Run` + `TThreadedQueue`
 - **Known limitation:** guest/anonymous login not implemented yet
 
+## Yggdrasil IPv6 Support (branch `yggdrasil-ipv6`)
+
+**Branch:** `yggdrasil-ipv6` — рабочая реализация IPv6 + Yggdrasil. Все изменения изолированы, при необходимости мёржатся в `master`.
+
+### Проблема
+mORMot2 использует `gethostbyname` (IPv4-only) для разрешения адресов (`mormot.net.sock.posix.inc:470`). Bare numeric IPv6 (`::1`, `201:9dea:...`) не парсятся → `ENetSock`.
+
+### Решение: `THttpAuthSocket` в `AuthClient.pas`
+- Собственный `THttpAuthSocket = class(THttpClientSocket)` с методом `OpenHost`
+- Использует `getaddrinfo(AI_NUMERICHOST)` из libc напрямую (парсит и IPv4, и IPv6)
+- Создаёт сокет через `c_socket`/`c_connect`/`c_close` (libc на Linux, ws2_32.dll на Windows)
+- `fSock := TNetSocket(PtrInt(FD))` — mORMot2 хранит хендл как указатель
+- mORMot2 не патчится, всё в нашем коде
+
+### `GameConfig.pas`
+Добавлены поля:
+- `ServerHost: string` — Yggdrasil IP по умолчанию (`201:9dea:3336:fed6:3c78:fdf0:ccda:bf70`)
+- `AuthPort: Word` — порт auth-сервера (`AUTH_SERVER_DEFAULT_PORT`)
+
+### `TAuthClient`
+- Конструктор: `TAuthClient.Create(const AHost: string; APort: Word)` (вместо URL)
+- Параметры: `FHost`, `FPort: Word`
+- `ClientAuthSystem.pas` передаёт `GlobalConfig.ServerHost`, `GlobalConfig.AuthPort`
+
+### Изменённые файлы (ветка `yggdrasil-ipv6`)
+| Файл | Что |
+|------|-----|
+| `logic/src/auth_server/AuthClient.pas` | `THttpAuthSocket` + `getaddrinfo`, кроссплатформенные импорты libc/ws2_32 |
+| `logic/src/GameConfig.pas` | `ServerHost`, `AuthPort` поля |
+| `Extract/code/systems/ClientAuthSystem.pas` | Использует `GlobalConfig` |
+| `Extract/code/views/startview.pas` | `'::1'` → `GlobalConfig.ServerHost` |
+| `Extract/code/views/gameviewlobby.pas` | `'::1'` → `GlobalConfig.ServerHost` |
+
+### Cross-platform импорты (`AuthClient.pas`)
+| Платформа | Функции | Библиотека |
+|-----------|---------|------------|
+| Linux/Android/macOS | `socket`, `connect`, `close`, `getaddrinfo`, `freeaddrinfo`, `gai_strerror` | `external 'c'` (libc/Bionic) |
+| Windows | `socket`, `connect`, `closesocket`, `getaddrinfo`, `freeaddrinfo`, `gai_strerror` | `external 'ws2_32.dll'` (Winsock2) |
+
+### Android APK сборка
+- В `CastleEngineManifest.xml` добавлен `<service name="client_server" />` (даёт `INTERNET` + `ACCESS_NETWORK_STATE`)
+- `android:usesCleartextTraffic="true"` — патчится вручную в `AndroidManifest.xml` после `castle-engine package`:
+
+```bash
+cd Extract
+castle-engine package --os=android --cpu=aarch64 --mode=debug
+sed -i 's|<application|<application android:usesCleartextTraffic="true"|' \
+  castle-engine-output/android/project/app/src/main/AndroidManifest.xml
+cd castle-engine-output/android/project
+ANDROID_HOME=/home/vano/Android/Sdk JAVA_HOME=/usr/lib/jvm/java-17-openjdk \
+  ./gradlew assembleDebug
+cp app/build/outputs/apk/debug/app-debug.apk ../../../Extract-0.1-android-debug.apk
+```
+
+### ENET (RNL) — `TGameClient.Connect`
+Уже корректно обрабатывает IPv6: оборачивает адрес в `[]` при наличии `:` (`NetClient.pas:123`).
+
 ## Common Tasks
 | Task | Command |
 |------|---------|
@@ -131,3 +188,4 @@ Publisher ──Queue+Flush──→ EventBus ──Subscribe──→ Consumer(
 | Build logic pkg | `cd logic && lazbuild extractlogic.lpk` |
 | Run tests | `cd test && lazbuild fpcunitproject1.lpi && ./fpcunitproject1` |
 | Open in Lazarus | Open `Extract/Extract_standalone.lpi` or `headless_app/physics_headless_test.dpr` |
+| Build Android APK (yggdrasil-ipv6) | См. раздел "Android APK сборка" выше |
