@@ -122,6 +122,7 @@ var
   Ready: Byte;
   S: string;
   Payload: TReadyCheckUpdatePayload;
+  StartPayload: TStartGamePayload;
 begin
   case Msg.Header.MsgType of
     msgRpcResponse:
@@ -184,10 +185,15 @@ begin
     end;
     msgStartGame:
     begin
-      if Length(Msg.Payload) >= 2 then
+      if Length(Msg.Payload) >= 6 then
       begin
+        StartPayload := TStartGamePayload.Create;
+        StartPayload.Port := Msg.Payload[0] or (Msg.Payload[1] shl 8);
+        StartPayload.LobbyId := Msg.Payload[2] or (Msg.Payload[3] shl 8)
+          or (Msg.Payload[4] shl 16) or (Msg.Payload[5] shl 24);
         E.EventType := cgeStartGame;
-        E.Amount := Msg.Payload[0] or (Msg.Payload[1] shl 8);
+        E.Amount := StartPayload.Port;
+        E.Data := StartPayload;
         GlobalClientEventBus.Queue(E);
         GlobalClientEventBus.Flush;
       end;

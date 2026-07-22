@@ -156,7 +156,9 @@ begin
 
   GamePort := FreePort;
 
-  M.Init(msgStartGame, [Lo(FreePort), Hi(FreePort)]);
+  M.Init(msgStartGame, [Lo(FreePort), Hi(FreePort),
+    Byte(LobbyId), Byte(LobbyId shr 8),
+    Byte(LobbyId shr 16), Byte(LobbyId shr 24)]);
   for p in Players do
     if Assigned(FOnSendToPlayer) then
       FOnSendToPlayer(p.PlayerId, M);

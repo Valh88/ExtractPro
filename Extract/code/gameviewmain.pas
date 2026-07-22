@@ -18,11 +18,12 @@ type
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: Boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
-    procedure StartGame(const AHost: string; APort: Word; const AToken: string = '');
+    procedure StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string = '');
   private
     FGameClient: TGameWorldClient;
     FGameHost: string;
     FGamePort: Word;
+    FGameLobbyId: UInt32;
     FGameToken: string;
   end;
 
@@ -39,10 +40,11 @@ begin
   DesignUrl := 'castle-data:/gameviewmain.castle-user-interface';
 end;
 
-procedure TViewMain.StartGame(const AHost: string; APort: Word; const AToken: string);
+procedure TViewMain.StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string);
 begin
   FGameHost := AHost;
   FGamePort := APort;
+  FGameLobbyId := ALobbyId;
   FGameToken := AToken;
 end;
 
@@ -59,6 +61,7 @@ begin
   );
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
+  FGameClient.LobbyId := FGameLobbyId;
   FGameClient.ViewSystem.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);

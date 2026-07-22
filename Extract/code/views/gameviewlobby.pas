@@ -299,17 +299,27 @@ end;
 procedure TViewLobby.OnStartGame(const Event: TClientGameEvent);
 var
   Port: Word;
+  LobbyId: UInt32;
   Token: string;
+  Payload: TStartGamePayload;
 begin
-  Port := Round(Event.Amount);
   Token := '';
+  LobbyId := 1;
+  Port := Round(Event.Amount);
+  if Event.Data <> nil then
+  begin
+    Payload := TStartGamePayload(Event.Data);
+    Port := Payload.Port;
+    LobbyId := Payload.LobbyId;
+    Payload.Free;
+  end;
   if FLobbyClient <> nil then
   begin
     Token := FLobbyClient.NetSystem.AuthToken;
     FLobbyClient.NetSystem.Disconnect;
   end;
-  WriteLn(StdErr, '[Client] Starting game on port ', Port, ' token="', Token, '"');
-  ViewMain.StartGame('127.0.0.1', Port, Token);
+  WriteLn(StdErr, '[Client] Starting game on port ', Port, ' lobby=', LobbyId, ' token="', Token, '"');
+  ViewMain.StartGame('127.0.0.1', Port, LobbyId, Token);
   Container.View := ViewMain;
 end;
 

@@ -26,6 +26,12 @@ type
     Players: array of TReadyCheckPlayerInfo;
   end;
 
+  TStartGamePayload = class
+  public
+    Port: Word;
+    LobbyId: UInt32;
+  end;
+
   TClientGameEvent = record
     EventType: TClientGameEventType;
     Amount: Single;
