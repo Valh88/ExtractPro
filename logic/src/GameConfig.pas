@@ -6,13 +6,17 @@ unit GameConfig;
 interface
 
 uses
-  SysUtils, Classes, help_types, EntityTypes;
+  SysUtils, Classes, help_types, EntityTypes, AuthTypes;
 
 type
   { Глобальный конфиг рейда }
   TGameConfig = record
+    { Сервер }
+    ServerHost: string;        // хост для подключения (IPv4/IPv6)
+    AuthPort: Word;            // порт auth-сервера
+
     { Время }
-    RaidTime: Single;          // макс. дли��ельность рейда (сек)
+    RaidTime: Single;          // макс. длительность рейда (сек)
     ExtractionTime: Single;    // время экстракции (сек)
 
     { Игроки }
@@ -56,6 +60,8 @@ implementation
 
 procedure TGameConfig.Init;
 begin
+  ServerHost := '201:9dea:3336:fed6:3c78:fdf0:ccda:bf70';
+  AuthPort := AUTH_SERVER_DEFAULT_PORT;
   RaidTime := 600;
   ExtractionTime := 5;
   MaxPlayers := 8;

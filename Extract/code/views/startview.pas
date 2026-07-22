@@ -39,7 +39,7 @@ var
 
 implementation
 
-uses SysUtils;
+uses SysUtils, GameConfig;
 
 constructor TViewStartView.Create(AOwner: TComponent);
 begin
@@ -101,7 +101,7 @@ begin
     Information.Text.Add('Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
     Information.Exists := True;
     FLobbyClient.NetSystem.AuthToken := Result.Token;
-    FLobbyClient.Connect('::1', 7776);
+    FLobbyClient.Connect(GlobalConfig.ServerHost, 7776);
   end
   else
   begin

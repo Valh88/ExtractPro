@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes,
-  Interfaces, AuthTypes, AuthClient,
+  Interfaces, AuthTypes, AuthClient, GameConfig,
   CastleKeysMouse,
   System.Threading;
 
@@ -37,7 +37,7 @@ type
     FOnAuthResult: TAuthRequestEvent;
     procedure DoAuth(const ALogin, APassword, AEmail: string; AKind: TAuthRequestKind);
   public
-    constructor Create(const AServerUrl: string = '');
+    constructor Create;
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single);
     function Press(const Event: TInputPressRelease): Boolean;
@@ -53,10 +53,10 @@ implementation
 
 { TClientAuthSystem }
 
-constructor TClientAuthSystem.Create(const AServerUrl: string);
+constructor TClientAuthSystem.Create;
 begin
   inherited Create;
-  FClient := TAuthClient.Create(AServerUrl);
+  FClient := TAuthClient.Create(GlobalConfig.ServerHost, GlobalConfig.AuthPort);
   FTask := nil;
   FToken := '';
   FUserId := 0;
@@ -83,7 +83,7 @@ var
   Resp: TAuthResponse;
   Res: TAuthRequestResult;
 begin
-  Client := TAuthClient.Create(FClient.ServerUrl);
+  Client := TAuthClient.Create(GlobalConfig.ServerHost, GlobalConfig.AuthPort);
   try
     FillChar(Res, SizeOf(Res), 0);
     Res.Kind := AKind;

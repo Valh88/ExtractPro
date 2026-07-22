@@ -3,7 +3,7 @@ unit GameViewLobby;
 interface
 
 uses
-  SysUtils, Classes, Math,
+  SysUtils, Classes, Math, GameConfig,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
   ClientEventBus, GameViewMain;
@@ -319,7 +319,7 @@ begin
     FLobbyClient.NetSystem.Disconnect;
   end;
   WriteLn(StdErr, '[Client] Starting game on port ', Port, ' lobby=', LobbyId, ' token="', Token, '"');
-  ViewMain.StartGame('::1', Port, LobbyId, Token);
+  ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, Token);
   Container.View := ViewMain;
 end;
 
