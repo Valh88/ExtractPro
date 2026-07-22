@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils,
   CastleKeysMouse, Interfaces, LobbyManager, MatchmakingSM, GameConfig,
-  NetMessages;
+  NetMessages, GameWorldServer;
 
 type
   TSendToPlayerEvent = function(APlayerId: UInt32; const Msg: TNetMessage): Boolean of object;
@@ -20,6 +20,7 @@ type
     FQueues: array[1..3] of TQueuedPlayerArray;
     FReadyPartySize: Byte;
     FPendingMatch: TQueuedPlayerArray;
+    FRequireAuth: Boolean;
     FOnSendToPlayer: TSendToPlayerEvent;
     function GetQueueSize(APartySize: Byte): Integer;
   public
@@ -52,6 +53,7 @@ type
     property Manager: TLobbyManager read FManager;
     property Fsm: TMatchStateMachine read FFsm;
     property OnSendToPlayer: TSendToPlayerEvent read FOnSendToPlayer write FOnSendToPlayer;
+    property RequireAuth: Boolean read FRequireAuth write FRequireAuth;
   end;
 
 implementation
@@ -139,8 +141,25 @@ end;
 
 procedure TLobbyManagerSystem.DistributeGame(const Players: array of TQueuedPlayer;
   out GamePort: Word);
+var
+  FreePort: Word;
+  LobbyId: UInt32;
+  Lobby: TGameWorldServer;
+  M: TNetMessage;
+  p: TQueuedPlayer;
 begin
-  GamePort := FManager.GetGameLobbyPort;
+  FreePort := FManager.GetAvailablePort;
+  LobbyId := FManager.AddLobby(FreePort, 32, FRequireAuth);
+  Lobby := FManager.FindLobbyById(LobbyId);
+  if Lobby <> nil then
+    Lobby.NetSystem.StartServer;
+
+  GamePort := FreePort;
+
+  M.Init(msgStartGame, [Lo(FreePort), Hi(FreePort)]);
+  for p in Players do
+    if Assigned(FOnSendToPlayer) then
+      FOnSendToPlayer(p.PlayerId, M);
 end;
 
 function TLobbyManagerSystem.GetQueueSize(APartySize: Byte): Integer;

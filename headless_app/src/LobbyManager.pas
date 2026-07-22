@@ -49,6 +49,7 @@ type
     property AuthValidator: IAuthValidator read FValidator write FValidator;
     property OnLog: TNotifyEvent read FOnLog write FOnLog;
     function GetGameLobbyPort: Word;
+    function GetAvailablePort(const StartFrom: Word = 7777; const EndAt: Word = 7995): Word;
     property Lobbies: TLobbyArray read FLobbies;
     property Count: Integer read GetCount;
   end;
@@ -152,6 +153,7 @@ begin
   FLobbyServer := TLobbyServer.Create(APort, AMaxPlayers);
   LS := TLobbyServer(FLobbyServer);
   MgrSys := TLobbyManagerSystem.Create(Self);
+  MgrSys.RequireAuth := ARequireAuth;
   LS.AddSystem(MgrSys);
   LS.RequireAuth := ARequireAuth;
   LS.NetSystem.ManagerSystem := MgrSys;
@@ -201,6 +203,16 @@ begin
   if Length(FLobbies) = 0 then
     raise Exception.Create('No game lobbies available');
   Result := FLobbies[0].Port;
+end;
+
+function TLobbyManager.GetAvailablePort(const StartFrom: Word; const EndAt: Word): Word;
+var
+  P: Word;
+begin
+  for P := StartFrom to EndAt do
+    if FindLobbyByPort(P) = -1 then
+      Exit(P);
+  raise Exception.CreateFmt('No available ports in range %d..%d', [StartFrom, EndAt]);
 end;
 
 function TLobbyManager.GetCount: Integer;

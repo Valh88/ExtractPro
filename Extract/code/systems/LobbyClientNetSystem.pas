@@ -182,6 +182,11 @@ begin
       GlobalClientEventBus.Queue(E);
       GlobalClientEventBus.Flush;
     end;
+    msgStartGame:
+    begin
+      if Length(Msg.Payload) >= 2 then
+        WriteLn(StdErr, '[Client] Game server port: ', Msg.Payload[0] or (Msg.Payload[1] shl 8));
+    end;
   end;
 end;
 
