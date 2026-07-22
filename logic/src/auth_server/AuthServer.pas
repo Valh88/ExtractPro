@@ -26,6 +26,7 @@ type
   private
     FServer: THttpServer;
     FPort: Word;
+    FBindAddress: string;
     FDB: TSqlDataBase;
     FValidator: IAuthValidator;
     FOnRegister: TRegisterEvent;
@@ -39,12 +40,13 @@ type
     function ValidateSession(const Token: string): TAuthResult;
     procedure CleanExpiredSessions;
   public
-    constructor Create(const APort: Word = AUTH_SERVER_DEFAULT_PORT);
+    constructor Create(const APort: Word = AUTH_SERVER_DEFAULT_PORT; const ABindAddress: string = '0.0.0.0');
     destructor Destroy; override;
     procedure Start;
     procedure Stop;
     property Validator: IAuthValidator read FValidator;
     property OnRegister: TRegisterEvent read FOnRegister write FOnRegister;
+    property BindAddress: string read FBindAddress write FBindAddress;
   end;
 
   TAuthServerValidator = class(TInterfacedObject, IAuthValidator)
@@ -72,10 +74,11 @@ end;
 
 { TAuthServer }
 
-constructor TAuthServer.Create(const APort: Word);
+constructor TAuthServer.Create(const APort: Word; const ABindAddress: string);
 begin
   inherited Create;
   FPort := APort;
+  FBindAddress := ABindAddress;
   FDB := nil;
   FServer := nil;
 end;
@@ -352,7 +355,7 @@ begin
   if FServer <> nil then
     Exit;
   InitDB;
-  FServer := THttpServer.Create(RawUtf8(FPort.ToString), nil, nil, 'AuthServer', 4);
+  FServer := THttpServer.Create(RawUtf8(FBindAddress + ':' + FPort.ToString), nil, nil, 'AuthServer', 4);
   FServer.OnRequest := @OnRequest;
   FValidator := TAuthServerValidator.Create(Self);
 end;

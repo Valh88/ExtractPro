@@ -29,6 +29,7 @@ type
     FLobbyPort: Word;
     FMaxPlayers: Integer;
     FAuthPort: Word;
+    FAuthHost: string;
     FRequireAuth: Boolean;
     FDBFileName: TFileName;
     FRunning: Boolean;
@@ -69,6 +70,7 @@ begin
   FLobbyPort := 7776;
   FMaxPlayers := 8;
   FAuthPort := AUTH_SERVER_DEFAULT_PORT;
+  FAuthHost := '::';
   FRequireAuth := False;
   FDBFileName := 'server.db';
   FRunning := False;
@@ -114,6 +116,8 @@ begin
       FLobbyPort := Word(StrToIntDef(S.SubString(13), 7776))
     else if S.StartsWith('--max-players=') then
       FMaxPlayers := StrToIntDef(S.SubString(14), 8)
+    else if S.StartsWith('--auth-host=') then
+      FAuthHost := S.SubString(12)
     else if S.StartsWith('--auth-port=') then
       FAuthPort := StrToIntDef(S.SubString(12), AUTH_SERVER_DEFAULT_PORT)
     else if S = '--no-auth' then
@@ -153,10 +157,10 @@ begin
 
   if FAuthPort > 0 then
   begin
-    FAuthServer := TAuthServer.Create(FAuthPort);
+    FAuthServer := TAuthServer.Create(FAuthPort, FAuthHost);
     FAuthServer.OnRegister := @OnAuthRegister;
     FAuthServer.Start;
-    Log(Format('Auth Server on port %d', [FAuthPort]));
+    Log(Format('Auth Server on %s:%d', [FAuthHost, FAuthPort]));
   end;
 
   FLobbyManager := TLobbyManager.Create(FFactory);
