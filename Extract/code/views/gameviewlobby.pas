@@ -7,7 +7,7 @@ uses
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   CastleLog,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
-  ClientEventBus, GameViewMain, GameConfig;
+  ClientEventBus, GameViewMain, GameConfig, ViewSwitchTransition, AnimationManager;
 
 type
   TViewLobby = class(TCastleView)
@@ -53,6 +53,8 @@ type
       FPlayerGroup: TCastleVerticalGroup;
       FCheckPanelBg: TCastleImageControl;
       FCheckSlots: array of TCheckSlot;
+      FAnimManager: TAnimationManager;
+      FTransition: TViewSwitchTransition;
     procedure OnMMState(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
     procedure OnReadyCheckUpdate(const Event: TClientGameEvent);
@@ -61,6 +63,7 @@ type
     procedure OnCancelBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
     procedure OnStartGame(const Event: TClientGameEvent);
+    procedure OnTransitionCompleted(Sender: TObject);
     procedure ClearCheckSlots;
   end;
 
@@ -77,6 +80,9 @@ constructor TViewLobby.Create(AOwner: TComponent);
 begin
   inherited;
   DesignUrl := 'castle-data:/views/gameviewlobby.castle-user-interface';
+  FAnimManager := TAnimationManager.Create;
+  FTransition := TViewSwitchTransition.Create;
+  FTransition.OnCompleted := @OnTransitionCompleted;
 end;
 
 procedure TViewLobby.Start;
@@ -131,6 +137,8 @@ begin
   GlobalClientEventBus.Unsubscribe(@OnReadyCheckUpdate);
   GlobalClientEventBus.Unsubscribe(@OnStartGame);
   ClearCheckSlots;
+  FreeAndNil(FTransition);
+  FreeAndNil(FAnimManager);
   FreeAndNil(FLobbyClient);
   inherited;
 end;
@@ -138,6 +146,9 @@ end;
 procedure TViewLobby.Update(const SecondsPassed: Single; var HandleInput: boolean);
 begin
   inherited;
+  FAnimManager.Update(SecondsPassed);
+  if FTransition <> nil then
+    FTransition.Update(SecondsPassed);
   if FLobbyClient <> nil then
   begin
     FLobbyClient.Update(SecondsPassed);
@@ -196,11 +207,6 @@ begin
   else
   begin
     ReadyDesign.Exists := False;
-    if CheckReadingPlayersDesign <> nil then
-    begin
-      CheckReadingPlayersDesign.Exists := False;
-      ClearCheckSlots;
-    end;
   end;
 end;
 
@@ -321,7 +327,11 @@ begin
   end;
   WritelnLog('Client', 'Starting game on port %d lobby=%d token="%s"', [Port, LobbyId, Token]);
   ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, Token);
-  Container.View := ViewMain;
+  FTransition.Start(Container, Self, ViewMain, FAnimManager, 0.3, 0.5);
+end;
+
+procedure TViewLobby.OnTransitionCompleted(Sender: TObject);
+begin
 end;
 
 end.

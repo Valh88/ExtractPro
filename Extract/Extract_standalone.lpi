@@ -133,6 +133,10 @@
         <Filename Value="code/systems/ClientMatchmakingSystem.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="code/utils/animations/ViewSwitchTransition.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
