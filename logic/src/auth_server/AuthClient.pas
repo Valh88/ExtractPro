@@ -63,10 +63,6 @@ const
 {$IFDEF MSWINDOWS}
 function c_getaddrinfo(node, service: PAnsiChar; hints: PAddrinfo; res: PPPAddrinfo): Integer; stdcall; external 'ws2_32.dll' name 'getaddrinfo';
 procedure c_freeaddrinfo(res: PAddrinfo); stdcall; external 'ws2_32.dll' name 'freeaddrinfo';
-function c_gai_strerror(errcode: Integer): PAnsiChar; stdcall; external 'ws2_32.dll' name 'gai_strerror';
-function c_socket(domain, type_, protocol: Integer): Integer; stdcall; external 'ws2_32.dll' name 'socket';
-function c_connect(s: Integer; name: Pointer; namelen: Integer): Integer; stdcall; external 'ws2_32.dll' name 'connect';
-function c_close(fd: Integer): Integer; stdcall; external 'ws2_32.dll' name 'closesocket';
 {$ELSE}
 function c_getaddrinfo(node, service: PAnsiChar; hints: PAddrinfo; res: PPPAddrinfo): Integer; cdecl; external 'c' name 'getaddrinfo';
 procedure c_freeaddrinfo(res: PAddrinfo); cdecl; external 'c' name 'freeaddrinfo';
@@ -95,8 +91,13 @@ begin
   Res := c_getaddrinfo(PAnsiChar(AHost), PAnsiChar(PortStr), @Hints, @AddrRes);
   if Res <> 0 then
     raise ENetSock.Create(
-      'getaddrinfo failed for ' + AHost + ':' + PortStr + ': ' + c_gai_strerror(Res),
-      nil, []);
+      'getaddrinfo failed for ' + AHost + ':' + PortStr + ': error ' + IntToStr(Res)
+{$IFDEF MSWINDOWS}
+      + ' (' + SysErrorMessage(WSAGetLastError) + ')'
+{$ELSE}
+      + ' (' + c_gai_strerror(Res) + ')'
+{$ENDIF}
+      , nil, []);
   try
     {$IFDEF MSWINDOWS}
     FD := WinSock2.socket(AddrRes^.ai_family, AddrRes^.ai_socktype, AddrRes^.ai_protocol);
