@@ -8,11 +8,22 @@ interface
 uses
   SysUtils, Classes, help_types, EntityTypes;
 
+const
+  AUTH_SERVER_DEFAULT_PORT = 8081;
+  LOBBY_SERVER_DEFAULT_PORT = 7776;
+  GAME_SERVER_DEFAULT_PORT = 7777;
+
 type
   { Глобальный конфиг рейда }
   TGameConfig = record
+    { Сеть }
+    ServerHost: string;        // адрес сервера (IPv4/IPv6)
+    AuthPort: Word;            // порт auth-сервера
+    LobbyPort: Word;           // порт лобби (matchmaking)
+    GamePort: Word;            // порт игрового мира
+
     { Время }
-    RaidTime: Single;          // макс. дли��ельность рейда (сек)
+    RaidTime: Single;          // макс. длительность рейда (сек)
     ExtractionTime: Single;    // время экстракции (сек)
 
     { Игроки }
@@ -56,6 +67,10 @@ implementation
 
 procedure TGameConfig.Init;
 begin
+  ServerHost := '127.0.0.1';
+  AuthPort := AUTH_SERVER_DEFAULT_PORT;
+  LobbyPort := LOBBY_SERVER_DEFAULT_PORT;
+  GamePort := GAME_SERVER_DEFAULT_PORT;
   RaidTime := 600;
   ExtractionTime := 5;
   MaxPlayers := 8;

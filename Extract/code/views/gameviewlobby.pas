@@ -5,8 +5,9 @@ interface
 uses
   SysUtils, Classes, Math,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
+  CastleLog,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
-  ClientEventBus, GameViewMain;
+  ClientEventBus, GameViewMain, GameConfig;
 
 type
   TViewLobby = class(TCastleView)
@@ -276,7 +277,7 @@ procedure TViewLobby.OnReadyBtn(const Sender: TCastleUserInterface;
 begin
   if FLobbyClient <> nil then
   begin
-    WriteLn(StdErr, '[Client] Player confirmed ready');
+    WritelnLog('Client', 'Player confirmed ready');
     FLobbyClient.MatchmakingSystem.SendReadyCheck;
     ReadyDesign.Exists := False;
     if CheckReadingPlayersDesign <> nil then
@@ -290,7 +291,7 @@ procedure TViewLobby.OnCancelBtn(const Sender: TCastleUserInterface;
 begin
   if FLobbyClient <> nil then
   begin
-    WriteLn(StdErr, '[Client] Player cancelled ready check');
+    WritelnLog('Client', 'Player cancelled ready check');
     FLobbyClient.MatchmakingSystem.SendReadyCancel;
   end;
   Handled := True;
@@ -318,8 +319,8 @@ begin
     Token := FLobbyClient.NetSystem.AuthToken;
     FLobbyClient.NetSystem.Disconnect;
   end;
-  WriteLn(StdErr, '[Client] Starting game on port ', Port, ' lobby=', LobbyId, ' token="', Token, '"');
-  ViewMain.StartGame('127.0.0.1', Port, LobbyId, Token);
+  WritelnLog('Client', 'Starting game on port %d lobby=%d token="%s"', [Port, LobbyId, Token]);
+  ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, Token);
   Container.View := ViewMain;
 end;
 

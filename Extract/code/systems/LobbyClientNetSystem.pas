@@ -6,6 +6,7 @@ interface
 
 uses
   SysUtils, Classes,
+  CastleLog,
   LobbySystemBase, LobbyWorld,
   RNL, NetMessages, NetClient, RpcClient,
   ClientEventBus;
@@ -94,7 +95,7 @@ var
   AuthData: TAuthPayload;
   i: Integer;
 begin
-  WriteLn(StdErr, '[LobbyNet] Connected to lobby server');
+  WritelnLog('LobbyNet', 'Connected to lobby server');
   if FAuthToken <> '' then
   begin
     FillChar(AuthData, SizeOf(AuthData), 0);
@@ -132,7 +133,7 @@ begin
     end;
     msgReadyCheck:
     begin
-      WriteLn(StdErr, '[Client] Received msgReadyCheck — match found, waiting for ready confirmation');
+      WritelnLog('Client', 'Received msgReadyCheck — match found, waiting for ready confirmation');
       E.EventType := cgeReadyCheck;
       E.Amount := 1.0;
       GlobalClientEventBus.Queue(E);
@@ -157,7 +158,7 @@ begin
           S := S + Format('[%d:%s] ', [Payload.Players[i].PlayerId,
             BoolToStr(Payload.Players[i].Ready, True)]);
         end;
-        WriteLn(StdErr, S);
+        WritelnLog('Client', '%s', [S]);
         E.EventType := cgeReadyCheckUpdate;
         E.Amount := 0.0;
         E.Data := Payload;
@@ -170,9 +171,9 @@ begin
       if Length(Msg.Payload) >= 1 then
       begin
         case Msg.Payload[0] of
-          0: WriteLn(StdErr, '[Client] Ready check failed (timeout), back to queue');
-          1: WriteLn(StdErr, '[Client] Ready check passed, game starting');
-          2: WriteLn(StdErr, '[Client] Match cancelled, re-enqueued');
+          0: WritelnLog('Client', 'Ready check failed (timeout), back to queue');
+          1: WritelnLog('Client', 'Ready check passed, game starting');
+          2: WritelnLog('Client', 'Match cancelled, re-enqueued');
         end;
       end;
       E.EventType := cgeReadyCheck;

@@ -10,7 +10,7 @@ uses
   SysUtils, Classes,
   Interfaces, AuthTypes, AuthClient,
   CastleKeysMouse,
-  System.Threading;
+  System.Threading, GameConfig;
 
 type
   TAuthRequestKind = (arkNone, arkLogin, arkRegister);
@@ -54,9 +54,15 @@ implementation
 { TClientAuthSystem }
 
 constructor TClientAuthSystem.Create(const AServerUrl: string);
+var
+  Url: string;
 begin
   inherited Create;
-  FClient := TAuthClient.Create(AServerUrl);
+  if AServerUrl <> '' then
+    Url := AServerUrl
+  else
+    Url := 'http://' + GlobalConfig.ServerHost + ':' + IntToStr(GlobalConfig.AuthPort);
+  FClient := TAuthClient.Create(Url);
   FTask := nil;
   FToken := '';
   FUserId := 0;

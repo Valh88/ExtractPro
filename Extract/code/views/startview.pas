@@ -9,7 +9,7 @@ interface
 uses
   Classes,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
-  LobbyClient, ClientAuthSystem, GameViewLobby;
+  LobbyClient, ClientAuthSystem, GameViewLobby, GameConfig;
 
 type
   TViewStartView = class(TCastleView)
@@ -39,7 +39,7 @@ var
 
 implementation
 
-uses SysUtils;
+uses SysUtils, CastleLog;
 
 constructor TViewStartView.Create(AOwner: TComponent);
 begin
@@ -93,7 +93,7 @@ end;
 procedure TViewStartView.OnLoginResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
-  WriteLn(StdErr, '[StartView] OnLoginResult: success=', Result.Success);
+  WritelnLog('StartView', 'OnLoginResult: success=%s', [BoolToStr(Result.Success, True)]);
   if Result.Success then
   begin
     Information.Text.Clear;
@@ -101,7 +101,7 @@ begin
     Information.Text.Add('Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
     Information.Exists := True;
     FLobbyClient.NetSystem.AuthToken := Result.Token;
-    FLobbyClient.Connect('127.0.0.1', 7776);
+    FLobbyClient.Connect(GlobalConfig.ServerHost, GlobalConfig.LobbyPort);
   end
   else
   begin
@@ -115,7 +115,7 @@ end;
 procedure TViewStartView.OnRegisterResult(Sender: TObject;
   const Result: TAuthRequestResult);
 begin
-  WriteLn(StdErr, '[StartView] OnRegisterResult: success=', Result.Success);
+  WritelnLog('StartView', 'OnRegisterResult: success=%s', [BoolToStr(Result.Success, True)]);
   if not Result.Success then
   begin
     Information.Text.Clear;
@@ -134,7 +134,7 @@ end;
 
 procedure TViewStartView.OnLobbyConnected(Sender: TObject);
 begin
-  WriteLn(StdErr, '[StartView] OnLobbyConnected');
+  WritelnLog('StartView', 'OnLobbyConnected');
   FConnecting := False;
   ViewLobby.SetLobbyClient(FLobbyClient);
   FLobbyClient := nil;
