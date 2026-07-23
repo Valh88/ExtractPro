@@ -21,7 +21,6 @@ type
     FDelayLeft: Single;
     FOnCompleted: TNotifyEvent;
     procedure StartFade;
-    procedure OnFadeInComplete(Sender: TObject);
     procedure OnFadeOutComplete(Sender: TObject);
   public
     constructor Create;
@@ -46,7 +45,7 @@ begin
   FToView := nil;
   FAnimManager := nil;
   FDuration := 0.3;
-  FDelay := 3;
+  FDelay := 0;
   FDelayLeft := 0;
   FOnCompleted := nil;
   FOverlay := TCastleRectangleControl.Create(nil);
@@ -89,23 +88,6 @@ begin
     FFromView.InsertFront(FOverlay);
 
   FA := TFadeAnimation.Create(FOverlay, FDuration, 0, 1);
-  FA.OnComplete := @OnFadeInComplete;
-  FAnimManager.Add(FA);
-  FA.Start;
-end;
-
-procedure TViewSwitchTransition.OnFadeInComplete(Sender: TObject);
-var
-  FA: TFadeAnimation;
-begin
-  if FContainer <> nil then
-    FContainer.View := FToView;
-
-  FOverlay.Color := Vector4(0, 0, 0, 1);
-  if FToView <> nil then
-    FToView.InsertFront(FOverlay);
-
-  FA := TFadeAnimation.Create(FOverlay, FDuration, 1, 0);
   FA.OnComplete := @OnFadeOutComplete;
   FAnimManager.Add(FA);
   FA.Start;
@@ -114,8 +96,10 @@ end;
 procedure TViewSwitchTransition.OnFadeOutComplete(Sender: TObject);
 begin
   FOverlay.Exists := False;
-  if FToView <> nil then
-    FToView.RemoveControl(FOverlay);
+  if FFromView <> nil then
+    FFromView.RemoveControl(FOverlay);
+  if FContainer <> nil then
+    FContainer.View := FToView;
   if Assigned(FOnCompleted) then
     FOnCompleted(Self);
 end;

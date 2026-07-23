@@ -327,7 +327,7 @@ begin
   end;
   WritelnLog('Client', 'Starting game on port %d lobby=%d token="%s"', [Port, LobbyId, Token]);
   ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, Token);
-  FTransition.Start(Container, Self, ViewMain, FAnimManager, 0.3, 0.5);
+  FTransition.Start(Container, Self, ViewMain, FAnimManager, 0.5, 1.5);
 end;
 
 procedure TViewLobby.OnTransitionCompleted(Sender: TObject);

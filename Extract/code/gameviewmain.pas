@@ -5,7 +5,8 @@ interface
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
-  help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient;
+  help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient,
+  UiAnimation, AnimationManager;
 
 type
   TViewMain = class(TCastleView)
@@ -25,6 +26,8 @@ type
     FGamePort: Word;
     FGameLobbyId: UInt32;
     FGameToken: string;
+    FOverlay: TCastleRectangleControl;
+    FAnimManager: TAnimationManager;
   end;
 
 var
@@ -51,8 +54,17 @@ end;
 procedure TViewMain.Start;
 var
   Factory: IEntityFactory;
+  FA: TFadeAnimation;
 begin
   inherited;
+
+  FAnimManager := TAnimationManager.Create;
+  FOverlay := TCastleRectangleControl.Create(nil);
+  FOverlay.FullSize := True;
+  FOverlay.Color := Vector4(0, 0, 0, 1);
+  FOverlay.Exists := True;
+  InsertFront(FOverlay);
+
   Factory := TEntityManager.Create(
     'castle-data:/PlayerProto.castle-transform',
     'castle-data:/PlayerProtoNoCamera.castle-transform',
@@ -65,10 +77,16 @@ begin
   FGameClient.ViewSystem.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
+
+  FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
+  FAnimManager.Add(FA);
+  FA.Start;
 end;
 
 procedure TViewMain.Stop;
 begin
+  FreeAndNil(FAnimManager);
+  FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
   FGameClient.Free;
   inherited;
@@ -80,6 +98,8 @@ begin
   LabelFps.Caption := 'FPS: ' + Container.Fps.ToString;
   if FGameClient <> nil then
     FGameClient.Update(SecondsPassed);
+  if FAnimManager <> nil then
+    FAnimManager.Update(SecondsPassed);
 end;
 
 function TViewMain.Press(const Event: TInputPressRelease): Boolean;
