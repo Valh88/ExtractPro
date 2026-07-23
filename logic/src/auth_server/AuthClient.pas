@@ -12,7 +12,7 @@ uses
   mormot.core.text,
   mormot.core.variants,
   mormot.net.client,
-  AuthTypes;
+  AuthTypes, GameConfig;
 
 type
   TAuthClient = class
@@ -35,7 +35,7 @@ begin
   inherited Create;
   FServerUrl := AServerUrl;
   if FServerUrl = '' then
-    FServerUrl := 'http://127.0.0.1:' + IntToStr(AUTH_SERVER_DEFAULT_PORT);
+    FServerUrl := 'http://' + GlobalConfig.ServerHost + ':' + IntToStr(GlobalConfig.AuthPort);
   FHttp := TSimpleHttpClient.Create;
 end;
 
