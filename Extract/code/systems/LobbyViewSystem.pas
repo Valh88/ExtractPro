@@ -122,6 +122,8 @@ begin
     lvtInventory: Result := LobbyView.TabInventory;
     lvtHeroes: Result := LobbyView.TabHeroes;
     lvtMarket: Result := LobbyView.TabMarket;
+  else
+    Result := nil;
   end;
 end;
 

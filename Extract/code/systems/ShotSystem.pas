@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, help_types, Interfaces, GameWorld,
-  ClientOutbox, NetMessages;
+  ClientOutbox, NetMessages, CastleLog;
 
 type
   TShotSystem = class(TWorldSystemBase)
@@ -96,7 +96,7 @@ begin
     B.GameWorld := GW;
     B.OnHit := procedure(const HitEntityId: TEntityId; const Damage: TDamageInfo)
     begin
-      WriteLn(HitEntityId);
+      WritelnLog('Shot', 'Hit entity: %d', [HitEntityId]);
     end;
   end;
 

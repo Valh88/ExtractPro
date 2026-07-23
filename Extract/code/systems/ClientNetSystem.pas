@@ -9,7 +9,8 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
-  ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer, RpcClient;
+  ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer, RpcClient,
+  CastleLog;
 
 type
   TSendMessageProc = reference to procedure(const M: TNetMessage; const AChannel: Integer);
@@ -354,9 +355,7 @@ begin
     msgHit:
     begin
       if THitData.FromBytes(Msg.Payload, Hit) then
-        WriteLn('[Hit] target:', Hit.TargetEntityId,
-          ' damage:', Hit.DamageAmount:0:0,
-          ' source:', Hit.SourceEntityId);
+        WritelnLog('Hit', 'target=%d damage=%.0f source=%d', [Hit.TargetEntityId, Hit.DamageAmount, Hit.SourceEntityId]);
     end;
     msgRpcResponse:
     begin
