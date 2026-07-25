@@ -16,3 +16,4 @@ headless_app/ExtractProServer_visual
 *.exe
 Extract/data/references/
 *.apk
+Extract/data/models/prototype/
