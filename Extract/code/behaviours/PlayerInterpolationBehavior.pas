@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Classes, Math,
   CastleTransform, CastleVectors,
-  BehaviorBase, CastleLog;
+  BehaviorBase;
 
 type
   TPlayerInterpolation = class(TBehaviorBase)
@@ -16,7 +16,7 @@ type
     FTargetRot: Single;
     FVisRoot: TCastleTransform;
     FSmoothFactor: Single;
-    FLogTimer: Single;
+
   public
     constructor Create(AOwner: TComponent); override;
     procedure ApplyTarget(const AX, AY, AZ, ARotY: Single);
@@ -33,15 +33,12 @@ constructor TPlayerInterpolation.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FSmoothFactor := 20.0;
-  FLogTimer := 0;
 end;
 
 procedure TPlayerInterpolation.ApplyTarget(const AX, AY, AZ, ARotY: Single);
 begin
   FTargetPos := Vector3(AX, AY, AZ);
   FTargetRot := ARotY;
-  WritelnLog('Interp', 'ApplyTarget dst=(%.2f,%.2f,%.2f) rot=%.2f',
-    [AX, AY, AZ, ARotY]);
 end;
 
 procedure TPlayerInterpolation.SnapTo(const AX, AY, AZ, ARotY: Single);
@@ -53,8 +50,6 @@ begin
 
   if Parent = nil then Exit;
   Parent.Translation := FTargetPos;
-
-  WritelnLog('Interp', 'SnapTo pos=(%.2f,%.2f,%.2f) rot=%.2f', [AX, AY, AZ, ARotY]);
 
   if FVisRoot = nil then
     for I := 0 to Parent.Count - 1 do
@@ -91,15 +86,6 @@ begin
   K := 1 - Exp(-FSmoothFactor * SecondsPassed);
 
   Parent.Translation := Parent.Translation + (FTargetPos - Parent.Translation) * K;
-
-  FLogTimer := FLogTimer + SecondsPassed;
-  if FLogTimer >= 1.0 then
-  begin
-    WritelnLog('Interp', 'Update cur=(%.2f,%.2f,%.2f) target=(%.2f,%.2f,%.2f) K=%.4f',
-      [Parent.Translation.X, Parent.Translation.Y, Parent.Translation.Z,
-       FTargetPos.X, FTargetPos.Y, FTargetPos.Z, K]);
-    FLogTimer := 0;
-  end;
 
   if FVisRoot <> nil then
     CurrRot := FVisRoot.Rotation.W

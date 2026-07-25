@@ -8,7 +8,7 @@ uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages,
   help_types, Interfaces,
-  PlayerInterpolationBehavior, CastleLog;
+  PlayerInterpolationBehavior;
 
 const
   SNAP_BUFFER_SIZE = 5;
@@ -48,9 +48,6 @@ var
   Entity: IGameEntity;
   Interp: TPlayerInterpolation;
 begin
-  WritelnLog('Snap', 'Received snapshot seq=%d entries=%d serverTime=%.3f',
-    [Data.Seq, Length(Data.Entries), Data.ServerTime]);
-
   FHead := (FHead + 1) mod SNAP_BUFFER_SIZE;
   FBuffer[FHead].ServerTime := Data.ServerTime;
   FBuffer[FHead].Entries := Copy(Data.Entries, 0, Length(Data.Entries));
@@ -68,17 +65,11 @@ begin
   begin
     Entry := Data.Entries[I];
     if Entry.EntityId = FLocalPlayerId then
-    begin
-      WritelnLog('Snap', '  [%d] local player skipped', [Entry.EntityId]);
       Continue;
-    end;
 
     Entity := WorldObj.FindEntity(Entry.EntityId);
     if Entity = nil then
     begin
-      WritelnLog('Snap', '  [%d] new entity type=%d pos=(%.2f,%.2f,%.2f)',
-        [Entry.EntityId, Entry.EntityType, Entry.PosX, Entry.PosY, Entry.PosZ]);
-
       if Entry.EntityType = 0 then
       begin
         Entity := WorldObj.Factory.CreatePlayerEntity(Entry.EntityId);
@@ -103,13 +94,9 @@ begin
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
       Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
-      WritelnLog('Snap', '  [%d] added missing PlayerInterpolation', [Entry.EntityId]);
     end
-    else begin
+    else
       Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
-      WritelnLog('Snap', '  [%d] ApplyTarget pos=(%.2f,%.2f,%.2f) rot=%.2f',
-        [Entry.EntityId, Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY]);
-    end;
   end;
 end;
 

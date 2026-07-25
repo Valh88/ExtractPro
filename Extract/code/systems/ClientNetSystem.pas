@@ -277,7 +277,6 @@ var
   Shot: TShotData;
   Bullet: IGameEntity;
   B: TBulletBehavior;
-  Hit: THitData;
   DenyCode: string;
 begin
   if not FConnectedReported then
@@ -325,13 +324,9 @@ begin
     begin
       if TSnapshotData.FromBytes(Msg.Payload, Snap) then
       begin
-        WritelnLog('ClientNet', 'msgSnapshot received seq=%d entries=%d',
-          [Snap.Seq, Length(Snap.Entries)]);
         if FSnapSystem <> nil then
           FSnapSystem.HandleSnapshot(Snap);
-      end
-      else
-        WritelnLog('ClientNet', 'msgSnapshot parse FAILED');
+      end;
     end;
     msgShot:
     begin
@@ -341,7 +336,7 @@ begin
         begin
           Bullet := WorldObj.Factory.CreateBulletEntity(WorldObj.AllocateEntityId);
           Bullet.Transform.Translation := Vector3(Shot.OriginX, Shot.OriginY, Shot.OriginZ)
-            + Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 1.5
+            + Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 3.0
             + Vector3(0, 0.5, 0);
           Bullet.Transform.RigidBody.LinearVelocity := Vector3(Shot.DirX, Shot.DirY, Shot.DirZ) * 20;
           B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
@@ -359,10 +354,7 @@ begin
           (Msg.Payload[2] shl 16) or (Msg.Payload[3] shl 24));
     end;
     msgHit:
-    begin
-      if THitData.FromBytes(Msg.Payload, Hit) then
-        WritelnLog('Hit', 'target=%d damage=%.0f source=%d', [Hit.TargetEntityId, Hit.DamageAmount, Hit.SourceEntityId]);
-    end;
+      begin end;
     msgRpcResponse:
     begin
       if FRpc <> nil then

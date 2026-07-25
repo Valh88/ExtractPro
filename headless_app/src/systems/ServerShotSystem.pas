@@ -43,7 +43,7 @@ begin
   OwnerEntityId := ShotData.OwnerEntityId;
   Bullet := WorldObj.Factory.CreateBulletEntity(WorldObj.AllocateEntityId);
   Bullet.Transform.Translation := Vector3(ShotData.OriginX, ShotData.OriginY, ShotData.OriginZ)
-    + Vector3(ShotData.DirX, ShotData.DirY, ShotData.DirZ) * 1.0;
+    + Vector3(ShotData.DirX, ShotData.DirY, ShotData.DirZ) * 3.0;
   Bullet.Transform.RigidBody.LinearVelocity := Vector3(ShotData.DirX, ShotData.DirY, ShotData.DirZ) * 20;
 
   B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;

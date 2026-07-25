@@ -87,7 +87,7 @@ begin
 
   Bullet := GW.Factory.CreateBulletEntity(FNextBulletId);
   Inc(FNextBulletId);
-  Bullet.Transform.Translation := CamPos + Dir * 1.0;
+  Bullet.Transform.Translation := CamPos + Dir * 3.0;
   Bullet.Transform.RigidBody.LinearVelocity := Dir * 20;
 
   B := Bullet.Transform.FindBehavior(TBulletBehavior) as TBulletBehavior;
