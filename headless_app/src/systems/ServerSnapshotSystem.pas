@@ -8,7 +8,7 @@ uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages, NetServer,
   EntityTypes,
-  CastleTransform, CastleVectors;
+  CastleTransform, CastleVectors, CastleLog;
 
 type
   TServerSnapshotSystem = class(TWorldSystemBase)
@@ -17,6 +17,7 @@ type
     FTimer: Single;
     FSeq: UInt32;
     FServerTime: Double;
+    FLogTimer: Single;
   public
     constructor Create(AWorldObj: TGameWorld; AServer: TGameServer);
     procedure Update(const SecondsPassed: Single); override;
@@ -33,6 +34,7 @@ begin
   FTimer := 0;
   FSeq := 0;
   FServerTime := 0;
+  FLogTimer := 0;
 end;
 
 procedure TServerSnapshotSystem.Update(const SecondsPassed: Single);
@@ -48,6 +50,7 @@ var
   TmpI: Integer;
 begin
   FServerTime := FServerTime + SecondsPassed;
+  FLogTimer := FLogTimer + SecondsPassed;
   FTimer := FTimer + SecondsPassed;
   if FTimer < 1 / 30 then Exit;
   FTimer := 0;
@@ -121,6 +124,15 @@ begin
     Entry.RotY := B.Visual.Rotation;
     Snap.Entries[Cnt] := Entry;
     Inc(Cnt);
+  end;
+
+  if (Cnt > 0) and (FLogTimer >= 1.0) then
+  begin
+    for I := 0 to Cnt - 1 do
+      if Snap.Entries[I].EntityType = 0 then
+        WritelnLog('ServerSnap', '  player[%d] id=%d pos=(%.2f,%.2f,%.2f) rot=%.2f',
+          [I, Snap.Entries[I].EntityId, Snap.Entries[I].PosX, Snap.Entries[I].PosY, Snap.Entries[I].PosZ, Snap.Entries[I].RotY]);
+    FLogTimer := 0;
   end;
 
   M.Init(msgSnapshot, Snap.ToBytes);

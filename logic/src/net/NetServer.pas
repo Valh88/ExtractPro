@@ -186,48 +186,51 @@ var
 begin
   ClearEvent;
   Status := FHost.Service(FEvent, ATimeoutMs);
-  if Status <> RNL_HOST_SERVICE_STATUS_EVENT then Exit;
+  while Status = RNL_HOST_SERVICE_STATUS_EVENT do
+  begin
+    Peer := FEvent.Peer;
 
-  Peer := FEvent.Peer;
-
-  case FEvent.Type_ of
-    RNL_HOST_EVENT_TYPE_PEER_CONNECT:
-    begin
-      Info.Peer := Peer;
-      Info.PlayerId := AllocPlayerId;
-      Info.Connected := True;
-      SetLength(FPeers, Length(FPeers) + 1);
-      FPeers[High(FPeers)] := Info;
-      if Assigned(FOnConnect) then
-        FOnConnect(Self, Peer, Info.PlayerId);
-    end;
-
-    RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
-    begin
-      Idx := FindPeerIdx(Peer);
-      if Idx <> -1 then
+    case FEvent.Type_ of
+      RNL_HOST_EVENT_TYPE_PEER_CONNECT:
       begin
-        if Assigned(FOnDisconnect) then
-          FOnDisconnect(Self, Peer, FPeers[Idx].PlayerId);
-        Last := High(FPeers);
-        if Idx < Last then
-          FPeers[Idx] := FPeers[Last];
-        SetLength(FPeers, Last);
+        Info.Peer := Peer;
+        Info.PlayerId := AllocPlayerId;
+        Info.Connected := True;
+        SetLength(FPeers, Length(FPeers) + 1);
+        FPeers[High(FPeers)] := Info;
+        if Assigned(FOnConnect) then
+          FOnConnect(Self, Peer, Info.PlayerId);
+      end;
+
+      RNL_HOST_EVENT_TYPE_PEER_DISCONNECT:
+      begin
+        Idx := FindPeerIdx(Peer);
+        if Idx <> -1 then
+        begin
+          if Assigned(FOnDisconnect) then
+            FOnDisconnect(Self, Peer, FPeers[Idx].PlayerId);
+          Last := High(FPeers);
+          if Idx < Last then
+            FPeers[Idx] := FPeers[Last];
+          SetLength(FPeers, Last);
+        end;
+      end;
+
+      RNL_HOST_EVENT_TYPE_PEER_RECEIVE:
+      begin
+        if FEvent.Message = nil then Continue;
+        Idx := FindPeerIdx(Peer);
+        if Idx = -1 then Continue;
+        Bytes := FEvent.Message.AsBytes;
+        FEvent.Message.DecRef;
+        FEvent.Message := nil;
+        if TNetMessage.Unpack(Bytes, Msg) then
+          if Assigned(FOnReceive) then
+            FOnReceive(Self, Peer, FPeers[Idx].PlayerId, Msg);
       end;
     end;
-
-    RNL_HOST_EVENT_TYPE_PEER_RECEIVE:
-    begin
-      if FEvent.Message = nil then Exit;
-      Idx := FindPeerIdx(Peer);
-      if Idx = -1 then Exit;
-      Bytes := FEvent.Message.AsBytes;
-      FEvent.Message.DecRef;
-      FEvent.Message := nil;
-      if TNetMessage.Unpack(Bytes, Msg) then
-        if Assigned(FOnReceive) then
-          FOnReceive(Self, Peer, FPeers[Idx].PlayerId, Msg);
-    end;
+    ClearEvent;
+    Status := FHost.Service(FEvent, 0);
   end;
 end;
 

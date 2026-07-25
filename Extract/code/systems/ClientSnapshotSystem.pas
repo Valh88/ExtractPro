@@ -5,10 +5,10 @@ unit ClientSnapshotSystem;
 interface
 
 uses
-  SysUtils, Classes, Math,
+  SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages,
   help_types, Interfaces,
-  PlayerInterpolationBehavior;
+  PlayerInterpolationBehavior, CastleLog;
 
 const
   SNAP_BUFFER_SIZE = 5;
@@ -25,10 +25,7 @@ type
     FHead: Integer;
     FTail: Integer;
     FCount: Integer;
-    FServerTime: Double;
     FLocalPlayerId: TEntityId;
-    function FindEntry(const Entries: array of TSnapshotEntry; EntityId: UInt32): Integer;
-    function LerpAngle(A, B, T: Single): Single;
   public
     procedure SetLocalPlayerId(const AId: TEntityId);
     procedure HandleSnapshot(const Data: TSnapshotData);
@@ -44,23 +41,6 @@ begin
   FLocalPlayerId := AId;
 end;
 
-function TClientSnapshotSystem.FindEntry(const Entries: array of TSnapshotEntry; EntityId: UInt32): Integer;
-begin
-  for Result := 0 to High(Entries) do
-    if Entries[Result].EntityId = EntityId then Exit;
-  Result := -1;
-end;
-
-function TClientSnapshotSystem.LerpAngle(A, B, T: Single): Single;
-var
-  Diff: Single;
-begin
-  Diff := B - A;
-  if Diff > Pi then Diff := Diff - 2 * Pi;
-  if Diff < -Pi then Diff := Diff + 2 * Pi;
-  Result := A + Diff * T;
-end;
-
 procedure TClientSnapshotSystem.HandleSnapshot(const Data: TSnapshotData);
 var
   I: Integer;
@@ -68,6 +48,9 @@ var
   Entity: IGameEntity;
   Interp: TPlayerInterpolation;
 begin
+  WritelnLog('Snap', 'Received snapshot seq=%d entries=%d serverTime=%.3f',
+    [Data.Seq, Length(Data.Entries), Data.ServerTime]);
+
   FHead := (FHead + 1) mod SNAP_BUFFER_SIZE;
   FBuffer[FHead].ServerTime := Data.ServerTime;
   FBuffer[FHead].Entries := Copy(Data.Entries, 0, Length(Data.Entries));
@@ -81,17 +64,21 @@ begin
       FTail := FHead;
   end;
 
-  if FCount = 2 then
-    FServerTime := FBuffer[FTail].ServerTime;
-
   for I := 0 to High(Data.Entries) do
   begin
     Entry := Data.Entries[I];
-    if Entry.EntityId = FLocalPlayerId then Continue;
+    if Entry.EntityId = FLocalPlayerId then
+    begin
+      WritelnLog('Snap', '  [%d] local player skipped', [Entry.EntityId]);
+      Continue;
+    end;
 
     Entity := WorldObj.FindEntity(Entry.EntityId);
     if Entity = nil then
     begin
+      WritelnLog('Snap', '  [%d] new entity type=%d pos=(%.2f,%.2f,%.2f)',
+        [Entry.EntityId, Entry.EntityType, Entry.PosX, Entry.PosY, Entry.PosZ]);
+
       if Entry.EntityType = 0 then
       begin
         Entity := WorldObj.Factory.CreatePlayerEntity(Entry.EntityId);
@@ -107,81 +94,27 @@ begin
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
       Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      Continue;
+    end;
+
+    Interp := Entity.Transform.FindBehavior(TPlayerInterpolation) as TPlayerInterpolation;
+    if Interp = nil then
+    begin
+      Interp := TPlayerInterpolation.Create(Entity.Transform);
+      Entity.Transform.AddBehavior(Interp);
+      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      WritelnLog('Snap', '  [%d] added missing PlayerInterpolation', [Entry.EntityId]);
+    end
+    else begin
+      Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      WritelnLog('Snap', '  [%d] ApplyTarget pos=(%.2f,%.2f,%.2f) rot=%.2f',
+        [Entry.EntityId, Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY]);
     end;
   end;
 end;
 
 procedure TClientSnapshotSystem.Update(const SecondsPassed: Single);
-var
-  PrevIdx, CurrIdx: Integer;
-  Duration, T: Single;
-  I, J: Integer;
-  Entry, PrevEntry: TSnapshotEntry;
-  Entity: IGameEntity;
-  Interp: TPlayerInterpolation;
-  LerpX, LerpY, LerpZ, LerpRot: Single;
 begin
-  if FCount < 2 then Exit;
-
-  FServerTime := FServerTime + SecondsPassed;
-
-  while FCount >= 2 do
-  begin
-    PrevIdx := FTail;
-    CurrIdx := (FTail + 1) mod SNAP_BUFFER_SIZE;
-    Duration := FBuffer[CurrIdx].ServerTime - FBuffer[PrevIdx].ServerTime;
-
-    if Duration <= 0 then
-    begin
-      FTail := CurrIdx;
-      Dec(FCount);
-      Continue;
-    end;
-
-    T := (FServerTime - FBuffer[PrevIdx].ServerTime) / Duration;
-    if T >= 1.0 then
-    begin
-      FTail := CurrIdx;
-      Dec(FCount);
-      Continue;
-    end;
-
-    Break;
-  end;
-
-  if FCount < 2 then Exit;
-
-  PrevIdx := FTail;
-  CurrIdx := (FTail + 1) mod SNAP_BUFFER_SIZE;
-  Duration := FBuffer[CurrIdx].ServerTime - FBuffer[PrevIdx].ServerTime;
-  if Duration <= 0 then Duration := 0.01;
-
-  T := (FServerTime - FBuffer[PrevIdx].ServerTime) / Duration;
-  T := EnsureRange(T, 0.0, 1.0);
-
-  for I := 0 to High(FBuffer[CurrIdx].Entries) do
-  begin
-    Entry := FBuffer[CurrIdx].Entries[I];
-    if Entry.EntityId = FLocalPlayerId then Continue;
-
-    Entity := WorldObj.FindEntity(Entry.EntityId);
-    if Entity = nil then Continue;
-
-    Interp := Entity.Transform.FindBehavior(TPlayerInterpolation) as TPlayerInterpolation;
-    if Interp = nil then Continue;
-
-    J := FindEntry(FBuffer[PrevIdx].Entries, Entry.EntityId);
-    if J >= 0 then
-    begin
-      PrevEntry := FBuffer[PrevIdx].Entries[J];
-      LerpX := PrevEntry.PosX + (Entry.PosX - PrevEntry.PosX) * T;
-      LerpY := PrevEntry.PosY + (Entry.PosY - PrevEntry.PosY) * T;
-      LerpZ := PrevEntry.PosZ + (Entry.PosZ - PrevEntry.PosZ) * T;
-      LerpRot := LerpAngle(PrevEntry.RotY, Entry.RotY, T);
-      Interp.ApplyTarget(LerpX, LerpY, LerpZ, LerpRot);
-    end else
-      Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
-  end;
 end;
 
 end.

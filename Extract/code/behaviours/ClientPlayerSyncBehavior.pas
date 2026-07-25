@@ -8,7 +8,7 @@ interface
 
 uses
   SysUtils, Classes, Math,
-  CastleTransform, CastleVectors,
+  CastleTransform, CastleVectors, CastleLog,
   NetMessages, BehaviorBase;
 
 type
@@ -19,6 +19,7 @@ type
     FSendProc: TSendMessageProc;
     FMyEntityId: UInt32;
     FStateTimer: Single;
+    FLogTimer: Single;
   public
     constructor Create(AOwner: TComponent; AMyEntityId: UInt32; ASendProc: TSendMessageProc); reintroduce;
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
@@ -34,6 +35,7 @@ begin
   FMyEntityId := AMyEntityId;
   FSendProc := ASendProc;
   FStateTimer := 0;
+  FLogTimer := 0;
 end;
 
 procedure TClientPlayerSync.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
@@ -49,7 +51,7 @@ begin
   if Parent = nil then Exit;
 
   FStateTimer := FStateTimer + SecondsPassed;
-  if FStateTimer >= 0.05 then
+  if FStateTimer >= 1 / 35 then
   begin
     PState.EntityId := FMyEntityId;
     PState.PosX := Parent.Translation.X;
@@ -66,6 +68,13 @@ begin
       PState.RotY := VisRoot.Rotation.W
     else
       PState.RotY := ArcTan2(Parent.Direction.X, -Parent.Direction.Z);
+    FLogTimer := FLogTimer + SecondsPassed;
+    if FLogTimer >= 1.0 then
+    begin
+      WritelnLog('ClientSync', 'send entity=%d pos=(%.2f,%.2f,%.2f) rot=%.2f',
+        [FMyEntityId, PState.PosX, PState.PosY, PState.PosZ, PState.RotY]);
+      FLogTimer := 0;
+    end;
     M.Init(msgPlayerState, PState.ToBytes);
     if Assigned(FSendProc) then
       FSendProc(M, NET_CH_UNRELIABLE);

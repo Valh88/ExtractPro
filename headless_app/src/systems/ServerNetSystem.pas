@@ -6,7 +6,7 @@ unit ServerNetSystem;
 interface
 
 uses
-  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
+  SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, CastleLog,
   RNL, NetMessages, NetServer, GameWorld, Interfaces,
   ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes, RpcServer, RpcTypes;
 
@@ -30,6 +30,7 @@ type
     FPendingJoin: array of TPendingJoin;
     FRequireAuth: Boolean;
     FValidator: IAuthValidator;
+    FLastLogTick: Int64;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
     function GetOnDisconnect: TServerDisconnectEvent;
@@ -98,6 +99,7 @@ begin
   OnReceive := @OnPlayerReceive;
   FRequireAuth := False;
   FValidator := nil;
+  FLastLogTick := 0;
   FPendingJoin := nil;
   FRpc := TRpcServer.Create;
 end;
@@ -377,10 +379,35 @@ begin
         E := WorldObj.FindEntity(State.EntityId);
         if E <> nil then
         begin
+          if GetTickCount64 - FLastLogTick >= 1000 then
+          begin
+            WriteLn(StdErr, '[ServerNet] msgPlayerState entity=', State.EntityId,
+              ' old=(', E.Position3.X:2:2, ',', E.Position3.Y:2:2, ',', E.Position3.Z:2:2,
+              ') new=(', State.PosX:2:2, ',', State.PosY:2:2, ',', State.PosZ:2:2, ')');
+            Flush(StdErr);
+            FLastLogTick := GetTickCount64;
+          end;
           Sync := E.Transform.FindBehavior(TServerPlayerSync) as TServerPlayerSync;
           if Sync <> nil then
+          begin
             Sync.ApplyState(State);
+          end
+          else
+          begin
+            WriteLn(StdErr, '[ServerNet] ERROR: TServerPlayerSync not found on entity ', State.EntityId);
+            Flush(StdErr);
+          end;
+        end
+        else
+        begin
+          WriteLn(StdErr, '[ServerNet] ERROR: entity ', State.EntityId, ' not found');
+          Flush(StdErr);
         end;
+      end
+      else
+      begin
+        WriteLn(StdErr, '[ServerNet] ERROR: TPlayerStateData.FromBytes failed');
+        Flush(StdErr);
       end;
     end;
     msgShot:

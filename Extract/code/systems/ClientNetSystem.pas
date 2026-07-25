@@ -324,8 +324,14 @@ begin
     msgSnapshot:
     begin
       if TSnapshotData.FromBytes(Msg.Payload, Snap) then
+      begin
+        WritelnLog('ClientNet', 'msgSnapshot received seq=%d entries=%d',
+          [Snap.Seq, Length(Snap.Entries)]);
         if FSnapSystem <> nil then
           FSnapSystem.HandleSnapshot(Snap);
+      end
+      else
+        WritelnLog('ClientNet', 'msgSnapshot parse FAILED');
     end;
     msgShot:
     begin
