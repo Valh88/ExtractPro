@@ -92,6 +92,15 @@
       },
       "Url" : "castle-data:/user_interfaces/Hud.castle-user-interface",
       "Width" : 1.5800000000000000E+003
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "Pricel",
+      "Url" : "castle-data:/user_interfaces/PricelDisign.castle-user-interface",
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle"
     }
   ],
   "InternalDesignCamera" : {
@@ -105,16 +114,16 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 2.0033943653106689E+000,
-      "X" : -1.1534759402275085E-001,
-      "Y" : 9.7742784023284912E-001,
-      "Z" : 1.7700245976448059E-001
+      "W" : 6.6591823101043701E-001,
+      "X" : -6.4881926774978638E-001,
+      "Y" : 7.4226033687591553E-001,
+      "Z" : 1.6758105158805847E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 1.1317120361328125E+002,
-      "Y" : 3.7839389801025391E+001,
-      "Z" : -2.2146553039550781E+001
+      "X" : 1.2007382202148438E+002,
+      "Y" : 4.0313201904296875E+001,
+      "Z" : -2.4414028167724609E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {

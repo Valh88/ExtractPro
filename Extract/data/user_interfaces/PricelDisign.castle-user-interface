@@ -1,0 +1,86 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "Name" : "Pricel",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 8.0000001192092896E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 2.0000000000000000E+001,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "BarTop",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "Y" : -1.5000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 4.0000000000000000E+000
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 8.0000001192092896E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 2.0000000000000000E+001,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "BarBottom",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "Y" : 3.5000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 4.0000000000000000E+000
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 8.0000001192092896E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 4.0000000000000000E+000,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Name" : "BarLeft",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : -1.5000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle",
+      "Width" : 2.0000000000000000E+001
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Alpha" : 8.0000001192092896E-001,
+        "Blue" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 4.0000000000000000E+000,
+      "HorizontalAnchorParent" : "hpMiddle",
+      "Name" : "BarRight",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.5000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle",
+      "Width" : 2.0000000000000000E+001
+    }
+  ]
+}
