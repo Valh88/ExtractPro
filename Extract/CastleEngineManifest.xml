@@ -7,6 +7,7 @@ See https://castle-engine.io/project_manifest for documentation of this file.
     name="Extract"
     standalone_source="Extract_standalone.dpr"
     game_units="GameInitialize"
+    editor_units="CastleParticleEmitter"
     qualified_name="com.mycompany.Extract"
     caption="Extract"
 >
@@ -25,6 +26,7 @@ See https://castle-engine.io/project_manifest for documentation of this file.
       <path value="../logic/src/auth_server/" />
       <path value="../logic/src/castle_bridges/" />
       <path value="../logic/src/world_systems/" />
+      <path value="../../cge-3d-particle-emitter/src/" />
       <path value="../../../mORMot2/src/" />
       <path value="../../../mORMot2/src/core/" />
       <path value="../../../mORMot2/src/crypt/" />
