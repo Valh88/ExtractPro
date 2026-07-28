@@ -6,6 +6,7 @@ uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
   CastleUIControls, CastleControls, CastleKeysMouse,
   help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient,
+  GameViewSystem,
   UiAnimation, AnimationManager;
 
 type
@@ -13,6 +14,7 @@ type
   published
     LabelFps: TCastleLabel;
     Viewport1: TCastleViewport;
+    Pricel: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -41,6 +43,12 @@ constructor TViewMain.Create(AOwner: TComponent);
 begin
   inherited;
   DesignUrl := 'castle-data:/gameviewmain.castle-user-interface';
+  // var
+  //   BarTop: TCastleRectangleControl;
+  // begin
+  //   BarTop := Pricel.DesignedComponent('BarTop') as TCastleRectangleControl;
+  //   BarTop.Translation.Y := -(Gap + BarTop.Height);
+  // end;
 end;
 
 procedure TViewMain.StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string);
