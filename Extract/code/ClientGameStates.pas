@@ -1,4 +1,4 @@
-unit ClientGameStates;
+﻿unit ClientGameStates;
 
 {$mode objfpc}{$H+}
 
@@ -8,7 +8,7 @@ uses
   SysUtils, State, StateMachine, GameSettings, GameWorldClient;
 
 type
-  TClientGameStateBase = class(specialize TState<TGameState>)
+  TClientGameStateBase = class(specialize TState<TClientGameState>)
   protected
     FWorld: TGameWorldClient;
   public
@@ -50,14 +50,14 @@ end;
 
 procedure TClientLoadingState.Update(DeltaTime: Single);
 begin
-  ChangeState(gsWaitingPlayers);
+  ChangeState(cgsWaitingPlayers);
 end;
 
 { TClientWaitingPlayersState }
 
 procedure TClientWaitingPlayersState.Update(DeltaTime: Single);
 begin
-  ChangeState(gsPlaying);
+  ChangeState(cgsPlaying);
 end;
 
 { TClientPlayingState }

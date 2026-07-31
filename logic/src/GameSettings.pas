@@ -8,8 +8,10 @@ uses
   CastleVectors, State, StateMachine;
 
 type
-  TGameState = (gsLoading, gsWaitingPlayers, gsPlaying, gsFinished);
-  TGameFsm = specialize TStateMachine<TGameState>;
+  TServerGameState = (sgsLoading, sgsWaitingPlayers, sgsPlaying, sgsFinished);
+  TClientGameState = (cgsLoading, cgsWaitingPlayers, cgsPlaying, cgsFinished);
+  TServerGameFsm = specialize TStateMachine<TServerGameState>;
+  TClientGameFsm = specialize TStateMachine<TClientGameState>;
 
   TSpawnPoint = record
     Pos: TVector3;

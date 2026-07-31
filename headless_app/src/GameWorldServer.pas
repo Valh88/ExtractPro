@@ -1,4 +1,4 @@
-unit GameWorldServer;
+﻿unit GameWorldServer;
 
 {$mode objfpc}{$H+}
 {$modeswitch anonymousfunctions}
@@ -21,8 +21,8 @@ type
     FShotSystem: TServerShotSystem;
     FDbSystem: TServerDbSystem;
     FSettings: TGameSettings;
-    FFsm: TGameFsm;
-    function GetGameState: TGameState;
+    FFsm: TServerGameFsm;
+    function GeTServerGameState: TServerGameState;
     procedure RegisterSystems; override;
     procedure CollectSpawnPoints;
   public
@@ -37,7 +37,7 @@ type
     property NetSystem: TServerNetSystem read FNetSystem;
     property DbSystem: TServerDbSystem read FDbSystem;
     property Settings: TGameSettings read FSettings write FSettings;
-    property GameState: TGameState read GetGameState;
+    property GameState: TServerGameState read GeTServerGameState;
   end;
 
 implementation
@@ -63,15 +63,15 @@ begin
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
 
-  FFsm := TGameFsm.Create;
-  FFsm.RegisterState(gsLoading, TLoadingState.Create(Self));
-  FFsm.RegisterState(gsWaitingPlayers, TWaitingPlayersState.Create(Self));
-  FFsm.RegisterState(gsPlaying, TPlayingState.Create(Self));
-  FFsm.RegisterState(gsFinished, TFinishedState.Create(Self));
-  FFsm.ChangeState(gsLoading);
+  FFsm := TServerGameFsm.Create;
+  FFsm.RegisterState(sgsLoading, TLoadingState.Create(Self));
+  FFsm.RegisterState(sgsWaitingPlayers, TWaitingPlayersState.Create(Self));
+  FFsm.RegisterState(sgsPlaying, TPlayingState.Create(Self));
+  FFsm.RegisterState(sgsFinished, TFinishedState.Create(Self));
+  FFsm.ChangeState(sgsLoading);
 end;
 
-function TGameWorldServer.GetGameState: TGameState;
+function TGameWorldServer.GeTServerGameState: TServerGameState;
 begin
   Result := FFsm.CurrentState;
 end;

@@ -1,4 +1,4 @@
-unit GameStates;
+﻿unit GameStates;
 
 {$mode objfpc}{$H+}
 
@@ -8,7 +8,7 @@ uses
   SysUtils, State, StateMachine, GameWorldServer, GameSettings;
 
 type
-  TGameStateBase = class(specialize TState<TGameState>)
+  TServerGameStateBase = class(specialize TState<TServerGameState>)
   protected
     FWorld: TGameWorldServer;
   public
@@ -16,31 +16,31 @@ type
     property World: TGameWorldServer read FWorld;
   end;
 
-  TLoadingState = class(TGameStateBase)
+  TLoadingState = class(TServerGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
-  TWaitingPlayersState = class(TGameStateBase)
+  TWaitingPlayersState = class(TServerGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
-  TPlayingState = class(TGameStateBase)
+  TPlayingState = class(TServerGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
-  TFinishedState = class(TGameStateBase)
+  TFinishedState = class(TServerGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
 implementation
 
-{ TGameStateBase }
+{ TServerGameStateBase }
 
-constructor TGameStateBase.Create(AWorld: TGameWorldServer);
+constructor TServerGameStateBase.Create(AWorld: TGameWorldServer);
 begin
   inherited Create;
   FWorld := AWorld;
@@ -52,14 +52,14 @@ procedure TLoadingState.Update(DeltaTime: Single);
 begin
   FWorld.EnsureMapLoaded;
   FWorld.LoadMapData;
-  ChangeState(gsWaitingPlayers);
+  ChangeState(sgsWaitingPlayers);
 end;
 
 { TWaitingPlayersState }
 
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
-  ChangeState(gsPlaying);
+  ChangeState(sgsPlaying);
 end;
 
 { TPlayingState }

@@ -1,4 +1,4 @@
-unit GameWorldClient;
+﻿unit GameWorldClient;
 
 {$mode objfpc}{$H+}
 {$modeswitch anonymousfunctions}
@@ -28,7 +28,7 @@ type
     FLobbyId: UInt32;
     FViewSystem: TGameViewSystem;
     FSettings: TGameSettings;
-    FFsm: TGameFsm;
+    FFsm: TClientGameFsm;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -46,7 +46,7 @@ type
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
     property ViewSystem: TGameViewSystem read FViewSystem;
     property Settings: TGameSettings read FSettings write FSettings;
-    property Fsm: TGameFsm read FFsm;
+    property Fsm: TClientGameFsm read FFsm;
   end;
 
 implementation
@@ -69,12 +69,12 @@ begin
   FLobbyId := 1;
   FSettings := DefaultGameSettings;
 
-  FFsm := TGameFsm.Create;
-  FFsm.RegisterState(gsLoading, TClientLoadingState.Create(Self));
-  FFsm.RegisterState(gsWaitingPlayers, TClientWaitingPlayersState.Create(Self));
-  FFsm.RegisterState(gsPlaying, TClientPlayingState.Create(Self));
-  FFsm.RegisterState(gsFinished, TClientFinishedState.Create(Self));
-  FFsm.ChangeState(gsLoading);
+  FFsm := TClientGameFsm.Create;
+  FFsm.RegisterState(cgsLoading, TClientLoadingState.Create(Self));
+  FFsm.RegisterState(cgsWaitingPlayers, TClientWaitingPlayersState.Create(Self));
+  FFsm.RegisterState(cgsPlaying, TClientPlayingState.Create(Self));
+  FFsm.RegisterState(cgsFinished, TClientFinishedState.Create(Self));
+  FFsm.ChangeState(cgsLoading);
 end;
 
 destructor TGameWorldClient.Destroy;
@@ -121,7 +121,7 @@ var
 begin
   Entity := Factory.CreateMainPlayerEntity(AEntityId);
   Entity.Transform.Translation := CastleVectors.Vector3(APosX, APosY, APosZ);
-  // Entity.Rotation := ARotY; вращать роот или визуал?
+  // Entity.Rotation := ARotY; РІСЂР°С‰Р°С‚СЊ СЂРѕРѕС‚ РёР»Рё РІРёР·СѓР°Р»?
   AddPlayer(Entity);
   FMainPlayerId := Entity.EntityId;
   InitMainPlayerOverlay(Entity.Transform);
