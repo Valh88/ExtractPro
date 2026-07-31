@@ -10,7 +10,7 @@ uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform,
   RNL, NetMessages, NetClient, GameWorld, help_types, Interfaces,
   ClientPlayerSyncBehavior, ClientSnapshotSystem, BulletTimer, RpcClient,
-  CastleLog;
+  ClientEventBus, CastleLog;
 
 type
   TSendMessageProc = reference to procedure(const M: TNetMessage; const AChannel: Integer);
@@ -278,6 +278,7 @@ var
   Bullet: IGameEntity;
   B: TBulletBehavior;
   DenyCode: string;
+  E: TClientGameEvent;
 begin
   if not FConnectedReported then
   begin
@@ -354,11 +355,22 @@ begin
           (Msg.Payload[2] shl 16) or (Msg.Payload[3] shl 24));
     end;
     msgHit:
-      begin end;
+    begin end;
     msgRpcResponse:
     begin
       if FRpc <> nil then
         FRpc.DispatchResponse(Msg.Header.CorrelationId, Msg.Payload);
+    end;
+    msgGameStateChanged:
+    begin
+      if Length(Msg.Payload) >= 1 then
+      begin
+        E.EventType := cgeGameStateChanged;
+        E.Amount := Msg.Payload[0];
+        E.Data := nil;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
+      end;
     end;
   end;
 end;

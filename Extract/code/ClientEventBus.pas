@@ -13,7 +13,8 @@ type
     cgePartySizeChanged,
     cgeReadyCheck,        // Amount=1.0: показать дизайн, 0.0: скрыть
     cgeReadyCheckUpdate,
-    cgeStartGame          // Amount = port game server
+    cgeStartGame,         // Amount = port game server
+    cgeGameStateChanged   // Amount = ординал TServerGameState
   );
 
   TReadyCheckPlayerInfo = record

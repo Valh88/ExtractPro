@@ -91,6 +91,7 @@ const
   msgReadyCheckUpdate = 24; // server→client: статус готовности игроков
   msgReadyCheckEnd = 25;    // server→client: ready check завершён (0=rollback, 1=game start)
   msgStartGame = 26;        // server→client: порт game server для подключения
+  msgGameStateChanged = 27; // server→client: текущее состояние TServerGameState (payload: 1 byte)
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;

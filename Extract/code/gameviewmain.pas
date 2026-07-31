@@ -4,9 +4,9 @@ interface
 
 uses Classes,
   CastleVectors, CastleComponentSerialize, CastleViewport, CastleTransform,
-  CastleUIControls, CastleControls, CastleKeysMouse,
+  CastleUIControls, CastleControls, CastleKeysMouse, CastleLog,
   help_types, Interfaces, WorldBridge, EntityManager, GameWorldClient,
-  GameViewSystem,
+  GameViewSystem, ClientEventBus, GameSettings,
   UiAnimation, AnimationManager;
 
 type
@@ -30,6 +30,8 @@ type
     FGameToken: string;
     FOverlay: TCastleRectangleControl;
     FAnimManager: TAnimationManager;
+    FSceneRevealed: Boolean;
+    procedure OnGameStateChanged(const Event: TClientGameEvent);
   end;
 
 var
@@ -62,16 +64,18 @@ end;
 procedure TViewMain.Start;
 var
   Factory: IEntityFactory;
-  FA: TFadeAnimation;
 begin
   inherited;
 
+  FSceneRevealed := False;
   FAnimManager := TAnimationManager.Create;
   FOverlay := TCastleRectangleControl.Create(nil);
   FOverlay.FullSize := True;
   FOverlay.Color := Vector4(0, 0, 0, 1);
   FOverlay.Exists := True;
   InsertFront(FOverlay);
+
+  GlobalClientEventBus.Subscribe(cgeGameStateChanged, @OnGameStateChanged);
 
   Factory := TEntityManager.Create(
     'castle-data:/PlayerProto.castle-transform',
@@ -85,14 +89,11 @@ begin
   FGameClient.ViewSystem.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
-
-  FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
-  FAnimManager.Add(FA);
-  FA.Start;
 end;
 
 procedure TViewMain.Stop;
 begin
+  GlobalClientEventBus.Unsubscribe(@OnGameStateChanged);
   FreeAndNil(FAnimManager);
   FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
@@ -115,6 +116,19 @@ begin
   Result := inherited;
   if FGameClient <> nil then
     FGameClient.Press(Event);
+end;
+
+procedure TViewMain.OnGameStateChanged(const Event: TClientGameEvent);
+var
+  FA: TFadeAnimation;
+begin
+  WritelnLog('Client', 'Game state: %d', [Round(Event.Amount)]);
+  if FSceneRevealed then Exit;
+  if TServerGameState(Round(Event.Amount)) <> sgsPlaying then Exit;
+  FSceneRevealed := True;
+  FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
+  FAnimManager.Add(FA);
+  FA.Start;
 end;
 
 end.

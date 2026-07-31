@@ -9,7 +9,7 @@ interface
   uses
     SysUtils, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
     ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
-    JobQueueSystem, GameSettings;
+    JobQueueSystem, GameSettings, CastleLog;
 
 type
   TGameWorldServer = class(TGameWorld)
@@ -22,7 +22,9 @@ type
     FDbSystem: TServerDbSystem;
     FSettings: TGameSettings;
     FFsm: TServerGameFsm;
+    procedure OnStateChanged(NewState, OldState: TServerGameState);
     function GeTServerGameState: TServerGameState;
+    function GetGameState: TServerGameState; override;
     procedure RegisterSystems; override;
     procedure CollectSpawnPoints;
   public
@@ -31,6 +33,7 @@ type
       const AFactory: IEntityFactory; const APort: Word = 7777;
       const AMaxPlayers: Integer = 8; const ASettings: PGameSettings = nil);
     destructor Destroy; override;
+    procedure StartServer;
     procedure EnsureMapLoaded;
     procedure LoadMapData;
     procedure SetDbSystem(aDbSystem: TServerDbSystem);
@@ -64,14 +67,21 @@ begin
   B.GameLogic := Self;
 
   FFsm := TServerGameFsm.Create;
+  FFsm.RegisterState(sgsStart, TStartState.Create(Self));
   FFsm.RegisterState(sgsLoading, TLoadingState.Create(Self));
   FFsm.RegisterState(sgsWaitingPlayers, TWaitingPlayersState.Create(Self));
   FFsm.RegisterState(sgsPlaying, TPlayingState.Create(Self));
   FFsm.RegisterState(sgsFinished, TFinishedState.Create(Self));
-  FFsm.ChangeState(sgsLoading);
+  FFsm.AddStateChangeListener(@OnStateChanged);
+  FFsm.ChangeState(sgsStart);
 end;
 
 function TGameWorldServer.GeTServerGameState: TServerGameState;
+begin
+  Result := FFsm.CurrentState;
+end;
+
+function TGameWorldServer.GetGameState: TServerGameState;
 begin
   Result := FFsm.CurrentState;
 end;
@@ -208,6 +218,20 @@ begin
   {$ifndef VISUAL}
   FWorldRoot.UpdateIncreaseTime(SecondsPassed);
   {$endif}
+end;
+
+procedure TGameWorldServer.StartServer;
+begin
+  FNetSystem.StartServer;
+end;
+
+procedure TGameWorldServer.OnStateChanged(NewState, OldState: TServerGameState);
+var
+  M: TNetMessage;
+begin
+  M.Init(msgGameStateChanged, [Byte(Ord(NewState))]);
+  FNetSystem.Broadcast(M);
+  WritelnLog('Server', 'Game state changed: %d -> %d', [Ord(OldState), Ord(NewState)]);
 end;
 
 end.

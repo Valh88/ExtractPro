@@ -5,16 +5,13 @@ unit GameWorld;
 interface
 
 uses
-  SysUtils, Classes, help_types, EntityTypes, WorldTypes, GameConfig, Interfaces, EventBus,
-  CastleKeysMouse;
+  SysUtils, Classes, help_types, EntityTypes, WorldTypes, GameConfig, GameSettings,
+  Interfaces, EventBus, CastleKeysMouse;
 
 type
-  TRaidPhase = (rpExploring, rpExtracting);
-
   TGameWorld = class
   private
     FData: TGameWorldData;
-    FPhase: TRaidPhase;
     FNextEntityId: TEntityId;
     FMaxRaidTime: Single;
     FWorld: IGameWorld;
@@ -45,10 +42,10 @@ type
     procedure AddBullet(const AVisual: IGameEntity; const AOwnerId: TEntityId);
     procedure SpawnEnemy(const RoomIndex: Integer);
     procedure GenerateDungeon;
-    procedure StartExtraction;
     function GetData: TGameWorldData;
     procedure SetEntityVisual(const AEntityId: TEntityId; const Visual: IGameEntity);
     procedure RemoveEntity(const AEntityId: TEntityId);
+    function GetGameState: TServerGameState; virtual;
 
     { Доступ для систем }
     property Data: TGameWorldData read FData;
@@ -58,7 +55,7 @@ type
     procedure QueueEvent(const Ev: TGameEvent);
     procedure QueueDeadEntity(const AEntityId: TEntityId);
 
-    property Phase: TRaidPhase read FPhase;
+    property GameState: TServerGameState read GetGameState;
     property World: IGameWorld read FWorld write FWorld;
     property Factory: IEntityFactory read FFactory write FFactory;
   end;
@@ -77,7 +74,6 @@ begin
   FFactory := AFactory;
   FData.Init;
   FNextEntityId := 1;
-  FPhase := rpExploring;
   FMaxRaidTime := GlobalConfig.RaidTime;
 
   RegisterSystems;
@@ -200,7 +196,6 @@ end;
 
 procedure TGameWorld.Start;
 begin
-  FPhase := rpExploring;
   FData.Init;
 end;
 
@@ -301,15 +296,6 @@ begin
     FWorld.RegisterEntity(AVisual);
 end;
 
-procedure TGameWorld.StartExtraction;
-var
-  i: Integer;
-begin
-  FPhase := rpExtracting;
-  for i := 0 to High(FData.Players) do
-    FData.Players[i].IsExtracting := True;
-end;
-
 procedure TGameWorld.SpawnEnemy(const RoomIndex: Integer);
 var
   E: TEnemyData;
@@ -346,6 +332,11 @@ procedure TGameWorld.GenerateDungeon;
 begin
   FData.ExtractionPoints := nil;
   FData.Rooms := nil;
+end;
+
+function TGameWorld.GetGameState: TServerGameState;
+begin
+  Result := sgsPlaying;
 end;
 
 function TGameWorld.GetData: TGameWorldData;

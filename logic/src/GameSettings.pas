@@ -8,7 +8,7 @@ uses
   CastleVectors, State, StateMachine;
 
 type
-  TServerGameState = (sgsLoading, sgsWaitingPlayers, sgsPlaying, sgsFinished);
+  TServerGameState = (sgsStart, sgsLoading, sgsWaitingPlayers, sgsPlaying, sgsFinished);
   TClientGameState = (cgsLoading, cgsWaitingPlayers, cgsPlaying, cgsFinished);
   TServerGameFsm = specialize TStateMachine<TServerGameState>;
   TClientGameFsm = specialize TStateMachine<TClientGameState>;

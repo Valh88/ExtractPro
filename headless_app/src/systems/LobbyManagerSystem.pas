@@ -152,7 +152,7 @@ begin
   LobbyId := FManager.AddLobby(FreePort, 32, FRequireAuth);
   Lobby := FManager.FindLobbyById(LobbyId);
   if Lobby <> nil then
-    Lobby.NetSystem.StartServer;
+    Lobby.StartServer;
 
   GamePort := FreePort;
 

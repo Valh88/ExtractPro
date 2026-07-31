@@ -16,24 +16,32 @@ type
     property World: TGameWorldServer read FWorld;
   end;
 
+  TStartState = class(TServerGameStateBase)
+  public
+    procedure Enter(FromState: TServerGameState); override;
+    procedure Update(DeltaTime: Single); override;
+  end;
+
   TLoadingState = class(TServerGameStateBase)
   public
+    procedure Enter(FromState: TServerGameState); override;
     procedure Update(DeltaTime: Single); override;
   end;
 
   TWaitingPlayersState = class(TServerGameStateBase)
   public
+    procedure Enter(FromState: TServerGameState); override;
     procedure Update(DeltaTime: Single); override;
   end;
 
   TPlayingState = class(TServerGameStateBase)
   public
-    procedure Update(DeltaTime: Single); override;
+    procedure Enter(FromState: TServerGameState); override;
   end;
 
   TFinishedState = class(TServerGameStateBase)
   public
-    procedure Update(DeltaTime: Single); override;
+    procedure Enter(FromState: TServerGameState); override;
   end;
 
 implementation
@@ -46,16 +54,35 @@ begin
   FWorld := AWorld;
 end;
 
+{ TStartState }
+
+procedure TStartState.Enter(FromState: TServerGameState);
+begin
+end;
+
+procedure TStartState.Update(DeltaTime: Single);
+begin
+  ChangeState(sgsLoading);
+end;
+
 { TLoadingState }
 
-procedure TLoadingState.Update(DeltaTime: Single);
+procedure TLoadingState.Enter(FromState: TServerGameState);
 begin
   FWorld.EnsureMapLoaded;
   FWorld.LoadMapData;
+end;
+
+procedure TLoadingState.Update(DeltaTime: Single);
+begin
   ChangeState(sgsWaitingPlayers);
 end;
 
 { TWaitingPlayersState }
+
+procedure TWaitingPlayersState.Enter(FromState: TServerGameState);
+begin
+end;
 
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
@@ -64,13 +91,13 @@ end;
 
 { TPlayingState }
 
-procedure TPlayingState.Update(DeltaTime: Single);
+procedure TPlayingState.Enter(FromState: TServerGameState);
 begin
 end;
 
 { TFinishedState }
 
-procedure TFinishedState.Update(DeltaTime: Single);
+procedure TFinishedState.Enter(FromState: TServerGameState);
 begin
 end;
 

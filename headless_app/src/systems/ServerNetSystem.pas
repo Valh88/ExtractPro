@@ -243,6 +243,9 @@ begin
   Spawn.RotY := E.Rotation;
   M.Init(msgJoinAccept, Spawn.ToBytes);
   SendTo(Peer, M);
+
+  M.Init(msgGameStateChanged, [Byte(Ord(WorldObj.GameState))]);
+  SendTo(Peer, M);
 end;
 
 procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
