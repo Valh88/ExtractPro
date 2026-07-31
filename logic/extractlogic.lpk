@@ -37,6 +37,10 @@
         <UnitName Value="GameConfig"/>
       </Item>
       <Item>
+        <Filename Value="src/GameSettings.pas"/>
+        <UnitName Value="GameSettings"/>
+      </Item>
+      <Item>
         <Filename Value="src/castle_bridges/EntityBridge.pas"/>
         <UnitName Value="EntityBridge"/>
       </Item>

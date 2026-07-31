@@ -9,12 +9,12 @@ interface
 
 uses
   Interfaces, EntityTypes, WorldTypes, GameWorld, LobbyWorld, GameConfig, 
-  EntityBridge, WorldBridge, EventBus, help_types, EntityManager, 
-  CharacterControllerBehavior, FirstPersonCameraBehavior, MouseLookOverlay, 
-  TouchMoveControl, WorldSystemBase, LobbySystemBase, JobQueueSystem, 
-  JobQueue, RNL, NetMessages, NetServer, NetClient, AuthTypes, AuthServer, 
-  AuthClient, BulletTimer, GameWorldClient, DbAccounts, DbItems, DbSession, 
-  DbConfig, DbCore, Db, State, StateMachine, LazarusPackageIntf;
+  GameSettings, EntityBridge, WorldBridge, EventBus, help_types, 
+  EntityManager, CharacterControllerBehavior, FirstPersonCameraBehavior, 
+  MouseLookOverlay, TouchMoveControl, WorldSystemBase, LobbySystemBase, 
+  JobQueueSystem, JobQueue, RNL, NetMessages, NetServer, NetClient, AuthTypes, 
+  AuthServer, AuthClient, BulletTimer, GameWorldClient, DbAccounts, DbItems, 
+  DbSession, DbConfig, DbCore, Db, State, StateMachine, LazarusPackageIntf;
 
 implementation
 

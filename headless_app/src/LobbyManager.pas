@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, Classes, CastleTransform, CastleScene,
   GameWorldServer, Interfaces, ServerEntityFactory,
-  ServerDbSystem, AuthTypes, DbCore,
+  ServerDbSystem, AuthTypes, DbCore, GameSettings,
   System.Threading;
 
 type
@@ -36,7 +36,8 @@ type
   public
     constructor Create(const AFactory: IEntityFactory);
     destructor Destroy; override;
-    function AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean = False): UInt32;
+    function AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean = False;
+      const ASettings: PGameSettings = nil): UInt32;
     procedure AddMatchmakingLobby(const APort: Word; const AMaxPlayers: Integer = 64; const ARequireAuth: Boolean = False);
     procedure RemoveLobby(const AId: UInt32);
     function FindLobbyById(const AId: UInt32): TGameWorldServer;
@@ -98,31 +99,38 @@ begin
     FLobbyDbSystem := TServerDbSystem.CreateWithDB(FDatabase);
 end;
 
-function TLobbyManager.AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean): UInt32;
+function TLobbyManager.AddLobby(const APort, AMaxPlayers: Word; const ARequireAuth: Boolean;
+  const ASettings: PGameSettings): UInt32;
 var
   Lobby: TLobbyInfo;
   WorldRoot: TCastleAbstractRootTransform;
   Design: TCastleTransformDesign;
+  S: TGameSettings;
   idx: Integer;
 begin
   idx := FindLobbyByPort(APort);
   if idx <> -1 then
     raise Exception.CreateFmt('Lobby on port %d already exists', [APort]);
 
+  if ASettings <> nil then
+    S := ASettings^
+  else
+    S := DefaultGameSettings;
+
   WorldRoot := TCastleRootTransform.Create(nil);
   Design := TCastleTransformDesign.Create(nil);
-  {$ifdef VISUAL}
-  Design.Url := 'castle-data:/physics_scene.castle-transform';
-  {$else}
-  Design.Url := 'castle-data:/physics_scene_headless.castle-transform';
-  {$endif}
+  if S.MapUrl.Headless <> '' then
+    Design.Url := S.MapUrl.Headless
+  else
+    Design.Url := S.MapUrl.Render;
   WorldRoot.Add(Design);
   WorldRoot.UpdateIncreaseTime(0);
 
   Lobby.Id := FNextId;
   Lobby.Port := APort;
   Lobby.MaxPlayers := AMaxPlayers;
-  Lobby.World := TGameWorldServer.Create(WorldRoot, FFactory, APort, AMaxPlayers);
+  Lobby.World := TGameWorldServer.Create(WorldRoot, FFactory, APort, AMaxPlayers, @S);
+  Lobby.World.LoadMapData;
   Lobby.World.NetSystem.RequireAuth := ARequireAuth;
 
   if FValidator <> nil then

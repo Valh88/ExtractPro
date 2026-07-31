@@ -12,7 +12,7 @@ uses
   MouseLookOverlay, FirstPersonCameraBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
-  GameViewSystem;
+  GameViewSystem, GameSettings;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -27,6 +27,7 @@ type
     FRpc: TRpcClient;
     FLobbyId: UInt32;
     FViewSystem: TGameViewSystem;
+    FSettings: TGameSettings;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -42,6 +43,7 @@ type
     property Rpc: TRpcClient read FRpc;
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
     property ViewSystem: TGameViewSystem read FViewSystem;
+    property Settings: TGameSettings read FSettings write FSettings;
   end;
 
 implementation
@@ -60,6 +62,7 @@ begin
   FViewport := AViewport;
   FMouseLookUi := nil;
   FLobbyId := 1;
+  FSettings := DefaultGameSettings;
 end;
 
 destructor TGameWorldClient.Destroy;
