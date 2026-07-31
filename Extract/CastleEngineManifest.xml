@@ -22,6 +22,7 @@ See https://castle-engine.io/project_manifest for documentation of this file.
       <path value="code/utils/animations/" />
       <path value="../logic/src/" />
       <path value="../logic/src/behaviors/" />
+      <path value="../logic/src/fsm/" />
       <path value="../logic/src/net/" />
       <path value="../logic/src/auth_server/" />
       <path value="../logic/src/castle_bridges/" />

@@ -21,6 +21,8 @@ type
     FShotSystem: TServerShotSystem;
     FDbSystem: TServerDbSystem;
     FSettings: TGameSettings;
+    FFsm: TGameFsm;
+    function GetGameState: TGameState;
     procedure RegisterSystems; override;
     procedure CollectSpawnPoints;
   public
@@ -29,14 +31,18 @@ type
       const AFactory: IEntityFactory; const APort: Word = 7777;
       const AMaxPlayers: Integer = 8; const ASettings: PGameSettings = nil);
     destructor Destroy; override;
+    procedure EnsureMapLoaded;
     procedure LoadMapData;
     procedure SetDbSystem(aDbSystem: TServerDbSystem);
     property NetSystem: TServerNetSystem read FNetSystem;
     property DbSystem: TServerDbSystem read FDbSystem;
     property Settings: TGameSettings read FSettings write FSettings;
+    property GameState: TGameState read GetGameState;
   end;
 
 implementation
+
+uses GameStates;
 
 { TGameWorldServer }
 
@@ -56,6 +62,18 @@ begin
   B := TWorldBridge.Create(ARoot);
   inherited Create(B as IGameWorld, AFactory);
   B.GameLogic := Self;
+
+  FFsm := TGameFsm.Create;
+  FFsm.RegisterState(gsLoading, TLoadingState.Create(Self));
+  FFsm.RegisterState(gsWaitingPlayers, TWaitingPlayersState.Create(Self));
+  FFsm.RegisterState(gsPlaying, TPlayingState.Create(Self));
+  FFsm.RegisterState(gsFinished, TFinishedState.Create(Self));
+  FFsm.ChangeState(gsLoading);
+end;
+
+function TGameWorldServer.GetGameState: TGameState;
+begin
+  Result := FFsm.CurrentState;
 end;
 
 procedure TGameWorldServer.SetDbSystem(aDbSystem: TServerDbSystem);
@@ -63,6 +81,11 @@ begin
   FDbSystem := aDbSystem;
   if aDbSystem <> nil then
     AddSystem(aDbSystem);
+end;
+
+procedure TGameWorldServer.EnsureMapLoaded;
+begin
+  FWorldRoot.UpdateIncreaseTime(0);
 end;
 
 procedure TGameWorldServer.LoadMapData;
@@ -155,6 +178,7 @@ end;
 
 destructor TGameWorldServer.Destroy;
 begin
+  FFsm.Free;
   inherited;
 end;
 
@@ -179,6 +203,7 @@ end;
 
 procedure TGameWorldServer.Update(const SecondsPassed: Single);
 begin
+  FFsm.Update(SecondsPassed);
   inherited Update(SecondsPassed);
   {$ifndef VISUAL}
   FWorldRoot.UpdateIncreaseTime(SecondsPassed);

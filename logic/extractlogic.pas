@@ -13,8 +13,9 @@ uses
   EntityManager, CharacterControllerBehavior, FirstPersonCameraBehavior, 
   MouseLookOverlay, TouchMoveControl, WorldSystemBase, LobbySystemBase, 
   JobQueueSystem, JobQueue, RNL, NetMessages, NetServer, NetClient, AuthTypes, 
-  AuthServer, AuthClient, BulletTimer, GameWorldClient, DbAccounts, DbItems, 
-  DbSession, DbConfig, DbCore, Db, State, StateMachine, LazarusPackageIntf;
+  AuthServer, AuthClient, BulletTimer, GameWorldClient, ClientGameStates, 
+  DbAccounts, DbItems, DbSession, DbConfig, DbCore, Db, State, StateMachine, 
+  LazarusPackageIntf;
 
 implementation
 

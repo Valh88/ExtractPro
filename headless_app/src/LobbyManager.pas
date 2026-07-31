@@ -124,13 +124,11 @@ begin
   else
     Design.Url := S.MapUrl.Render;
   WorldRoot.Add(Design);
-  WorldRoot.UpdateIncreaseTime(0);
 
   Lobby.Id := FNextId;
   Lobby.Port := APort;
   Lobby.MaxPlayers := AMaxPlayers;
   Lobby.World := TGameWorldServer.Create(WorldRoot, FFactory, APort, AMaxPlayers, @S);
-  Lobby.World.LoadMapData;
   Lobby.World.NetSystem.RequireAuth := ARequireAuth;
 
   if FValidator <> nil then

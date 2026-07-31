@@ -129,6 +129,10 @@
         <UnitName Value="GameWorldClient"/>
       </Item>
       <Item>
+        <Filename Value="../Extract/code/ClientGameStates.pas"/>
+        <UnitName Value="ClientGameStates"/>
+      </Item>
+      <Item>
         <Filename Value="src/db/DbAccounts.pas"/>
         <UnitName Value="DbAccounts"/>
       </Item>

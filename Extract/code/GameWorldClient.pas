@@ -12,7 +12,7 @@ uses
   MouseLookOverlay, FirstPersonCameraBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
-  GameViewSystem, GameSettings;
+  GameViewSystem, GameSettings, State, StateMachine;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -28,11 +28,13 @@ type
     FLobbyId: UInt32;
     FViewSystem: TGameViewSystem;
     FSettings: TGameSettings;
+    FFsm: TGameFsm;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const AViewport: TCastleViewport);
     destructor Destroy; override;
+    procedure Update(const SecondsPassed: Single); override;
     procedure SpawnMainPlayer;
     procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single); override;
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
@@ -44,9 +46,12 @@ type
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
     property ViewSystem: TGameViewSystem read FViewSystem;
     property Settings: TGameSettings read FSettings write FSettings;
+    property Fsm: TGameFsm read FFsm;
   end;
 
 implementation
+
+uses ClientGameStates;
 
 { TGameWorldClient }
 
@@ -63,13 +68,27 @@ begin
   FMouseLookUi := nil;
   FLobbyId := 1;
   FSettings := DefaultGameSettings;
+
+  FFsm := TGameFsm.Create;
+  FFsm.RegisterState(gsLoading, TClientLoadingState.Create(Self));
+  FFsm.RegisterState(gsWaitingPlayers, TClientWaitingPlayersState.Create(Self));
+  FFsm.RegisterState(gsPlaying, TClientPlayingState.Create(Self));
+  FFsm.RegisterState(gsFinished, TClientFinishedState.Create(Self));
+  FFsm.ChangeState(gsLoading);
 end;
 
 destructor TGameWorldClient.Destroy;
 begin
+  FFsm.Free;
   FreeAndNil(FMouseLookUi);
   FRpc.Free;
   inherited;
+end;
+
+procedure TGameWorldClient.Update(const SecondsPassed: Single);
+begin
+  FFsm.Update(SecondsPassed);
+  inherited Update(SecondsPassed);
 end;
 
 procedure TGameWorldClient.InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);

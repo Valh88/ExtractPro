@@ -5,9 +5,12 @@ unit GameSettings;
 interface
 
 uses
-  CastleVectors;
+  CastleVectors, State, StateMachine;
 
 type
+  TGameState = (gsLoading, gsWaitingPlayers, gsPlaying, gsFinished);
+  TGameFsm = specialize TStateMachine<TGameState>;
+
   TSpawnPoint = record
     Pos: TVector3;
     RotY: Single;
