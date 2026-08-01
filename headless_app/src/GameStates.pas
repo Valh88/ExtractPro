@@ -65,7 +65,7 @@ end;
 procedure TStartState.Update(DeltaTime: Single);
 begin
   FTimer := FTimer + DeltaTime;
-  if FTimer >= 1.0 then
+  if FTimer >= 2.0 then
     ChangeState(sgsLoading);
 end;
 
@@ -81,7 +81,7 @@ end;
 procedure TLoadingState.Update(DeltaTime: Single);
 begin
   FTimer := FTimer + DeltaTime;
-  if FTimer >= 1.0 then
+  if FTimer >= 2.0 then
     ChangeState(sgsWaitingPlayers);
 end;
 
@@ -95,7 +95,7 @@ end;
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
   FTimer := FTimer + DeltaTime;
-  if FTimer >= 1.0 then
+  if FTimer >= 2.0 then
     ChangeState(sgsPlaying);
 end;
 

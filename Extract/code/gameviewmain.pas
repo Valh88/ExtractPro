@@ -34,6 +34,7 @@ type
     FOverlay: TCastleRectangleControl;
     FAnimManager: TAnimationManager;
     FSceneRevealed: Boolean;
+    FDotsAnim: TDotsAnimation;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
   end;
 
@@ -73,6 +74,8 @@ begin
 
   FSceneRevealed := False;
   FAnimManager := TAnimationManager.Create;
+  FDotsAnim := TDotsAnimation.Create(nil, '', 0.5);
+  FAnimManager.Add(FDotsAnim);
   FOverlay := TCastleRectangleControl.Create(nil);
   FOverlay.FullSize := True;
   FOverlay.Color := Vector4(0, 0, 0, 1);
@@ -101,6 +104,8 @@ end;
 procedure TViewMain.Stop;
 begin
   GlobalClientEventBus.Unsubscribe(@OnGameStateChanged);
+  FDotsAnim.Stop;
+  FreeAndNil(FDotsAnim);
   FreeAndNil(FAnimManager);
   FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
@@ -135,11 +140,11 @@ begin
 
   case State of
     sgsStart:
-      ShowInfo('ExtractPro', 'Загрузка...');
+      ShowInfo('ExtractPro', 'Загрузка');
     sgsLoading:
-      ShowInfo('ExtractPro', 'Загрузка мира...');
+      ShowInfo('ExtractPro', 'Загрузка мира');
     sgsWaitingPlayers:
-      ShowInfo('ExtractPro', 'Ожидание игроков...');
+      ShowInfo('ExtractPro', 'Ожидание игроков');
     sgsPlaying:
     begin
       HideInfo;
@@ -162,12 +167,13 @@ begin
   Title := InfoDesign.DesignedComponent('InfoTitle') as TCastleLabel;
   Txt := InfoDesign.DesignedComponent('InfoText') as TCastleLabel;
   Title.Caption := ATitle;
-  Txt.Caption := AText;
   InfoDesign.Exists := True;
+  FDotsAnim.Reset(Txt, AText);
 end;
 
 procedure TViewMain.HideInfo;
 begin
+  FDotsAnim.Stop;
   if InfoDesign = nil then Exit;
   InfoDesign.Exists := False;
 end;

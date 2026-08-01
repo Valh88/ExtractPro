@@ -17,7 +17,7 @@ type
     procedure DoAnimate(const Progress: Single); virtual; abstract;
   public
     constructor Create(const ADuration: Single);
-    procedure Update(const SecondsPassed: Single);
+    procedure Update(const SecondsPassed: Single); virtual;
     procedure Start;
     procedure Stop; virtual;
     function IsComplete: Boolean;
@@ -82,6 +82,23 @@ type
     constructor Create(ALbl: TCastleLabel; const ADuration: Single;
       const AFromScale, AToScale: Single);
     procedure Stop; override;
+  end;
+
+  TDotsAnimation = class(TBaseAnimation)
+  private
+    FLabel: TCastleLabel;
+    FBaseText: string;
+    FInterval: Single;
+    FElapsed: Single;
+    FDotCount: Integer;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(ALabel: TCastleLabel; const ABaseText: string;
+      const AInterval: Single);
+    procedure Update(const SecondsPassed: Single); override;
+    procedure Stop; override;
+    procedure Reset(ALabel: TCastleLabel; const ABaseText: String);
   end;
 
 implementation
@@ -229,6 +246,53 @@ end;
 procedure TScaleAnimation.DoAnimate(const Progress: Single);
 begin
   FLbl.FontScale := FFromScale + (FToScale - FFromScale) * Progress;
+end;
+
+{ TDotsAnimation }
+
+constructor TDotsAnimation.Create(ALabel: TCastleLabel; const ABaseText: string;
+  const AInterval: Single);
+begin
+  inherited Create(1);
+  FLabel := ALabel;
+  FBaseText := ABaseText;
+  FInterval := AInterval;
+  FElapsed := 0;
+  FDotCount := 0;
+end;
+
+procedure TDotsAnimation.Update(const SecondsPassed: Single);
+begin
+  FElapsed := FElapsed + SecondsPassed;
+  if FElapsed >= FInterval then
+  begin
+    FElapsed := FElapsed - FInterval;
+    Inc(FDotCount);
+    if FDotCount > 3 then
+      FDotCount := 0;
+    FLabel.Caption := FBaseText + Copy('...', 1, FDotCount);
+  end;
+end;
+
+procedure TDotsAnimation.DoAnimate(const Progress: Single);
+begin
+end;
+
+procedure TDotsAnimation.Stop;
+begin
+  if FLabel <> nil then
+    FLabel.Caption := FBaseText;
+  inherited;
+end;
+
+procedure TDotsAnimation.Reset(ALabel: TCastleLabel; const ABaseText: String);
+begin
+  FLabel := ALabel;
+  FBaseText := ABaseText;
+  FDotCount := 0;
+  FElapsed := 0;
+  FLabel.Caption := FBaseText;
+  Start;
 end;
 
 end.
