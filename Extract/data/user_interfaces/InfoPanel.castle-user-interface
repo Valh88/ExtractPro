@@ -6,8 +6,8 @@
   "Name" : "InfoPanel",
   "TranslationPersistent" : {
     "$$ClassName" : "TCastleVector2Persistent",
-    "X" : -5.8000000000000000E+002,
-    "Y" : -7.7500000000000000E+002
+    "X" : -5.9000000000000000E+002,
+    "Y" : -8.5500000000000000E+002
   },
   "VerticalAnchorParent" : "vpTop",
   "VerticalAnchorSelf" : "vpTop",
@@ -35,7 +35,6 @@
       "HorizontalAnchorSelf" : "hpMiddle",
       "Name" : "InfoTitle",
       "Text" : [
-        "INFO"
       ],
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
@@ -61,7 +60,7 @@
       ],
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
-        "Y" : -7.0000000000000000E+001
+        "Y" : -5.0000000000000000E+001
       },
       "VerticalAnchorParent" : "vpTop",
       "VerticalAnchorSelf" : "vpTop"

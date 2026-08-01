@@ -101,6 +101,19 @@
       "Url" : "castle-data:/user_interfaces/PricelDisign.castle-user-interface",
       "VerticalAnchorParent" : "vpMiddle",
       "VerticalAnchorSelf" : "vpMiddle"
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 1.2000000000000000E+002,
+      "Name" : "InfoDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000000000000E+001,
+        "Y" : 2.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
+      "Width" : 3.4000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
@@ -114,10 +127,10 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 6.6591823101043701E-001,
-      "X" : -6.4881926774978638E-001,
-      "Y" : 7.4226033687591553E-001,
-      "Z" : 1.6758105158805847E-001
+      "W" : 1.4412361383438110E+000,
+      "X" : -2.3864640295505524E-001,
+      "Y" : 9.5032984018325806E-001,
+      "Z" : 1.9980280101299286E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",

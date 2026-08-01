@@ -15,6 +15,7 @@ type
     LabelFps: TCastleLabel;
     Viewport1: TCastleViewport;
     Pricel: TCastleDesign;
+    InfoDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -22,6 +23,8 @@ type
     procedure Update(const SecondsPassed: Single; var HandleInput: Boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
     procedure StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string = '');
+    procedure ShowInfo(const ATitle, AText: String);
+    procedure HideInfo;
   private
     FGameClient: TGameWorldClient;
     FGameHost: string;
@@ -64,6 +67,7 @@ end;
 procedure TViewMain.Start;
 var
   Factory: IEntityFactory;
+  VS: TGameViewSystem;
 begin
   inherited;
 
@@ -86,7 +90,8 @@ begin
   FGameClient := TGameWorldClient.Create(Viewport1.Items, Factory, Viewport1);
   FGameClient.Start;
   FGameClient.LobbyId := FGameLobbyId;
-  FGameClient.ViewSystem.View := Self;
+  VS := FGameClient.ViewSystem;
+  VS.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
 end;
@@ -129,6 +134,24 @@ begin
   FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
   FAnimManager.Add(FA);
   FA.Start;
+end;
+
+procedure TViewMain.ShowInfo(const ATitle, AText: String);
+var
+  Title, Txt: TCastleLabel;
+begin
+  if InfoDesign = nil then Exit;
+  Title := InfoDesign.DesignedComponent('InfoTitle') as TCastleLabel;
+  Txt := InfoDesign.DesignedComponent('InfoText') as TCastleLabel;
+  Title.Caption := ATitle;
+  Txt.Caption := AText;
+  InfoDesign.Exists := True;
+end;
+
+procedure TViewMain.HideInfo;
+begin
+  if InfoDesign = nil then Exit;
+  InfoDesign.Exists := False;
 end;
 
 end.

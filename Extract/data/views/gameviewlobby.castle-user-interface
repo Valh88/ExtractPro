@@ -424,6 +424,19 @@
       },
       "Url" : "castle-data:/user_interfaces/CheckReadingDesign.castle-user-interface",
       "Width" : 5.2000000000000000E+002
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 1.5000000000000000E+002,
+      "Name" : "InfoDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000000000000E+001,
+        "Y" : 6.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
+      "Width" : 4.2000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
