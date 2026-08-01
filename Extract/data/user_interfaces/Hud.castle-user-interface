@@ -188,6 +188,15 @@
           "Width" : 3.0000000000000000E+002
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "HorizontalAnchorParent" : "hpMiddle",
+      "HorizontalAnchorSelf" : "hpMiddle",
+      "Name" : "Pricel",
+      "Url" : "castle-data:/user_interfaces/PricelDisign.castle-user-interface",
+      "VerticalAnchorParent" : "vpMiddle",
+      "VerticalAnchorSelf" : "vpMiddle"
     }
   ]
 }

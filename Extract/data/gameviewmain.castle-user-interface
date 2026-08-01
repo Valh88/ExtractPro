@@ -83,7 +83,8 @@
     },
     {
       "$$ClassName" : "TCastleDesign",
-      "Height" : 3.2000000000000000E+002,
+      "FullSize" : true,
+      "Height" : 9.9000000000000000E+002,
       "Name" : "Hud",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
@@ -92,15 +93,6 @@
       },
       "Url" : "castle-data:/user_interfaces/Hud.castle-user-interface",
       "Width" : 1.5800000000000000E+003
-    },
-    {
-      "$$ClassName" : "TCastleDesign",
-      "HorizontalAnchorParent" : "hpMiddle",
-      "HorizontalAnchorSelf" : "hpMiddle",
-      "Name" : "Pricel",
-      "Url" : "castle-data:/user_interfaces/PricelDisign.castle-user-interface",
-      "VerticalAnchorParent" : "vpMiddle",
-      "VerticalAnchorSelf" : "vpMiddle"
     },
     {
       "$$ClassName" : "TCastleDesign",
