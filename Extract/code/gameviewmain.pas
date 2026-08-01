@@ -35,7 +35,9 @@ type
     FAnimManager: TAnimationManager;
     FSceneRevealed: Boolean;
     FDotsAnim: TDotsAnimation;
+    FFadeAnim: TDesignFadeAnimation;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
+    procedure OnFadeOutComplete(Sender: TObject);
   end;
 
 var
@@ -105,6 +107,8 @@ procedure TViewMain.Stop;
 begin
   GlobalClientEventBus.Unsubscribe(@OnGameStateChanged);
   FDotsAnim.Stop;
+  if FFadeAnim <> nil then
+    FreeAndNil(FFadeAnim);
   FreeAndNil(FDotsAnim);
   FreeAndNil(FAnimManager);
   FreeAndNil(FOverlay);
@@ -164,6 +168,11 @@ var
   Title, Txt: TCastleLabel;
 begin
   if InfoDesign = nil then Exit;
+  if FFadeAnim <> nil then
+  begin
+    FAnimManager.Remove(FFadeAnim);
+    FreeAndNil(FFadeAnim);
+  end;
   Title := InfoDesign.DesignedComponent('InfoTitle') as TCastleLabel;
   Txt := InfoDesign.DesignedComponent('InfoText') as TCastleLabel;
   Title.Caption := ATitle;
@@ -175,7 +184,22 @@ procedure TViewMain.HideInfo;
 begin
   FDotsAnim.Stop;
   if InfoDesign = nil then Exit;
-  InfoDesign.Exists := False;
+  if FFadeAnim <> nil then
+  begin
+    FAnimManager.Remove(FFadeAnim);
+    FreeAndNil(FFadeAnim);
+  end;
+  FFadeAnim := TDesignFadeAnimation.Create(InfoDesign, 0.4, 1, 0);
+  FFadeAnim.OnComplete := @OnFadeOutComplete;
+  FAnimManager.Add(FFadeAnim);
+  FFadeAnim.Start;
+end;
+
+procedure TViewMain.OnFadeOutComplete(Sender: TObject);
+begin
+  FFadeAnim := nil;
+  if InfoDesign <> nil then
+    InfoDesign.Exists := False;
 end;
 
 end.

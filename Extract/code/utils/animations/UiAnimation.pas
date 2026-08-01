@@ -101,6 +101,25 @@ type
     procedure Reset(ALabel: TCastleLabel; const ABaseText: String);
   end;
 
+  TDesignFadeAnimation = class(TBaseAnimation)
+  private
+    type
+      TChildColorInfo = record
+        Control: TCastleUserInterface;
+        OriginalColor: TCastleColor;
+      end;
+    var
+      FDesign: TCastleDesign;
+      FFromAlpha, FToAlpha: Single;
+      FChildColors: array of TChildColorInfo;
+      FChildCount: Integer;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(ADesign: TCastleDesign; const ADuration: Single;
+      const AFromAlpha, AToAlpha: Single);
+  end;
+
 implementation
 
 uses CastleUtils;
@@ -293,6 +312,56 @@ begin
   FElapsed := 0;
   FLabel.Caption := FBaseText;
   Start;
+end;
+
+{ TDesignFadeAnimation }
+
+constructor TDesignFadeAnimation.Create(ADesign: TCastleDesign;
+  const ADuration: Single; const AFromAlpha, AToAlpha: Single);
+var
+  I: Integer;
+  Child: TCastleUserInterface;
+begin
+  inherited Create(ADuration);
+  FDesign := ADesign;
+  FFromAlpha := AFromAlpha;
+  FToAlpha := AToAlpha;
+  FChildCount := 0;
+  SetLength(FChildColors, FDesign.ControlsCount);
+  for I := 0 to FDesign.ControlsCount - 1 do
+  begin
+    Child := FDesign.Controls[I];
+    if Child is TCastleLabel then
+    begin
+      FChildColors[FChildCount].Control := Child;
+      FChildColors[FChildCount].OriginalColor := TCastleLabel(Child).Color;
+      Inc(FChildCount);
+    end
+    else if Child is TCastleImageControl then
+    begin
+      FChildColors[FChildCount].Control := Child;
+      FChildColors[FChildCount].OriginalColor := TCastleImageControl(Child).Color;
+      Inc(FChildCount);
+    end;
+  end;
+end;
+
+procedure TDesignFadeAnimation.DoAnimate(const Progress: Single);
+var
+  Alpha: Single;
+  I: Integer;
+  C: TCastleColor;
+begin
+  Alpha := FFromAlpha + (FToAlpha - FFromAlpha) * Progress;
+  for I := 0 to FChildCount - 1 do
+  begin
+    C := FChildColors[I].OriginalColor;
+    C.W := Alpha;
+    if FChildColors[I].Control is TCastleLabel then
+      TCastleLabel(FChildColors[I].Control).Color := C
+    else
+      TCastleImageControl(FChildColors[I].Control).Color := C;
+  end;
 end;
 
 end.
