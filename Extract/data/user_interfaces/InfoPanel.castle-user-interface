@@ -16,8 +16,7 @@
     {
       "$$ClassName" : "TCastleImageControl",
       "Content" : {
-        "$$ClassName" : "TCastleImagePersistent",
-        "Url" : "castle-data:/ui/panel_bg.png"
+        "$$ClassName" : "TCastleImagePersistent"
       },
       "FullSize" : true,
       "Name" : "InfoBg",
@@ -55,8 +54,6 @@
       "HorizontalAnchorSelf" : "hpMiddle",
       "Name" : "InfoText",
       "Text" : [
-        "Welcome to the game!",
-        "Select a game mode to begin."
       ],
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
