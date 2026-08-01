@@ -78,6 +78,8 @@ begin
   FOverlay.Color := Vector4(0, 0, 0, 1);
   FOverlay.Exists := True;
   InsertFront(FOverlay);
+  InfoDesign.Parent.RemoveControl(InfoDesign);
+  InsertFront(InfoDesign);
 
   GlobalClientEventBus.Subscribe(cgeGameStateChanged, @OnGameStateChanged);
 
@@ -125,15 +127,31 @@ end;
 
 procedure TViewMain.OnGameStateChanged(const Event: TClientGameEvent);
 var
+  State: TServerGameState;
   FA: TFadeAnimation;
 begin
-  WritelnLog('Client', 'Game state: %d', [Round(Event.Amount)]);
-  if FSceneRevealed then Exit;
-  if TServerGameState(Round(Event.Amount)) <> sgsPlaying then Exit;
-  FSceneRevealed := True;
-  FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
-  FAnimManager.Add(FA);
-  FA.Start;
+  State := TServerGameState(Round(Event.Amount));
+  WritelnLog('Client', 'Game state: %d', [Ord(State)]);
+
+  case State of
+    sgsStart:
+      ShowInfo('ExtractPro', 'Загрузка...');
+    sgsLoading:
+      ShowInfo('ExtractPro', 'Загрузка мира...');
+    sgsWaitingPlayers:
+      ShowInfo('ExtractPro', 'Ожидание игроков...');
+    sgsPlaying:
+    begin
+      HideInfo;
+      if not FSceneRevealed then
+      begin
+        FSceneRevealed := True;
+        FA := TFadeAnimation.Create(FOverlay, 0.8, 1, 0);
+        FAnimManager.Add(FA);
+        FA.Start;
+      end;
+    end;
+  end;
 end;
 
 procedure TViewMain.ShowInfo(const ATitle, AText: String);

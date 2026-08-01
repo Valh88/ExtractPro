@@ -11,6 +11,7 @@ type
   TServerGameStateBase = class(specialize TState<TServerGameState>)
   protected
     FWorld: TGameWorldServer;
+    FTimer: Single;
   public
     constructor Create(AWorld: TGameWorldServer);
     property World: TGameWorldServer read FWorld;
@@ -58,35 +59,44 @@ end;
 
 procedure TStartState.Enter(FromState: TServerGameState);
 begin
+  FTimer := 0;
 end;
 
 procedure TStartState.Update(DeltaTime: Single);
 begin
-  ChangeState(sgsLoading);
+  FTimer := FTimer + DeltaTime;
+  if FTimer >= 1.0 then
+    ChangeState(sgsLoading);
 end;
 
 { TLoadingState }
 
 procedure TLoadingState.Enter(FromState: TServerGameState);
 begin
+  FTimer := 0;
   FWorld.EnsureMapLoaded;
   FWorld.LoadMapData;
 end;
 
 procedure TLoadingState.Update(DeltaTime: Single);
 begin
-  ChangeState(sgsWaitingPlayers);
+  FTimer := FTimer + DeltaTime;
+  if FTimer >= 1.0 then
+    ChangeState(sgsWaitingPlayers);
 end;
 
 { TWaitingPlayersState }
 
 procedure TWaitingPlayersState.Enter(FromState: TServerGameState);
 begin
+  FTimer := 0;
 end;
 
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
-  ChangeState(sgsPlaying);
+  FTimer := FTimer + DeltaTime;
+  if FTimer >= 1.0 then
+    ChangeState(sgsPlaying);
 end;
 
 { TPlayingState }
