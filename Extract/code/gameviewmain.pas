@@ -140,11 +140,11 @@ begin
 
   case State of
     sgsStart:
-      ShowInfo('ExtractPro', 'Загрузка');
+      ShowInfo('', 'Загрузка');
     sgsLoading:
-      ShowInfo('ExtractPro', 'Загрузка мира');
+      ShowInfo('', 'Загрузка мира');
     sgsWaitingPlayers:
-      ShowInfo('ExtractPro', 'Ожидание игроков');
+      ShowInfo('', 'Ожидание игроков');
     sgsPlaying:
     begin
       HideInfo;

@@ -104,16 +104,15 @@
     },
     {
       "$$ClassName" : "TCastleDesign",
-      "Exists" : false,
       "Height" : 1.2000000000000000E+002,
       "Name" : "InfoDesign",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
-        "X" : 1.0000000000000000E+001,
-        "Y" : 2.0000000000000000E+001
+        "X" : 3.0000000000000000E+001,
+        "Y" : 1.3000000000000000E+002
       },
       "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
-      "Width" : 3.4000000000000000E+002
+      "Width" : 3.3000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
