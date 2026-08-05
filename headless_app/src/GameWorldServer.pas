@@ -233,7 +233,7 @@ end;
 
 procedure TGameWorldServer.RegisterPlayer(const AEntityId: TEntityId; const ALobbyPlayerId: UInt32);
 var
-  i: Integer;
+  i, TeamCount, PartySize: Integer;
   L: TEntityMatchLink;
 begin
   for i := 0 to High(FEntityToMatch) do
@@ -246,6 +246,13 @@ begin
       L.MatchIndex := i;
       Break;
     end;
+  if L.MatchIndex >= 0 then
+  begin
+    TeamCount := Length(FSettings.TeamSpawnSets);
+    PartySize := FMatchPlayers[0].PartySize;
+    if (TeamCount > 0) and (PartySize > 0) then
+      FMatchTeams[L.MatchIndex] := Byte((L.MatchIndex div PartySize) mod TeamCount);
+  end;
   L.EntityId := AEntityId;
   SetLength(FEntityToMatch, Length(FEntityToMatch) + 1);
   FEntityToMatch[High(FEntityToMatch)] := L;
@@ -366,9 +373,10 @@ begin
     SpIdx := TeamUsed[FMatchTeams[Mi]];
     Spawned := False;
     if (FMatchTeams[Mi] < TeamCount) and
-       (SpIdx < Length(FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points)) then
+       (Length(FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points) > 0) then
     begin
-      Sp := FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points[SpIdx];
+      Sp := FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points[
+        SpIdx mod Length(FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points)];
       Spawned := True;
     end;
     if not Spawned and (SpIdx < Length(FSettings.SpawnPoints)) then
