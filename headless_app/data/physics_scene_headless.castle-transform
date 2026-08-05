@@ -125,6 +125,89 @@
           "Name" : "RigidBody"
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Red_1",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 40.8417
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Red_2",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 40.8417,
+        "Z" : 3.8304
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Red_3",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 40.8417,
+        "Z" : -2.7470
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Green_1",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -3.9996,
+        "Z" : 46.8131
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Green_2",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -2.6936,
+        "Z" : 46.8131
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Green_3",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -1.2238,
+        "Z" : 46.8131
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Blue_1",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -13.2706,
+        "Y" : 0.1147,
+        "Z" : -47.1347
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Blue_2",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -14.0782,
+        "Y" : 0.1147,
+        "Z" : -47.1347
+      }
+    },
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "Spawn_Blue_3",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -14.9553,
+        "Y" : 0.1147,
+        "Z" : -47.1347
+      }
     }
   ]
 }

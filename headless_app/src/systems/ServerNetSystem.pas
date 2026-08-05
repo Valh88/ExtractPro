@@ -8,7 +8,7 @@ interface
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, CastleLog,
   RNL, NetMessages, NetServer, GameWorld, Interfaces,
-  ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes, RpcServer, RpcTypes;
+  ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes, RpcServer, RpcTypes, GameSettings;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
@@ -30,6 +30,7 @@ type
     FPendingJoin: array of TPendingJoin;
     FRequireAuth: Boolean;
     FValidator: IAuthValidator;
+    FSettings: PGameSettings;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
     function GetOnDisconnect: TServerDisconnectEvent;
@@ -56,6 +57,7 @@ type
     procedure Log(const Msg: String);
     property Server: TGameServer read FServer;
     property Rpc: TRpcServer read FRpc;
+    property Settings: PGameSettings read FSettings write FSettings;
     property ShotSystem: TServerShotSystem read FShotSystem write FShotSystem;
     property OnConnect: TServerConnectEvent read GetOnConnect write SetOnConnect;
     property OnDisconnect: TServerDisconnectEvent read GetOnDisconnect write SetOnDisconnect;
@@ -227,9 +229,25 @@ var
   E: IGameEntity;
   Spawn: TEntitySpawnData;
   M: TNetMessage;
+  Sp: TSpawnPoint;
+  TeamIdx: Integer;
 begin
   E := WorldObj.Factory.CreatePlayerEntity(WorldObj.AllocateEntityId);
-  E.Transform.Translation := CastleVectors.Vector3(0, 5, 0);
+
+  Sp.Pos := Vector3(0, 5, 0);
+  Sp.RotY := 0;
+  if FSettings <> nil then
+  begin
+    TeamIdx := -1;
+    if Length(FSettings^.TeamSpawnSets) > 0 then
+      TeamIdx := Random(Length(FSettings^.TeamSpawnSets));
+    if (TeamIdx >= 0) and (Length(FSettings^.TeamSpawnSets[TeamIdx].Points) > 0) then
+      Sp := FSettings^.TeamSpawnSets[TeamIdx].Points[Random(Length(FSettings^.TeamSpawnSets[TeamIdx].Points))]
+    else if Length(FSettings^.SpawnPoints) > 0 then
+      Sp := FSettings^.SpawnPoints[Random(Length(FSettings^.SpawnPoints))];
+  end;
+
+  E.Transform.Translation := Sp.Pos;
   if E.Transform.RigidBody <> nil then
   begin
     E.Transform.RigidBody.Dynamic := False;
@@ -239,8 +257,8 @@ begin
   E.Transform.AddBehavior(TServerPlayerSync.Create(E.Transform, E.EntityId));
   FServer.SetPeerEntityId(Peer, E.EntityId);
   Spawn.EntityId := E.EntityId;
-  Spawn.PosX := 0; Spawn.PosY := 5; Spawn.PosZ := 0;
-  Spawn.RotY := E.Rotation;
+  Spawn.PosX := Sp.Pos.X; Spawn.PosY := Sp.Pos.Y; Spawn.PosZ := Sp.Pos.Z;
+  Spawn.RotY := Sp.RotY;
   M.Init(msgJoinAccept, Spawn.ToBytes);
   SendTo(Peer, M);
 

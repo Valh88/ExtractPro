@@ -53,6 +53,89 @@
         "$$ClassName" : "TCastleTransformDesign",
         "Name" : "World",
         "Url" : "castle-data:/physics_scene.castle-transform"
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Red_1",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : 4.0841690063476562E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Red_2",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : 4.0841690063476562E+001,
+          "Z" : 3.8304436206817627E+000
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Red_3",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : 4.0841690063476562E+001,
+          "Z" : -2.7470140457153320E+000
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Green_1",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -3.9996299743652344E+000,
+          "Z" : 4.6813091278076172E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Green_2",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -2.6936020851135254E+000,
+          "Z" : 4.6813091278076172E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Green_3",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -1.2237962484359741E+000,
+          "Z" : 4.6813091278076172E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Blue_1",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -1.3270617485046387E+001,
+          "Y" : 1.1466360092163086E-001,
+          "Z" : -4.7134731292724609E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Blue_2",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -1.4078152656555176E+001,
+          "Y" : 1.1466360092163086E-001,
+          "Z" : -4.7134731292724609E+001
+        }
+      },
+      {
+        "$$ClassName" : "TCastleTransform",
+        "Name" : "Spawn_Blue_3",
+        "TranslationPersistent" : {
+          "$$ClassName" : "TCastleVector3Persistent",
+          "X" : -1.4955261230468750E+001,
+          "Y" : 1.1466360092163086E-001,
+          "Z" : -4.7134731292724609E+001
+        }
       }
     ]
   },
@@ -83,6 +166,7 @@
     },
     {
       "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
       "FullSize" : true,
       "Height" : 9.9000000000000000E+002,
       "Name" : "Hud",
@@ -118,16 +202,16 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.4412361383438110E+000,
-      "X" : -2.3864640295505524E-001,
-      "Y" : 9.5032984018325806E-001,
-      "Z" : 1.9980280101299286E-001
+      "W" : 2.9903373718261719E+000,
+      "X" : -7.9189399257302284E-003,
+      "Y" : 9.9429988861083984E-001,
+      "Z" : 1.0632568597793579E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 1.2007382202148438E+002,
-      "Y" : 4.0313201904296875E+001,
-      "Z" : -2.4414028167724609E+001
+      "X" : -1.2762887954711914E+001,
+      "Y" : 1.8600839376449585E+000,
+      "Z" : -5.5213241577148438E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {

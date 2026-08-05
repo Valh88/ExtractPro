@@ -196,6 +196,7 @@ procedure TGameWorldServer.RegisterSystems;
 begin
   inherited;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
+  FNetSystem.Settings := @FSettings;
   FShotSystem := TServerShotSystem.Create(Self);
   FNetSystem.ShotSystem := FShotSystem;
   FShotSystem.SendHitProc := procedure(const APlayerId: UInt32; const HitData: THitData)
