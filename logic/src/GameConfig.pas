@@ -91,7 +91,7 @@ begin
   ArmorFormulaDiv := 100;
   PartiesPerMatch := 3;
   DefaultPartySize := 1;
-  ReadyCheckTimeout := 10.0;
+  ReadyCheckTimeout := 30.0;
 end;
 
 initialization
