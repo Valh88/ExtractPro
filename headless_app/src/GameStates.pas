@@ -94,9 +94,11 @@ end;
 
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
-  FTimer := FTimer + DeltaTime;
-  if FTimer >= 2.0 then
+  if FWorld.IsMatchFull then
+  begin
+    FWorld.DistributeParties;
     ChangeState(sgsPlaying);
+  end;
 end;
 
 { TPlayingState }

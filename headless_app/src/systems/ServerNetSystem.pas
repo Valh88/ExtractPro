@@ -7,16 +7,19 @@ interface
 
 uses
   SysUtils, Classes, WorldSystemBase, CastleKeysMouse, CastleVectors, CastleTransform, CastleLog,
-  RNL, NetMessages, NetServer, GameWorld, Interfaces,
+  RNL, NetMessages, NetServer, GameWorld, Interfaces, help_types,
   ServerPlayerSyncBehavior, ServerShotSystem, AuthTypes, RpcServer, RpcTypes, GameSettings;
 
 type
   TServerNetLogEvent = procedure(Sender: TObject; const Msg: String) of object;
+  TOnPlayerRegisteredEvent = procedure(const AEntityId: TEntityId; const ALobbyPlayerId: UInt32) of object;
+  TOnGetPlayerTeamEvent = function(const AEntityId: TEntityId): Integer of object;
 
   TPendingJoin = record
     Peer: TRNLPeer;
     PlayerId: UInt32;
     LobbyId: UInt32;
+    LobbyPlayerId: UInt32;
     Authenticated: Boolean;
     Timeout: Single;
   end;
@@ -31,6 +34,8 @@ type
     FRequireAuth: Boolean;
     FValidator: IAuthValidator;
     FSettings: PGameSettings;
+    FOnPlayerRegistered: TOnPlayerRegisteredEvent;
+    FOnGetPlayerTeam: TOnGetPlayerTeamEvent;
     function GetOnConnect: TServerConnectEvent;
     procedure SetOnConnect(const AValue: TServerConnectEvent);
     function GetOnDisconnect: TServerDisconnectEvent;
@@ -39,7 +44,8 @@ type
     procedure SetOnReceive(const AValue: TServerReceiveEvent);
     procedure CleanPendingJoin;
     function FindPendingJoin(Peer: TRNLPeer): Integer;
-    procedure SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32);
+    procedure SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32; const ALobbyPlayerId: UInt32 = 0);
+    procedure TeleportToTeamPoint(const AEntityId: TEntityId; ATeam: Integer);
   public
     constructor Create(AWorldObj: TGameWorld; APort: Word; AMaxPlayers: Integer);
     destructor Destroy; override;
@@ -65,6 +71,8 @@ type
     property OnLog: TServerNetLogEvent read FOnLog write FOnLog;
     property RequireAuth: Boolean read FRequireAuth write FRequireAuth;
     property AuthValidator: IAuthValidator read FValidator write FValidator;
+    property OnPlayerRegistered: TOnPlayerRegisteredEvent read FOnPlayerRegistered write FOnPlayerRegistered;
+    property OnGetPlayerTeam: TOnGetPlayerTeamEvent read FOnGetPlayerTeam write FOnGetPlayerTeam;
   end;
 
 implementation
@@ -201,7 +209,7 @@ begin
   if Assigned(FOnLog) then
     FOnLog(Self, Msg)
   else
-    WriteLn(Msg);
+    WritelnLog('Server', Msg);
 end;
 
 function TServerNetSystem.FindPendingJoin(Peer: TRNLPeer): Integer;
@@ -224,7 +232,7 @@ begin
     end;
 end;
 
-procedure TServerNetSystem.SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32);
+procedure TServerNetSystem.SpawnPlayer(Peer: TRNLPeer; APlayerId: UInt32; const ALobbyPlayerId: UInt32);
 var
   E: IGameEntity;
   Spawn: TEntitySpawnData;
@@ -236,15 +244,25 @@ begin
 
   Sp.Pos := Vector3(0, 5, 0);
   Sp.RotY := 0;
+  TeamIdx := -1;
+  if (ALobbyPlayerId <> 0) and Assigned(FOnPlayerRegistered) then
+    FOnPlayerRegistered(E.EntityId, ALobbyPlayerId);
+  if Assigned(FOnGetPlayerTeam) then
+    TeamIdx := FOnGetPlayerTeam(E.EntityId);
   if FSettings <> nil then
   begin
-    TeamIdx := -1;
-    if Length(FSettings^.TeamSpawnSets) > 0 then
-      TeamIdx := Random(Length(FSettings^.TeamSpawnSets));
-    if (TeamIdx >= 0) and (Length(FSettings^.TeamSpawnSets[TeamIdx].Points) > 0) then
+    if (TeamIdx >= 0) and (TeamIdx < Length(FSettings^.TeamSpawnSets)) and
+       (Length(FSettings^.TeamSpawnSets[TeamIdx].Points) > 0) then
       Sp := FSettings^.TeamSpawnSets[TeamIdx].Points[Random(Length(FSettings^.TeamSpawnSets[TeamIdx].Points))]
-    else if Length(FSettings^.SpawnPoints) > 0 then
-      Sp := FSettings^.SpawnPoints[Random(Length(FSettings^.SpawnPoints))];
+    else
+    begin
+      if Length(FSettings^.TeamSpawnSets) > 0 then
+        TeamIdx := Random(Length(FSettings^.TeamSpawnSets));
+      if (TeamIdx >= 0) and (Length(FSettings^.TeamSpawnSets[TeamIdx].Points) > 0) then
+        Sp := FSettings^.TeamSpawnSets[TeamIdx].Points[Random(Length(FSettings^.TeamSpawnSets[TeamIdx].Points))]
+      else if Length(FSettings^.SpawnPoints) > 0 then
+        Sp := FSettings^.SpawnPoints[Random(Length(FSettings^.SpawnPoints))];
+    end;
   end;
 
   E.Transform.Translation := Sp.Pos;
@@ -266,6 +284,24 @@ begin
   SendTo(Peer, M);
 end;
 
+procedure TServerNetSystem.TeleportToTeamPoint(const AEntityId: TEntityId; ATeam: Integer);
+var
+  E: IGameEntity;
+  Sp: TSpawnPoint;
+begin
+  E := WorldObj.FindEntity(AEntityId);
+  if E = nil then Exit;
+  Sp.Pos := Vector3(0, 5, 0);
+  Sp.RotY := 0;
+  if (FSettings <> nil) and (ATeam >= 0) and (ATeam < Length(FSettings^.TeamSpawnSets)) and
+     (Length(FSettings^.TeamSpawnSets[ATeam].Points) > 0) then
+    Sp := FSettings^.TeamSpawnSets[ATeam].Points[Random(Length(FSettings^.TeamSpawnSets[ATeam].Points))];
+  E.Transform.Translation := Sp.Pos;
+  E.Transform.Rotation := Vector4(0, 1, 0, Sp.RotY);
+  WritelnLog('Server', 'Entity %d teleported to team %d point %s',
+    [AEntityId, ATeam, Sp.Pos.ToString]);
+end;
+
 procedure TServerNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; PlayerId: UInt32);
 var
   L: Integer;
@@ -280,6 +316,7 @@ begin
     FPendingJoin[L].Peer := Peer;
     FPendingJoin[L].PlayerId := PlayerId;
     FPendingJoin[L].LobbyId := 0;
+    FPendingJoin[L].LobbyPlayerId := 0;
     FPendingJoin[L].Authenticated := False;
     FPendingJoin[L].Timeout := 10;
   end;
@@ -337,25 +374,45 @@ var
   AuthResult: TAuthResult;
   M: TNetMessage;
   Idx: Integer;
+  EntityId: UInt32;
+  TeamIdx: Integer;
 begin
   case Msg.Header.MsgType of
     msgJoinReq:
     begin
-      if not FRequireAuth then Exit;
       if TJoinReqData.FromBytes(Msg.Payload, JoinData) then
       begin
-        Idx := FindPendingJoin(Peer);
-        if Idx = -1 then Exit;
-        FPendingJoin[Idx].LobbyId := JoinData.LobbyId;
-        if FPendingJoin[Idx].Authenticated then
+        if FRequireAuth then
         begin
-          FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
-          SetLength(FPendingJoin, Length(FPendingJoin) - 1);
-          Log('Player ' + PlayerId.ToString + ' joined lobby ' + JoinData.LobbyId.ToString);
-          SpawnPlayer(Peer, PlayerId);
+          Idx := FindPendingJoin(Peer);
+          if Idx = -1 then Exit;
+          FPendingJoin[Idx].LobbyId := JoinData.LobbyId;
+          FPendingJoin[Idx].LobbyPlayerId := JoinData.LobbyPlayerId;
+          if FPendingJoin[Idx].Authenticated then
+          begin
+            FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
+            SetLength(FPendingJoin, Length(FPendingJoin) - 1);
+            Log('Player ' + PlayerId.ToString + ' joined lobby ' + JoinData.LobbyId.ToString);
+            SpawnPlayer(Peer, PlayerId, JoinData.LobbyPlayerId);
+          end
+          else
+            Log('Player ' + PlayerId.ToString + ' waiting for auth (lobby ' + JoinData.LobbyId.ToString + ')');
         end
         else
-          Log('Player ' + PlayerId.ToString + ' waiting for auth (lobby ' + JoinData.LobbyId.ToString + ')');
+        begin
+          EntityId := FServer.GetPeerEntityId(Peer);
+          if EntityId <> 0 then
+          begin
+            if Assigned(FOnPlayerRegistered) then
+              FOnPlayerRegistered(EntityId, JoinData.LobbyPlayerId);
+            if Assigned(FOnGetPlayerTeam) then
+            begin
+              TeamIdx := FOnGetPlayerTeam(EntityId);
+              if TeamIdx >= 0 then
+                TeleportToTeamPoint(EntityId, TeamIdx);
+            end;
+          end;
+        end;
       end;
     end;
     msgAuth:
@@ -374,10 +431,11 @@ begin
             FPendingJoin[Idx].Authenticated := True;
             if FPendingJoin[Idx].LobbyId <> 0 then
             begin
+              JoinData.LobbyPlayerId := FPendingJoin[Idx].LobbyPlayerId;
               FPendingJoin[Idx] := FPendingJoin[High(FPendingJoin)];
               SetLength(FPendingJoin, Length(FPendingJoin) - 1);
               Log('Player ' + PlayerId.ToString + ' authenticated and joined');
-              SpawnPlayer(Peer, PlayerId);
+              SpawnPlayer(Peer, PlayerId, JoinData.LobbyPlayerId);
             end;
           end;
           Log('Player ' + PlayerId.ToString + ' authenticated as ' + AuthResult.Login);

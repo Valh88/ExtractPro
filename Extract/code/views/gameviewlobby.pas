@@ -307,17 +307,20 @@ procedure TViewLobby.OnStartGame(const Event: TClientGameEvent);
 var
   Port: Word;
   LobbyId: UInt32;
+  PlayerId: UInt32;
   Token: string;
   Payload: TStartGamePayload;
 begin
   Token := '';
   LobbyId := 1;
+  PlayerId := 0;
   Port := Round(Event.Amount);
   if Event.Data <> nil then
   begin
     Payload := TStartGamePayload(Event.Data);
     Port := Payload.Port;
     LobbyId := Payload.LobbyId;
+    PlayerId := Payload.PlayerId;
     Payload.Free;
   end;
   if FLobbyClient <> nil then
@@ -325,8 +328,9 @@ begin
     Token := FLobbyClient.NetSystem.AuthToken;
     FLobbyClient.NetSystem.Disconnect;
   end;
-  WritelnLog('Client', 'Starting game on port %d lobby=%d token="%s"', [Port, LobbyId, Token]);
-  ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, Token);
+  WritelnLog('Client', 'Starting game on port %d lobby=%d player=%d token="%s"',
+    [Port, LobbyId, PlayerId, Token]);
+  ViewMain.StartGame(GlobalConfig.ServerHost, Port, LobbyId, PlayerId, Token);
   FTransition.Start(Container, Self, ViewMain, FAnimManager, 0.5, 1.5);
 end;
 

@@ -5,7 +5,7 @@ unit LobbyNetSystem;
 interface
 
 uses
-  SysUtils, Classes,
+  SysUtils, Classes, CastleLog,
   LobbySystemBase, LobbyWorld,
   RNL, NetMessages, NetServer, RpcServer, RpcTypes, AuthTypes;
 
@@ -213,10 +213,11 @@ begin
 
   PIdx := LobbyWorld.FindPlayerIndex(FRpcCallers[Idx].PlayerId);
   if PIdx >= 0 then
-  begin
     Mgr.EnqueuePlayer(FRpcCallers[Idx].PlayerId,
-      LobbyWorld.Players[PIdx].Login, PartySize);
-  end;
+      LobbyWorld.Players[PIdx].Login, PartySize)
+  else
+    WritelnLog('LobbyServer', 'QueueJoin: player not found in lobby world: %d',
+      [FRpcCallers[Idx].PlayerId]);
 
   RemoveRpcCaller(CorrelationId);
   ReplyProc(nil);
@@ -288,7 +289,7 @@ begin
     FPendingAuth[i].Timeout := FPendingAuth[i].Timeout - SecondsPassed;
     if FPendingAuth[i].Timeout <= 0 then
     begin
-      WriteLn(StdErr, '[LobbyServer] Auth timeout for player ', FPendingAuth[i].PlayerId);
+      WritelnLog('LobbyServer', 'Auth timeout for player %d', [FPendingAuth[i].PlayerId]);
       M.Init(msgJoinDeny, [Byte(Ord('T')), Byte(Ord('O'))]);
       SendTo(FPendingAuth[i].Peer, M);
       FPendingAuth[i].Peer.Disconnect;
@@ -304,7 +305,7 @@ procedure TLobbyNetSystem.OnPlayerConnected(Sender: TObject; Peer: TRNLPeer; Pla
 var
   L: Integer;
 begin
-  WriteLn(StdErr, '[LobbyServer] Player connected: id=', PlayerId);
+  WritelnLog('LobbyServer', 'Player connected: id=%d', [PlayerId]);
   if not FRequireAuth then
     LobbyWorld.AddPlayer(PlayerId, '')
   else
@@ -367,11 +368,12 @@ begin
             FPendingAuth[Idx] := FPendingAuth[High(FPendingAuth)];
             SetLength(FPendingAuth, Length(FPendingAuth) - 1);
           end;
-          WriteLn(StdErr, '[LobbyServer] Player ', PlayerId, ' authenticated as ', AuthResult.Login);
+          WritelnLog('LobbyServer', 'Player %d authenticated as %s',
+            [PlayerId, AuthResult.Login]);
         end
         else
         begin
-          WriteLn(StdErr, '[LobbyServer] Auth failed for player ', PlayerId);
+          WritelnLog('LobbyServer', 'Auth failed for player %d', [PlayerId]);
           M.Init(msgJoinDeny, [Byte(Ord('A')), Byte(Ord('U')), Byte(Ord('T'))]);
           SendTo(Peer, M);
           Peer.Disconnect;

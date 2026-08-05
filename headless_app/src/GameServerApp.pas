@@ -7,7 +7,7 @@ interface
 
 uses
   SysUtils, Classes,
-  CastleTransform, CastleScene,
+  CastleLog, CastleTransform, CastleScene,
   help_types, Interfaces, WorldTypes, GameWorld, GameConfig,
   ServerEntityFactory, GameWorldServer, ServerDbSystem,
   LobbyManager, AuthServer, DbCore, DbAccounts,
@@ -31,6 +31,7 @@ type
     FAuthPort: Word;
     FAuthHost: string;
     FRequireAuth: Boolean;
+    FAutoLobby: Boolean;
     FDBFileName: TFileName;
     FRunning: Boolean;
     FTickCount: Int64;
@@ -72,6 +73,7 @@ begin
   FAuthPort := AUTH_SERVER_DEFAULT_PORT;
   FAuthHost := '0.0.0.0';
   FRequireAuth := False;
+  FAutoLobby := False;
   FDBFileName := 'server.db';
   FRunning := False;
   FTickCount := 0;
@@ -96,10 +98,7 @@ begin
   if Assigned(FOnLog) then
     FOnLog(Self, Msg)
   else
-  begin
-    WriteLn(Msg);
-    Flush(Output);
-  end;
+    WritelnLog('Server', Msg);
 end;
 
 procedure TGameServerApp.ParseArgs;
@@ -124,6 +123,8 @@ begin
       FAuthPort := 0
     else if S = '--require-auth' then
       FRequireAuth := True
+    else if S = '--auto-lobby' then
+      FAutoLobby := True
     else if S.StartsWith('--db=') then
       FDBFileName := S.SubString(5);
   end;
@@ -183,11 +184,31 @@ const
 var
   i: Integer;
   TotalPlayers: Integer;
+  AutoLobbyId: UInt32;
+  AutoLobby: TGameWorldServer;
+  MP: array of TMatchPlayerInfo;
 begin
   if FRunning then Exit;
   FRunning := True;
 
+  // CastleLog: пишет в stdout (консольное приложение) или в файл конфига на Windows GUI
+  InitializeLog;
   SetupShared;
+
+  if FAutoLobby then
+  begin
+    AutoLobbyId := FLobbyManager.AddLobby(7901, 32, False);
+    AutoLobby := FLobbyManager.FindLobbyById(AutoLobbyId);
+    if AutoLobby <> nil then
+    begin
+      SetLength(MP, 3);
+      MP[0].PlayerId := 1; MP[0].PartySize := 1;
+      MP[1].PlayerId := 2; MP[1].PartySize := 1;
+      MP[2].PlayerId := 3; MP[2].PartySize := 1;
+      AutoLobby.SetMatchPlayers(MP);
+      Log('Auto test lobby on port 7901 (players 1,2,3)');
+    end;
+  end;
 
   for i := 0 to FLobbyManager.Count - 1 do
     FLobbyManager.Lobbies[i].World.NetSystem.StartServer;

@@ -186,12 +186,14 @@ begin
     end;
     msgStartGame:
     begin
-      if Length(Msg.Payload) >= 6 then
+      if Length(Msg.Payload) >= 10 then
       begin
         StartPayload := TStartGamePayload.Create;
         StartPayload.Port := Msg.Payload[0] or (Msg.Payload[1] shl 8);
         StartPayload.LobbyId := Msg.Payload[2] or (Msg.Payload[3] shl 8)
           or (Msg.Payload[4] shl 16) or (Msg.Payload[5] shl 24);
+        StartPayload.PlayerId := Msg.Payload[6] or (Msg.Payload[7] shl 8)
+          or (Msg.Payload[8] shl 16) or (Msg.Payload[9] shl 24);
         E.EventType := cgeStartGame;
         E.Amount := StartPayload.Port;
         E.Data := StartPayload;

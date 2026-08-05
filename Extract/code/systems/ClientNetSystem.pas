@@ -21,6 +21,7 @@ type
     FHost: string;
     FPort: Word;
     FLobbyId: UInt32;
+    FLobbyPlayerId: UInt32;
     FMaxRetries: Integer;
     FRetryDelay: Single;
     FRetryCount: Integer;
@@ -67,6 +68,7 @@ type
     property DefaultSendProc: TSendMessageProc read FDefaultSendProc write FDefaultSendProc;
     property MyEntityId: TEntityId read FMyEntityId;
     property AuthToken: string read FAuthToken write FAuthToken;
+    property LobbyPlayerId: UInt32 read FLobbyPlayerId write FLobbyPlayerId;
     property OnDeny: TNotifyEvent read FOnDeny write FOnDeny;
     property DenyReason: string read FDenyReason;
   end;
@@ -91,6 +93,7 @@ begin
   FDenyReason := '';
   FOnDeny := nil;
   FLobbyId := 1;
+  FLobbyPlayerId := 0;
   FRpc := nil;
   FConnectedReported := False;
 end;
@@ -250,6 +253,7 @@ begin
   end;
 
   JoinData.LobbyId := FLobbyId;
+  JoinData.LobbyPlayerId := FLobbyPlayerId;
   JoinData.Version := 1;
   M.Init(msgJoinReq, JoinData.ToBytes);
   if FClient <> nil then
@@ -279,6 +283,8 @@ var
   B: TBulletBehavior;
   DenyCode: string;
   E: TClientGameEvent;
+  PartyInfo: TPartyInfoData;
+  i: Integer;
 begin
   if not FConnectedReported then
   begin
@@ -370,6 +376,15 @@ begin
         E.Data := nil;
         GlobalClientEventBus.Queue(E);
         GlobalClientEventBus.Flush;
+      end;
+    end;
+    msgPartyInfo:
+    begin
+      if TPartyInfoData.FromBytes(Msg.Payload, PartyInfo) then
+      begin
+        WritelnLog('Client', 'Party info: team=%d members=%d', [PartyInfo.TeamIndex, PartyInfo.MemberCount]);
+        for i := 0 to High(PartyInfo.MemberIds) do
+          WritelnLog('Client', '  member[%d] = %d', [i, PartyInfo.MemberIds[i]]);
       end;
     end;
   end;

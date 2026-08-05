@@ -21,7 +21,8 @@ type
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: Boolean); override;
     function Press(const Event: TInputPressRelease): Boolean; override;
-    procedure StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string = '');
+    procedure StartGame(const AHost: string; APort: Word; ALobbyId: UInt32;
+      APlayerId: UInt32; const AToken: string = '');
     procedure ShowInfo(const ATitle, AText: String);
     procedure HideInfo;
   private
@@ -29,6 +30,7 @@ type
     FGameHost: string;
     FGamePort: Word;
     FGameLobbyId: UInt32;
+    FGamePlayerId: UInt32;
     FGameToken: string;
     FOverlay: TCastleRectangleControl;
     FAnimManager: TAnimationManager;
@@ -52,11 +54,13 @@ begin
   DesignUrl := 'castle-data:/gameviewmain.castle-user-interface';
 end;
 
-procedure TViewMain.StartGame(const AHost: string; APort: Word; ALobbyId: UInt32; const AToken: string);
+procedure TViewMain.StartGame(const AHost: string; APort: Word; ALobbyId: UInt32;
+  APlayerId: UInt32; const AToken: string);
 begin
   FGameHost := AHost;
   FGamePort := APort;
   FGameLobbyId := ALobbyId;
+  FGamePlayerId := APlayerId;
   FGameToken := AToken;
 end;
 
@@ -93,6 +97,7 @@ begin
   VS := FGameClient.ViewSystem;
   VS.View := Self;
   FGameClient.NetSystem.AuthToken := FGameToken;
+  FGameClient.NetSystem.LobbyPlayerId := FGamePlayerId;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
 end;
 

@@ -31,6 +31,7 @@ type
   public
     Port: Word;
     LobbyId: UInt32;
+    PlayerId: UInt32;
   end;
 
   TClientGameEvent = record

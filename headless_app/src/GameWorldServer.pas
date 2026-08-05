@@ -9,9 +9,24 @@ interface
   uses
     SysUtils, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
     ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
-    JobQueueSystem, GameSettings, CastleLog;
+    JobQueueSystem, GameSettings, CastleLog, help_types;
 
 type
+  TMatchPlayerInfo = record
+    PlayerId: UInt32;  // id игрока в лобби (matchmaking)
+    PartySize: Byte;   // 1 = соло, 3 = трио
+  end;
+
+  TEntityMatchLink = record
+    EntityId: TEntityId;
+    MatchIndex: Integer; // индекс в FMatchPlayers, -1 = не связан
+  end;
+
+  TPartyData = record
+    TeamIndex: Byte;
+    Members: array of TEntityId;
+  end;
+
   TGameWorldServer = class(TGameWorld)
   protected
     FWorldRoot: TCastleAbstractRootTransform;
@@ -22,6 +37,10 @@ type
     FDbSystem: TServerDbSystem;
     FSettings: TGameSettings;
     FFsm: TServerGameFsm;
+    FMatchPlayers: array of TMatchPlayerInfo;
+    FMatchTeams: array of Byte;          // команда на индекс матча, 255 = не назначена
+    FEntityToMatch: array of TEntityMatchLink;
+    FParties: array of TPartyData;
     procedure OnStateChanged(NewState, OldState: TServerGameState);
     function GeTServerGameState: TServerGameState;
     function GetGameState: TServerGameState; override;
@@ -37,6 +56,12 @@ type
     procedure EnsureMapLoaded;
     procedure LoadMapData;
     procedure SetDbSystem(aDbSystem: TServerDbSystem);
+    procedure SetMatchPlayers(const APlayers: array of TMatchPlayerInfo);
+    procedure RegisterPlayer(const AEntityId: TEntityId; const ALobbyPlayerId: UInt32);
+    function IsMatchFull: Boolean;
+    function GetTeamForEntity(const AEntityId: TEntityId): Integer;
+    function GetPartyInfo(const AEntityId: TEntityId; out Info: TPartyInfoData): Boolean;
+    procedure DistributeParties;
     property NetSystem: TServerNetSystem read FNetSystem;
     property DbSystem: TServerDbSystem read FDbSystem;
     property Settings: TGameSettings read FSettings write FSettings;
@@ -186,6 +211,194 @@ begin
     FSettings.TeamSpawnSets := LocalTeams;
 end;
 
+procedure TGameWorldServer.SetMatchPlayers(const APlayers: array of TMatchPlayerInfo);
+var
+  i: Integer;
+begin
+  FMatchPlayers := nil;
+  FMatchTeams := nil;
+  FEntityToMatch := nil;
+  FParties := nil;
+  SetLength(FMatchPlayers, Length(APlayers));
+  SetLength(FMatchTeams, Length(APlayers));
+  for i := 0 to High(APlayers) do
+  begin
+    FMatchPlayers[i] := APlayers[i];
+    FMatchTeams[i] := 255;
+  end;
+  if Length(APlayers) > 0 then
+    WritelnLog('Server', 'Match players set: %d (party size %d)',
+      [Length(APlayers), APlayers[0].PartySize]);
+end;
+
+procedure TGameWorldServer.RegisterPlayer(const AEntityId: TEntityId; const ALobbyPlayerId: UInt32);
+var
+  i: Integer;
+  L: TEntityMatchLink;
+begin
+  for i := 0 to High(FEntityToMatch) do
+    if FEntityToMatch[i].EntityId = AEntityId then
+      Exit;
+  L.MatchIndex := -1;
+  for i := 0 to High(FMatchPlayers) do
+    if FMatchPlayers[i].PlayerId = ALobbyPlayerId then
+    begin
+      L.MatchIndex := i;
+      Break;
+    end;
+  L.EntityId := AEntityId;
+  SetLength(FEntityToMatch, Length(FEntityToMatch) + 1);
+  FEntityToMatch[High(FEntityToMatch)] := L;
+  WritelnLog('Server', 'Player registered: entity=%d lobbyPlayerId=%d matchIndex=%d',
+    [AEntityId, ALobbyPlayerId, L.MatchIndex]);
+end;
+
+function TGameWorldServer.IsMatchFull: Boolean;
+var
+  i, j: Integer;
+  Linked: Boolean;
+begin
+  if Length(FMatchPlayers) = 0 then
+    Exit(True);
+  for i := 0 to High(FMatchPlayers) do
+  begin
+    Linked := False;
+    for j := 0 to High(FEntityToMatch) do
+      if FEntityToMatch[j].MatchIndex = i then
+      begin
+        Linked := True;
+        Break;
+      end;
+    if not Linked then
+      Exit(False);
+  end;
+  Result := True;
+end;
+
+function TGameWorldServer.GetTeamForEntity(const AEntityId: TEntityId): Integer;
+var
+  i: Integer;
+begin
+  Result := -1;
+  for i := 0 to High(FEntityToMatch) do
+    if (FEntityToMatch[i].EntityId = AEntityId) and (FEntityToMatch[i].MatchIndex >= 0) then
+    begin
+      Result := FMatchTeams[FEntityToMatch[i].MatchIndex];
+      if Result = 255 then
+        Result := -1;
+      Exit;
+    end;
+end;
+
+function TGameWorldServer.GetPartyInfo(const AEntityId: TEntityId; out Info: TPartyInfoData): Boolean;
+var
+  i, Mi, PartySize, PartyIdx: Integer;
+begin
+  Result := False;
+  for i := 0 to High(FEntityToMatch) do
+    if FEntityToMatch[i].EntityId = AEntityId then
+    begin
+      Mi := FEntityToMatch[i].MatchIndex;
+      if (Mi < 0) or (Mi >= Length(FMatchTeams)) or (FMatchTeams[Mi] = 255) then
+        Exit;
+      Info.TeamIndex := FMatchTeams[Mi];
+      Info.MemberIds := nil;
+      PartySize := FMatchPlayers[Mi].PartySize;
+      if PartySize > 0 then
+      begin
+        PartyIdx := Mi div PartySize;
+        if PartyIdx < Length(FParties) then
+          for Mi := 0 to High(FParties[PartyIdx].Members) do
+          begin
+            SetLength(Info.MemberIds, Length(Info.MemberIds) + 1);
+            Info.MemberIds[High(Info.MemberIds)] := FParties[PartyIdx].Members[Mi];
+          end;
+      end;
+      Info.MemberCount := Byte(Length(Info.MemberIds));
+      Result := True;
+      Exit;
+    end;
+end;
+
+procedure TGameWorldServer.DistributeParties;
+var
+  i, Mi, PartySize, TeamCount, PartyIdx, SpIdx: Integer;
+  TeamUsed: array of Integer;
+  Sp: TSpawnPoint;
+  Spawned: Boolean;
+  E: IGameEntity;
+  Info: TPartyInfoData;
+  M: TNetMessage;
+  Pid: UInt32;
+begin
+  if Length(FMatchPlayers) = 0 then
+    Exit;
+  TeamCount := Length(FSettings.TeamSpawnSets);
+  if TeamCount = 0 then
+    TeamCount := 1;
+  PartySize := FMatchPlayers[0].PartySize;
+  if PartySize = 0 then
+    PartySize := 1;
+
+  FParties := nil;
+  for i := 0 to High(FMatchPlayers) do
+  begin
+    FMatchTeams[i] := Byte((i div PartySize) mod TeamCount);
+    PartyIdx := i div PartySize;
+    if Length(FParties) <= PartyIdx then
+      SetLength(FParties, PartyIdx + 1);
+    if Length(FParties[PartyIdx].Members) = 0 then
+      FParties[PartyIdx].TeamIndex := FMatchTeams[i];
+    SetLength(FParties[PartyIdx].Members, Length(FParties[PartyIdx].Members) + 1);
+  end;
+  WritelnLog('Server', 'Parties distributed: %d parties, %d teams',
+    [Length(FParties), TeamCount]);
+
+  SetLength(TeamUsed, TeamCount);
+  for i := 0 to High(FEntityToMatch) do
+  begin
+    Mi := FEntityToMatch[i].MatchIndex;
+    if Mi < 0 then
+      Continue;
+    E := FindEntity(FEntityToMatch[i].EntityId);
+    if E = nil then
+      Continue;
+    SpIdx := TeamUsed[FMatchTeams[Mi]];
+    Spawned := False;
+    if (FMatchTeams[Mi] < TeamCount) and
+       (SpIdx < Length(FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points)) then
+    begin
+      Sp := FSettings.TeamSpawnSets[FMatchTeams[Mi]].Points[SpIdx];
+      Spawned := True;
+    end;
+    if not Spawned and (SpIdx < Length(FSettings.SpawnPoints)) then
+      Sp := FSettings.SpawnPoints[SpIdx]
+    else if not Spawned then
+      Sp.Pos := Vector3(0, 5, 0);
+    Inc(TeamUsed[FMatchTeams[Mi]]);
+    E.Transform.Translation := Sp.Pos;
+    E.Transform.Rotation := Vector4(0, 1, 0, Sp.RotY);
+    WritelnLog('Server', 'Entity %d teleported to team %d spawn (%s)',
+      [FEntityToMatch[i].EntityId, FMatchTeams[Mi], Sp.Pos.ToString]);
+  end;
+
+  for i := 0 to High(FEntityToMatch) do
+  begin
+    if FEntityToMatch[i].MatchIndex < 0 then
+      Continue;
+    Pid := FNetSystem.Server.FindPlayerIdByEntityId(FEntityToMatch[i].EntityId);
+    if Pid = 0 then
+      Continue;
+    if GetPartyInfo(FEntityToMatch[i].EntityId, Info) then
+    begin
+      M.Init(msgPartyInfo, Info.ToBytes);
+      FNetSystem.SendToPlayer(Pid, M);
+      WritelnLog('Server', 'PartyInfo sent to player %d: team=%d members=%d',
+        [Pid, Info.TeamIndex, Info.MemberCount]);
+    end;
+  end;
+end;
+
 destructor TGameWorldServer.Destroy;
 begin
   FFsm.Free;
@@ -197,6 +410,8 @@ begin
   inherited;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
   FNetSystem.Settings := @FSettings;
+  FNetSystem.OnPlayerRegistered := @RegisterPlayer;
+  FNetSystem.OnGetPlayerTeam := @GetTeamForEntity;
   FShotSystem := TServerShotSystem.Create(Self);
   FNetSystem.ShotSystem := FShotSystem;
   FShotSystem.SendHitProc := procedure(const APlayerId: UInt32; const HitData: THitData)

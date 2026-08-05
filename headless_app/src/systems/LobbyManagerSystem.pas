@@ -147,21 +147,35 @@ var
   Lobby: TGameWorldServer;
   M: TNetMessage;
   p: TQueuedPlayer;
+  MatchPlayers: array of TMatchPlayerInfo;
+  i: Integer;
 begin
   FreePort := FManager.GetAvailablePort;
   LobbyId := FManager.AddLobby(FreePort, 32, FRequireAuth);
   Lobby := FManager.FindLobbyById(LobbyId);
   if Lobby <> nil then
+  begin
     Lobby.StartServer;
-
+    SetLength(MatchPlayers, Length(Players));
+    for i := 0 to High(Players) do
+    begin
+      MatchPlayers[i].PlayerId := Players[i].PlayerId;
+      MatchPlayers[i].PartySize := Players[i].PartySize;
+    end;
+    Lobby.SetMatchPlayers(MatchPlayers);
+  end;
   GamePort := FreePort;
 
-  M.Init(msgStartGame, [Lo(FreePort), Hi(FreePort),
-    Byte(LobbyId), Byte(LobbyId shr 8),
-    Byte(LobbyId shr 16), Byte(LobbyId shr 24)]);
   for p in Players do
+  begin
+    M.Init(msgStartGame, [Lo(FreePort), Hi(FreePort),
+      Byte(LobbyId), Byte(LobbyId shr 8),
+      Byte(LobbyId shr 16), Byte(LobbyId shr 24),
+      Byte(p.PlayerId), Byte(p.PlayerId shr 8),
+      Byte(p.PlayerId shr 16), Byte(p.PlayerId shr 24)]);
     if Assigned(FOnSendToPlayer) then
       FOnSendToPlayer(p.PlayerId, M);
+  end;
 end;
 
 function TLobbyManagerSystem.GetQueueSize(APartySize: Byte): Integer;

@@ -92,6 +92,7 @@ const
   msgReadyCheckEnd = 25;    // server→client: ready check завершён (0=rollback, 1=game start)
   msgStartGame = 26;        // server→client: порт game server для подключения
   msgGameStateChanged = 27; // server→client: текущее состояние TServerGameState (payload: 1 byte)
+  msgPartyInfo = 28;        // server→client: состав пати (TPartyInfoData)
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;
@@ -101,9 +102,18 @@ const
 type
   TJoinReqData = packed record
     LobbyId: UInt32;
+    LobbyPlayerId: UInt32;
     Version: Byte;
     function ToBytes: TBytes;
     class function FromBytes(const Data: TBytes; out Value: TJoinReqData): Boolean; static;
+  end;
+
+  TPartyInfoData = record
+    TeamIndex: Byte;
+    MemberCount: Byte;
+    MemberIds: array of UInt32;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TPartyInfoData): Boolean; static;
   end;
 
   TAuthPayload = packed record
@@ -329,6 +339,43 @@ begin
   Result := Length(Data) >= SizeOf(TJoinReqData);
   if not Result then Exit;
   Move(Data[0], Value, SizeOf(TJoinReqData));
+end;
+
+{ TPartyInfoData }
+
+function TPartyInfoData.ToBytes: TBytes;
+var
+  Off, I: Integer;
+begin
+  Off := 2;
+  SetLength(Result, Off + Length(MemberIds) * 4);
+  Result[0] := TeamIndex;
+  Result[1] := Byte(Length(MemberIds));
+  for I := 0 to High(MemberIds) do
+  begin
+    Result[Off + I * 4] := Byte(MemberIds[I]);
+    Result[Off + I * 4 + 1] := Byte(MemberIds[I] shr 8);
+    Result[Off + I * 4 + 2] := Byte(MemberIds[I] shr 16);
+    Result[Off + I * 4 + 3] := Byte(MemberIds[I] shr 24);
+  end;
+end;
+
+class function TPartyInfoData.FromBytes(const Data: TBytes; out Value: TPartyInfoData): Boolean;
+var
+  Count, Off, I: Integer;
+begin
+  Result := Length(Data) >= 2;
+  if not Result then Exit;
+  Value.TeamIndex := Data[0];
+  Count := Data[1];
+  Value.MemberCount := Count;
+  Off := 2;
+  if Length(Data) < Off + Count * 4 then
+    Exit(False);
+  SetLength(Value.MemberIds, Count);
+  for I := 0 to Count - 1 do
+    Value.MemberIds[I] := Data[Off + I * 4] or (Data[Off + I * 4 + 1] shl 8) or
+      (Data[Off + I * 4 + 2] shl 16) or (Data[Off + I * 4 + 3] shl 24);
 end;
 
 { TAuthPayload }
