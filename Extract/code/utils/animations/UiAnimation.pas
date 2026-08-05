@@ -283,14 +283,15 @@ end;
 procedure TDotsAnimation.Update(const SecondsPassed: Single);
 begin
   FElapsed := FElapsed + SecondsPassed;
-  if FElapsed >= FInterval then
-  begin
-    FElapsed := FElapsed - FInterval;
-    Inc(FDotCount);
-    if FDotCount > 3 then
-      FDotCount := 0;
-    FLabel.Caption := FBaseText + Copy('...', 1, FDotCount);
-  end;
+    if FElapsed >= FInterval then
+    begin
+      FElapsed := FElapsed - FInterval;
+      Inc(FDotCount);
+      if FDotCount > 3 then
+        FDotCount := 0;
+      if FLabel <> nil then
+        FLabel.Caption := FBaseText + Copy('...', 1, FDotCount);
+    end;
 end;
 
 procedure TDotsAnimation.DoAnimate(const Progress: Single);

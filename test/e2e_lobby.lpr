@@ -12,6 +12,7 @@ uses
 var
   C: TGameClient;
   Rpc: TRpcClient;
+  FPartySize: Byte;
   FJoined: Boolean;
   FReadySent: Boolean;
   FHasStart: Boolean;
@@ -106,7 +107,7 @@ begin
   if not FHasStart then
   begin
     SetLength(Payload, 1);
-    Payload[0] := 1;
+    Payload[0] := FPartySize;
     Rpc.SendRequest(rpcQueueJoin, Payload, nil);
     WriteLn(Format('[%d] queue join sent', [MyId]));
     Flush(Output);
@@ -138,10 +139,11 @@ var
 begin
   if ParamCount < 1 then
   begin
-    WriteLn('usage: e2e_lobby <tag>');
+    WriteLn('usage: e2e_lobby <tag> [partySize]');
     Halt(2);
   end;
   MyId := StrToIntDef(ParamStr(1), 1);
+  FPartySize := Byte(StrToIntDef(ParamStr(2), 1));
   FHasStart := False;
   FPhase2 := False;
   FJoinAccept := False;

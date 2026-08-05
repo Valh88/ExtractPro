@@ -35,6 +35,7 @@ type
     CheckReadingPlayersDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Start; override;
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
@@ -137,9 +138,14 @@ begin
   GlobalClientEventBus.Unsubscribe(@OnReadyCheckUpdate);
   GlobalClientEventBus.Unsubscribe(@OnStartGame);
   ClearCheckSlots;
+  FreeAndNil(FLobbyClient);
+  inherited;
+end;
+
+destructor TViewLobby.Destroy;
+begin
   FreeAndNil(FTransition);
   FreeAndNil(FAnimManager);
-  FreeAndNil(FLobbyClient);
   inherited;
 end;
 
