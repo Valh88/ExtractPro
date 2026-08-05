@@ -106,9 +106,10 @@ begin
   GlobalClientEventBus.Unsubscribe(@OnGameStateChanged);
   FDotsAnim.Stop;
   if FFadeAnim <> nil then
-    FreeAndNil(FFadeAnim);
-  FreeAndNil(FDotsAnim);
+    FFadeAnim.Stop;
   FreeAndNil(FAnimManager);
+  FDotsAnim := nil;
+  FFadeAnim := nil;
   FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
   FGameClient.Free;
@@ -180,7 +181,6 @@ end;
 
 procedure TViewMain.HideInfo;
 begin
-  FDotsAnim.Stop;
   if InfoDesign = nil then Exit;
   if FFadeAnim <> nil then
   begin
