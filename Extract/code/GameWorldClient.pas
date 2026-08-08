@@ -12,7 +12,8 @@ uses
   MouseLookOverlay, FirstPersonCameraBehavior, CharacterControllerBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
-  GameViewSystem, GameSettings, State, StateMachine;
+  GameViewSystem, GameSettings, State, StateMachine,
+  ClientGameStateSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -28,9 +29,10 @@ type
     FLobbyId: UInt32;
     FViewSystem: TGameViewSystem;
     FSettings: TGameSettings;
-    FFsm: TClientGameFsm;
+    FGameStateSystem: TClientGameStateSystem;
     FInputEnabled: Boolean;
     FMainPlayerTransform: TCastleTransform;
+    function GetFsm: TClientGameFsm;
     procedure SetInputEnabled(const AEnabled: Boolean);
     procedure ApplyInputEnabled;
     procedure RegisterSystems; override;
@@ -52,15 +54,22 @@ type
     property LobbyId: UInt32 read FLobbyId write FLobbyId;
     property ViewSystem: TGameViewSystem read FViewSystem;
     property Settings: TGameSettings read FSettings write FSettings;
-    property Fsm: TClientGameFsm read FFsm;
+    property Fsm: TClientGameFsm read GetFsm;
+    property GameStateSystem: TClientGameStateSystem read FGameStateSystem;
     property InputEnabled: Boolean read FInputEnabled write SetInputEnabled;
   end;
 
 implementation
 
-uses ClientGameStates;
-
 { TGameWorldClient }
+
+function TGameWorldClient.GetFsm: TClientGameFsm;
+begin
+  if FGameStateSystem <> nil then
+    Result := FGameStateSystem.Fsm
+  else
+    Result := nil;
+end;
 
 constructor TGameWorldClient.Create(const ARoot: TCastleAbstractRootTransform;
   const AFactory: IEntityFactory; const AViewport: TCastleViewport);
@@ -77,18 +86,10 @@ begin
   FInputEnabled := True;
   FMainPlayerTransform := nil;
   FSettings := DefaultGameSettings;
-
-  FFsm := TClientGameFsm.Create;
-  FFsm.RegisterState(cgsWaiting, TClientWaitingState.Create(Self));
-  FFsm.RegisterState(cgsMainMenu, TClientMainMenuState.Create(Self));
-  FFsm.RegisterState(cgsSettings, TClientSettingsState.Create(Self));
-  FFsm.RegisterState(cgsPlaying, TClientPlayingState.Create(Self));
-  FFsm.ChangeState(cgsWaiting);
 end;
 
 destructor TGameWorldClient.Destroy;
 begin
-  FFsm.Free;
   FreeAndNil(FMouseLookUi);
   FRpc.Free;
   inherited;
@@ -96,7 +97,6 @@ end;
 
 procedure TGameWorldClient.Update(const SecondsPassed: Single);
 begin
-  FFsm.Update(SecondsPassed);
   inherited Update(SecondsPassed);
 end;
 
@@ -171,6 +171,9 @@ var
   ShotSys: TShotSystem;
 begin
   inherited;
+
+  FGameStateSystem := TClientGameStateSystem.Create(Self);
+  AddSystem(FGameStateSystem);
 
   FAuthSystem := TClientAuthSystem.Create;
   AddSystem(FAuthSystem);
