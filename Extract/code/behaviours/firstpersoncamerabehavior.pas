@@ -143,6 +143,8 @@ procedure TFirstPersonCameraBehavior.SetCursorVisible(const Value: Boolean);
 begin
   if FCursorVisible = Value then Exit;
   FCursorVisible := Value;
+  FAccumulatedMouseDelta := TVector2.Zero;
+  FSmoothedDelta := TVector2.Zero;
   if not Value and (GetContainer <> nil) then
     GetContainer.MouseLookPress;
 end;
@@ -259,7 +261,8 @@ begin
       Delta.Y := FAccumulatedMouseDelta.Y / Cont.UnscaledHeight;
     end else
       Delta := TVector2.Zero;
-    FAccumulatedMouseDelta := TVector2.Zero;
+    if (Abs(Delta.X) > 0.0001) or (Abs(Delta.Y) > 0.0001) then
+      FAccumulatedMouseDelta := TVector2.Zero;
   end else
     Delta := TVector2.Zero;
 

@@ -44,6 +44,7 @@ type
     procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single); override;
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
     property MainPlayerId: TEntityId read FMainPlayerId write FMainPlayerId;
+    property MainPlayerTransform: TCastleTransform read FMainPlayerTransform;
     property Viewport: TCastleViewport read FViewport write FViewport;
     property NetSystem: TClientNetSystem read FNetSystem;
     property AuthSystem: TClientAuthSystem read FAuthSystem;
@@ -79,6 +80,8 @@ begin
 
   FFsm := TClientGameFsm.Create;
   FFsm.RegisterState(cgsWaiting, TClientWaitingState.Create(Self));
+  FFsm.RegisterState(cgsMainMenu, TClientMainMenuState.Create(Self));
+  FFsm.RegisterState(cgsSettings, TClientSettingsState.Create(Self));
   FFsm.RegisterState(cgsPlaying, TClientPlayingState.Create(Self));
   FFsm.ChangeState(cgsWaiting);
 end;

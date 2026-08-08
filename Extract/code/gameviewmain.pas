@@ -16,6 +16,7 @@ type
     Viewport1: TCastleViewport;
     InfoDesign: TCastleDesign;
     TimerSceneStartDesign: TCastleDesign;
+    GameMenuDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -45,6 +46,9 @@ type
     procedure OnFadeOutComplete(Sender: TObject);
     procedure OnCountdownAnimComplete(Sender: TObject);
     procedure SetCountdownDigit(const AValue: Integer);
+    procedure SetMenuOpen(const Open: Boolean);
+    procedure OnMenuPlayBtn(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: Boolean);
   end;
 
 var
@@ -105,6 +109,8 @@ begin
   FGameClient.NetSystem.AuthToken := FGameToken;
   FGameClient.NetSystem.LobbyPlayerId := FGamePlayerId;
   FGameClient.NetSystem.Connect(FGameHost, FGamePort, FGameClient.LobbyId);
+
+  (GameMenuDesign.DesignedComponent('BtnPlay') as TCastleButton).OnPress := @OnMenuPlayBtn;
 end;
 
 procedure TViewMain.Stop;
@@ -150,8 +156,32 @@ end;
 function TViewMain.Press(const Event: TInputPressRelease): Boolean;
 begin
   Result := inherited;
+  if Event.Key = keyEscape then
+  begin
+    if FGameClient <> nil then
+      if GameMenuDesign.Exists then
+        SetMenuOpen(False)
+      else if FCountdownLeft <= 0 then
+        SetMenuOpen(True);
+    Exit(True);
+  end;
   if FGameClient <> nil then
     FGameClient.Press(Event);
+end;
+
+procedure TViewMain.SetMenuOpen(const Open: Boolean);
+begin
+  GameMenuDesign.Exists := Open;
+  if Open then
+    FGameClient.Fsm.ChangeState(cgsMainMenu)
+  else
+    FGameClient.Fsm.ChangeState(cgsPlaying);
+end;
+
+procedure TViewMain.OnMenuPlayBtn(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: Boolean);
+begin
+  SetMenuOpen(False);
 end;
 
 procedure TViewMain.OnGameStateChanged(const Event: TClientGameEvent);
