@@ -2,6 +2,7 @@
   "$$ClassName" : "TCastleViewport",
   "Background" : "Background",
   "Camera" : "Camera1",
+  "Fog" : "Fog1",
   "FullSize" : true,
   "Items" : {
     "$$ClassName" : "TCastleRootTransform",
@@ -148,7 +149,8 @@
     },
     {
       "$$ClassName" : "TCastleFog",
-      "Name" : "Fog1"
+      "Name" : "Fog1",
+      "VisibilityRange" : 2.0000000000000000E+002
     }
   ],
   "$Children" : [
@@ -195,6 +197,18 @@
       "FullSize" : true,
       "Name" : "TimerSceneStartDesign",
       "Url" : "castle-data:/user_interfaces/TimerSceneStartDesign.castle-user-interface"
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Height" : 4.3000000000000000E+002,
+      "Name" : "GameMenuDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.2700000000000000E+003,
+        "Y" : 2.5000000000000000E+002
+      },
+      "Url" : "castle-data:/user_interfaces/GameMenuDesign.castle-user-interface",
+      "Width" : 3.1000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
@@ -208,26 +222,21 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 2.6361093521118164E+000,
-      "X" : -2.6370987296104431E-002,
-      "Y" : 9.9443447589874268E-001,
-      "Z" : 1.0200341790914536E-001
-    },
-    "ScalePersistent" : {
-      "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 1.0000001192092896E+000,
-      "Y" : 1.0000003576278687E+000
+      "W" : 9.2577898502349854E-001,
+      "X" : -4.0110188722610474E-001,
+      "Y" : -8.9846497774124146E-001,
+      "Z" : -1.7854434251785278E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : -1.2386937141418457E+001,
-      "Y" : 2.1050512313842773E+001,
-      "Z" : -1.3152734375000000E+002
+      "X" : -4.5278278350830078E+001,
+      "Y" : 2.5361110687255859E+001,
+      "Z" : 3.9003898620605469E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {
     "$$ClassName" : "TCastleWalkNavigationDesign",
-    "MoveSpeed" : 2.7122728347778320E+001,
+    "MoveSpeed" : 3.1622781753540039E+001,
     "Name" : ""
   },
   "InternalDesignNavigations[dnExamine]" : {

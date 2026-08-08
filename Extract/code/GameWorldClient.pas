@@ -78,11 +78,8 @@ begin
   FSettings := DefaultGameSettings;
 
   FFsm := TClientGameFsm.Create;
-  FFsm.RegisterState(cgsLoading, TClientLoadingState.Create(Self));
-  FFsm.RegisterState(cgsWaitingPlayers, TClientWaitingPlayersState.Create(Self));
   FFsm.RegisterState(cgsPlaying, TClientPlayingState.Create(Self));
-  FFsm.RegisterState(cgsFinished, TClientFinishedState.Create(Self));
-  FFsm.ChangeState(cgsLoading);
+  FFsm.ChangeState(cgsPlaying);
 end;
 
 destructor TGameWorldClient.Destroy;

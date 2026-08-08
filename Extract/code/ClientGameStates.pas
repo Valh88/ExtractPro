@@ -16,22 +16,17 @@ type
     property World: TGameWorldClient read FWorld;
   end;
 
-  TClientLoadingState = class(TClientGameStateBase)
+  TClientMainMenuState = class(TClientGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
-  TClientWaitingPlayersState = class(TClientGameStateBase)
+  TClientSettingsState = class(TClientGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
 
   TClientPlayingState = class(TClientGameStateBase)
-  public
-    procedure Update(DeltaTime: Single); override;
-  end;
-
-  TClientFinishedState = class(TClientGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
   end;
@@ -46,29 +41,21 @@ begin
   FWorld := AWorld;
 end;
 
-{ TClientLoadingState }
+{ TClientMainMenuState }
 
-procedure TClientLoadingState.Update(DeltaTime: Single);
+procedure TClientMainMenuState.Update(DeltaTime: Single);
 begin
-  ChangeState(cgsWaitingPlayers);
 end;
 
-{ TClientWaitingPlayersState }
+{ TClientSettingsState }
 
-procedure TClientWaitingPlayersState.Update(DeltaTime: Single);
+procedure TClientSettingsState.Update(DeltaTime: Single);
 begin
-  ChangeState(cgsPlaying);
 end;
 
 { TClientPlayingState }
 
 procedure TClientPlayingState.Update(DeltaTime: Single);
-begin
-end;
-
-{ TClientFinishedState }
-
-procedure TClientFinishedState.Update(DeltaTime: Single);
 begin
 end;
 
