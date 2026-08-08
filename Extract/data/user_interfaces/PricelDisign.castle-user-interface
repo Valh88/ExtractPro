@@ -21,7 +21,7 @@
       },
       "VerticalAnchorParent" : "vpMiddle",
       "VerticalAnchorSelf" : "vpTop",
-      "Width" : 4.0000000000000000E+000
+      "Width" : 2.0000000000000000E+000
     },
     {
       "$$ClassName" : "TCastleRectangleControl",
@@ -41,7 +41,7 @@
       },
       "VerticalAnchorParent" : "vpMiddle",
       "VerticalAnchorSelf" : "vpTop",
-      "Width" : 4.0000000000000000E+000
+      "Width" : 2.0000000000000000E+000
     },
     {
       "$$ClassName" : "TCastleRectangleControl",
@@ -51,7 +51,7 @@
         "Blue" : 0.0000000000000000E+000,
         "Red" : 0.0000000000000000E+000
       },
-      "Height" : 4.0000000000000000E+000,
+      "Height" : 2.0000000000000000E+000,
       "HorizontalAnchorParent" : "hpMiddle",
       "HorizontalAnchorSelf" : "hpRight",
       "Name" : "BarLeft",
@@ -71,7 +71,7 @@
         "Blue" : 0.0000000000000000E+000,
         "Red" : 0.0000000000000000E+000
       },
-      "Height" : 4.0000000000000000E+000,
+      "Height" : 2.0000000000000000E+000,
       "HorizontalAnchorParent" : "hpMiddle",
       "Name" : "BarRight",
       "TranslationPersistent" : {
