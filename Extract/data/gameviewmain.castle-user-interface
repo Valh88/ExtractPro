@@ -2,6 +2,7 @@
   "$$ClassName" : "TCastleViewport",
   "Background" : "Background",
   "Camera" : "Camera1",
+  "DynamicBatching" : true,
   "Fog" : "Fog1",
   "FullSize" : true,
   "Items" : {
@@ -223,16 +224,16 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 9.2577898502349854E-001,
-      "X" : -4.0110188722610474E-001,
-      "Y" : -8.9846497774124146E-001,
-      "Z" : -1.7854434251785278E-001
+      "W" : 8.4815549850463867E-001,
+      "X" : -2.1412067115306854E-001,
+      "Y" : -9.7243428230285645E-001,
+      "Z" : -9.2325374484062195E-002
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : -4.5278278350830078E+001,
-      "Y" : 2.5361110687255859E+001,
-      "Z" : 3.9003898620605469E+001
+      "X" : -4.2713623046875000E+001,
+      "Y" : 2.4872446060180664E+001,
+      "Z" : 2.8427204132080078E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {
