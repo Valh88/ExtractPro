@@ -40,8 +40,10 @@ type
     FFadeAnim: TDesignFadeAnimation;
     FCountdownLeft: Single;
     FLastShownCountdown: Integer;
+    FCountdownAnim: TCountdownPulseAnimation;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
+    procedure OnCountdownAnimComplete(Sender: TObject);
     procedure SetCountdownDigit(const AValue: Integer);
   end;
 
@@ -114,6 +116,7 @@ begin
   FreeAndNil(FAnimManager);
   FDotsAnim := nil;
   FFadeAnim := nil;
+  FCountdownAnim := nil;
   FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
   FGameClient.Free;
@@ -136,7 +139,10 @@ begin
     if FLastShownCountdown <> Ceil(FCountdownLeft) then
     begin
       FLastShownCountdown := Ceil(FCountdownLeft);
-      SetCountdownDigit(FLastShownCountdown);
+      if FLastShownCountdown > 0 then
+        SetCountdownDigit(FLastShownCountdown)
+      else if TimerSceneStartDesign <> nil then
+        TimerSceneStartDesign.Exists := False;
     end;
   end;
 end;
@@ -194,6 +200,11 @@ begin
       FCountdownLeft := 0;
       if TimerSceneStartDesign <> nil then
         TimerSceneStartDesign.Exists := False;
+      if FCountdownAnim <> nil then
+      begin
+        FCountdownAnim.Stop;
+        FCountdownAnim := nil;
+      end;
       HideInfo;
       if FGameClient <> nil then
         FGameClient.InputEnabled := True;
@@ -246,7 +257,23 @@ begin
   if TimerSceneStartDesign = nil then Exit;
   Lbl := TimerSceneStartDesign.DesignedComponent('TimerLabel') as TCastleLabel;
   if Lbl <> nil then
+  begin
     Lbl.Caption := IntToStr(AValue);
+    if FCountdownAnim <> nil then
+    begin
+      FAnimManager.Remove(FCountdownAnim);
+      FreeAndNil(FCountdownAnim);
+    end;
+    FCountdownAnim := TCountdownPulseAnimation.Create(Lbl, 1.0);
+    FCountdownAnim.OnComplete := @OnCountdownAnimComplete;
+    FAnimManager.Add(FCountdownAnim);
+    FCountdownAnim.Start;
+  end;
+end;
+
+procedure TViewMain.OnCountdownAnimComplete(Sender: TObject);
+begin
+  FCountdownAnim := nil;
 end;
 
 end.

@@ -12,7 +12,6 @@
         "Red" : 1.0000000000000000E+000
       },
       "FontSize" : 1.2000000000000000E+002,
-      "FullSize" : true,
       "HorizontalAnchorParent" : "hpMiddle",
       "HorizontalAnchorSelf" : "hpMiddle",
       "Name" : "TimerLabel",

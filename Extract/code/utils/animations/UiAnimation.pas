@@ -84,6 +84,20 @@ type
     procedure Stop; override;
   end;
 
+  { Анимация цифры обратного отсчёта: рост из точки с лёгким отскоком,
+    удержание и сжатие обратно в точку. Длительность = 1 сек (тик отсчёта). }
+  TCountdownPulseAnimation = class(TBaseAnimation)
+  private
+    FLbl: TCastleLabel;
+    FGrowFraction: Single;
+    FShrinkFraction: Single;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(ALbl: TCastleLabel; const ADuration: Single);
+    procedure Stop; override;
+  end;
+
   TDotsAnimation = class(TBaseAnimation)
   private
     FLabel: TCastleLabel;
@@ -265,6 +279,48 @@ end;
 procedure TScaleAnimation.DoAnimate(const Progress: Single);
 begin
   FLbl.FontScale := FFromScale + (FToScale - FFromScale) * Progress;
+end;
+
+{ TCountdownPulseAnimation }
+
+constructor TCountdownPulseAnimation.Create(ALbl: TCastleLabel;
+  const ADuration: Single);
+begin
+  inherited Create(ADuration);
+  FLbl := ALbl;
+  FGrowFraction := 0.2;
+  FShrinkFraction := 0.2;
+end;
+
+procedure TCountdownPulseAnimation.Stop;
+begin
+  if FLbl <> nil then
+    FLbl.FontScale := 1;
+  inherited;
+end;
+
+procedure TCountdownPulseAnimation.DoAnimate(const Progress: Single);
+const
+  BackOvershoot = 2.041896; { 1.70158 * 1.2 - чуть больше отскок }
+var
+  P, Scale: Single;
+begin
+  if FLbl = nil then Exit;
+  if Progress < FGrowFraction then
+  begin
+    P := Progress / FGrowFraction;
+    P := P - 1;
+    Scale := 1 + (BackOvershoot + 1) * P * P * P + BackOvershoot * P * P;
+  end
+  else if Progress > 1 - FShrinkFraction then
+  begin
+    P := (Progress - (1 - FShrinkFraction)) / FShrinkFraction;
+    P := 1 - P;
+    Scale := P * P * P;
+  end
+  else
+    Scale := 1;
+  FLbl.FontScale := Scale;
 end;
 
 { TDotsAnimation }

@@ -192,13 +192,8 @@
     {
       "$$ClassName" : "TCastleDesign",
       "Exists" : false,
-      "Height" : 1.6000000000000000E+002,
+      "FullSize" : true,
       "Name" : "TimerSceneStartDesign",
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector2Persistent",
-        "X" : 7.6000000000000000E+002,
-        "Y" : 7.1000000000000000E+002
-      },
       "Url" : "castle-data:/user_interfaces/TimerSceneStartDesign.castle-user-interface"
     }
   ],
@@ -213,15 +208,15 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 3.2433540821075439E+000,
-      "X" : 6.9548189640045166E-003,
-      "Y" : 9.9106591939926147E-001,
-      "Z" : 1.3319228589534760E-001
+      "W" : 2.6361093521118164E+000,
+      "X" : -2.6370987296104431E-002,
+      "Y" : 9.9443447589874268E-001,
+      "Z" : 1.0200341790914536E-001
     },
     "ScalePersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 9.9999994039535522E-001,
-      "Y" : 1.0000001192092896E+000
+      "X" : 1.0000001192092896E+000,
+      "Y" : 1.0000003576278687E+000
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
