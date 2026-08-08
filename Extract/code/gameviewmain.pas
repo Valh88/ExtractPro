@@ -207,7 +207,10 @@ begin
       end;
       HideInfo;
       if FGameClient <> nil then
+      begin
+        FGameClient.Fsm.ChangeState(cgsPlaying);
         FGameClient.InputEnabled := True;
+      end;
     end;
   end;
 end;

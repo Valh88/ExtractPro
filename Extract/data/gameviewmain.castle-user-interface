@@ -200,6 +200,7 @@
     },
     {
       "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
       "Height" : 4.3000000000000000E+002,
       "Name" : "GameMenuDesign",
       "TranslationPersistent" : {

@@ -16,6 +16,12 @@ type
     property World: TGameWorldClient read FWorld;
   end;
 
+  { Статус по умолчанию: загрузка мира и прочее (заглушка). }
+  TClientWaitingState = class(TClientGameStateBase)
+  public
+    procedure Update(DeltaTime: Single); override;
+  end;
+
   TClientMainMenuState = class(TClientGameStateBase)
   public
     procedure Update(DeltaTime: Single); override;
@@ -39,6 +45,12 @@ constructor TClientGameStateBase.Create(AWorld: TGameWorldClient);
 begin
   inherited Create;
   FWorld := AWorld;
+end;
+
+{ TClientWaitingState }
+
+procedure TClientWaitingState.Update(DeltaTime: Single);
+begin
 end;
 
 { TClientMainMenuState }

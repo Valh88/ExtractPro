@@ -78,8 +78,9 @@ begin
   FSettings := DefaultGameSettings;
 
   FFsm := TClientGameFsm.Create;
+  FFsm.RegisterState(cgsWaiting, TClientWaitingState.Create(Self));
   FFsm.RegisterState(cgsPlaying, TClientPlayingState.Create(Self));
-  FFsm.ChangeState(cgsPlaying);
+  FFsm.ChangeState(cgsWaiting);
 end;
 
 destructor TGameWorldClient.Destroy;

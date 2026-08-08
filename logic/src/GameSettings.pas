@@ -9,7 +9,7 @@ uses
 
 type
   TServerGameState = (sgsStart, sgsLoading, sgsWaitingPlayers, sgsCountdown, sgsPlaying, sgsFinished);
-  TClientGameState = (cgsMainMenu, cgsSettings, cgsPlaying); // в будущем cgsLoading и прочее для клиента
+  TClientGameState = (cgsWaiting, cgsMainMenu, cgsSettings, cgsPlaying); // в будущем cgsLoading и прочее для клиента
   TServerGameFsm = specialize TStateMachine<TServerGameState>;
   TClientGameFsm = specialize TStateMachine<TClientGameState>;
 
