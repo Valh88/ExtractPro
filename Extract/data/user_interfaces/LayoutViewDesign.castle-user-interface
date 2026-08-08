@@ -1,5 +1,177 @@
 {
   "$$ClassName" : "TCastleUserInterface",
   "FullSize" : true,
-  "Name" : "LayoutView"
+  "Name" : "LayoutView",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/gradient_left.png"
+      },
+      "HeightFraction" : 1.0000000000000000E+000,
+      "Name" : "LeftGradient",
+      "Stretch" : true,
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 2.0000000000000000E+001
+    },
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Content" : {
+        "$$ClassName" : "TCastleImagePersistent",
+        "Url" : "castle-data:/ui/gradient_right.png"
+      },
+      "HeightFraction" : 1.0000000000000000E+000,
+      "HorizontalAnchorParent" : "hpRight",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Name" : "RightGradient",
+      "Stretch" : true,
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 2.0000000000000000E+001
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Blue" : 0.0000000000000000E+000,
+        "Green" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 7.0000000000000000E+001,
+      "Name" : "TopPanel",
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "WidthFraction" : 1.0000000000000000E+000,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "Name" : "GoldGroup",
+          "Spacing" : 6.0000000000000000E+000,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 5.2000000000000000E+001
+          },
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleImageControl",
+              "Content" : {
+                "$$ClassName" : "TCastleImagePersistent",
+                "Url" : "castle-data:/ui/gold_coin.png"
+              },
+              "Name" : "GoldIcon",
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle"
+            },
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Blue" : 7.5000000000000000E-001,
+                "Green" : 7.5000000000000000E-001,
+                "Red" : 7.5000000000000000E-001
+              },
+              "Name" : "Gold",
+              "Text" : [
+                "1488"
+              ],
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 2.6000000000000000E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle"
+            }
+          ]
+        },
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/gradient_top.png"
+          },
+          "Height" : 1.3000000000000000E+002,
+          "Name" : "Gradient",
+          "Stretch" : true,
+          "VerticalAnchorSelf" : "vpTop",
+          "WidthFraction" : 1.0000000000000000E+000
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleRectangleControl",
+      "ColorPersistent" : {
+        "$$ClassName" : "TCastleColorPersistent",
+        "Blue" : 0.0000000000000000E+000,
+        "Green" : 0.0000000000000000E+000,
+        "Red" : 0.0000000000000000E+000
+      },
+      "Height" : 7.0000000000000000E+001,
+      "Name" : "BottomPanel",
+      "WidthFraction" : 1.0000000000000000E+000,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleImageControl",
+          "Content" : {
+            "$$ClassName" : "TCastleImagePersistent",
+            "Url" : "castle-data:/ui/gradient_bottom.png"
+          },
+          "Height" : 1.4000000000000000E+002,
+          "Name" : "BottomGradient",
+          "Stretch" : true,
+          "VerticalAnchorParent" : "vpTop",
+          "WidthFraction" : 1.0000000000000000E+000
+        }
+      ]
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 6.0000000000000000E+001,
+      "Name" : "SearchDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 3.0000000000000000E+001,
+        "Y" : 1.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/SearchLobbyDesign.castle-user-interface",
+      "Width" : 1.9000000000000000E+002
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "FullSize" : true,
+      "Name" : "ReadyDesign",
+      "Url" : "castle-data:/user_interfaces/ReadyGameDesign.castle-user-interface"
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 2.3000000000000000E+002,
+      "Name" : "CheckReadingPlayersDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 5.4000000000000000E+002,
+        "Y" : 4.0000000000000000E+002
+      },
+      "Url" : "castle-data:/user_interfaces/CheckReadingDesign.castle-user-interface",
+      "Width" : 5.2000000000000000E+002
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "Height" : 1.5000000000000000E+002,
+      "Name" : "InfoDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000000000000E+001,
+        "Y" : 6.0000000000000000E+001
+      },
+      "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
+      "Width" : 4.2000000000000000E+002
+    }
+  ]
 }
