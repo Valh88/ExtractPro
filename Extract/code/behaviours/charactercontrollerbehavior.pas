@@ -23,6 +23,7 @@ type
     FMoving: Boolean;
     FCanJump: Boolean;
     FFirstPersonCam: TFirstPersonCameraBehavior;
+    FInputEnabled: Boolean;
     procedure EnsureTouchMoveControl;
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
@@ -39,6 +40,7 @@ type
     property JumpSpeed: Single read FJumpSpeed write FJumpSpeed;
     property TouchMove: TVector2 read FTouchMove write FTouchMove;
     property FirstPersonCam: TFirstPersonCameraBehavior read FFirstPersonCam write FFirstPersonCam;
+    property InputEnabled: Boolean read FInputEnabled write FInputEnabled;
   end;
 
 implementation
@@ -56,6 +58,7 @@ begin
   FMoveSpeed := 6.0;
   FSmoothStop := 8.0;
   FJumpSpeed := 6.0;
+  FInputEnabled := True;
 end;
 
 procedure TCharacterControllerBehavior.EnsureTouchMoveControl;
@@ -119,6 +122,13 @@ begin
 
   RB := GetRigidBody;
   if RB = nil then Exit;
+
+  if not FInputEnabled then
+  begin
+    RB.LinearVelocity := TVector3.Zero;
+    FMoving := False;
+    Exit;
+  end;
 
   EnsureTouchMoveControl;
   if FTouchMoveControl <> nil then

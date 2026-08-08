@@ -9,7 +9,7 @@ interface
 uses
   SysUtils, GameWorld, ShotSystem, WorldBridge, CastleTransform, CastleViewport, CastleVectors,
   help_types, CastleKeysMouse, Interfaces, ClientNetSystem,
-  MouseLookOverlay, FirstPersonCameraBehavior,
+  MouseLookOverlay, FirstPersonCameraBehavior, CharacterControllerBehavior,
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
   GameViewSystem, GameSettings, State, StateMachine;
@@ -29,12 +29,17 @@ type
     FViewSystem: TGameViewSystem;
     FSettings: TGameSettings;
     FFsm: TClientGameFsm;
+    FInputEnabled: Boolean;
+    FMainPlayerTransform: TCastleTransform;
+    procedure SetInputEnabled(const AEnabled: Boolean);
+    procedure ApplyInputEnabled;
     procedure RegisterSystems; override;
   public
     constructor Create(const ARoot: TCastleAbstractRootTransform;
       const AFactory: IEntityFactory; const AViewport: TCastleViewport);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
+    function Press(const Event: TInputPressRelease): Boolean; override;
     procedure SpawnMainPlayer;
     procedure HandleJoinAccept(const AEntityId: TEntityId; const APosX, APosY, APosZ, ARotY: Single); override;
     procedure InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
@@ -47,6 +52,7 @@ type
     property ViewSystem: TGameViewSystem read FViewSystem;
     property Settings: TGameSettings read FSettings write FSettings;
     property Fsm: TClientGameFsm read FFsm;
+    property InputEnabled: Boolean read FInputEnabled write SetInputEnabled;
   end;
 
 implementation
@@ -67,6 +73,8 @@ begin
   FViewport := AViewport;
   FMouseLookUi := nil;
   FLobbyId := 1;
+  FInputEnabled := True;
+  FMainPlayerTransform := nil;
   FSettings := DefaultGameSettings;
 
   FFsm := TClientGameFsm.Create;
@@ -93,6 +101,8 @@ end;
 
 procedure TGameWorldClient.InitMainPlayerOverlay(const AHeroTransform: TCastleTransform);
 begin
+  FMainPlayerTransform := AHeroTransform;
+  ApplyInputEnabled;
   if FMouseLookUi <> nil then
     FreeAndNil(FMouseLookUi);
   FMouseLookUi := TMouseLookOverlay.Create(FViewport.Owner);
@@ -100,6 +110,34 @@ begin
   FMouseLookUi.Viewport := FViewport;
   FMouseLookUi.Hero := AHeroTransform;
   FViewport.InsertBack(FMouseLookUi);
+end;
+
+procedure TGameWorldClient.SetInputEnabled(const AEnabled: Boolean);
+begin
+  if FInputEnabled = AEnabled then Exit;
+  FInputEnabled := AEnabled;
+  ApplyInputEnabled;
+end;
+
+procedure TGameWorldClient.ApplyInputEnabled;
+var
+  CC: TCharacterControllerBehavior;
+  FC: TFirstPersonCameraBehavior;
+begin
+  if FMainPlayerTransform = nil then Exit;
+  CC := FMainPlayerTransform.FindBehavior(TCharacterControllerBehavior) as TCharacterControllerBehavior;
+  if CC <> nil then
+    CC.InputEnabled := FInputEnabled;
+  FC := FMainPlayerTransform.FindBehavior(TFirstPersonCameraBehavior) as TFirstPersonCameraBehavior;
+  if FC <> nil then
+    FC.InputEnabled := FInputEnabled;
+end;
+
+function TGameWorldClient.Press(const Event: TInputPressRelease): Boolean;
+begin
+  if not FInputEnabled then
+    Exit(False);
+  Result := inherited Press(Event);
 end;
 
 procedure TGameWorldClient.SpawnMainPlayer;

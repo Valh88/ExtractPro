@@ -8,7 +8,7 @@ uses
   CastleVectors, State, StateMachine;
 
 type
-  TServerGameState = (sgsStart, sgsLoading, sgsWaitingPlayers, sgsPlaying, sgsFinished);
+  TServerGameState = (sgsStart, sgsLoading, sgsWaitingPlayers, sgsCountdown, sgsPlaying, sgsFinished);
   TClientGameState = (cgsLoading, cgsWaitingPlayers, cgsPlaying, cgsFinished);
   TServerGameFsm = specialize TStateMachine<TServerGameState>;
   TClientGameFsm = specialize TStateMachine<TClientGameState>;
@@ -36,6 +36,11 @@ type
   end;
 
   PGameSettings = ^TGameSettings;
+
+const
+  { Длительность состояния sgsCountdown (отсчёт перед стартом игры).
+    Клиент использует ту же константу для локального рендера цифр. }
+  GameStartCountdownSeconds: Single = 3.0;
 
 { Конвенция маркеров в .castle-transform (невидимые TCastleTransform):
   - "Spawn_1", "Spawn_2"        - общий пул точек спавна (без группы)

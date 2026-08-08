@@ -95,6 +95,7 @@ begin
   FFsm.RegisterState(sgsStart, TStartState.Create(Self));
   FFsm.RegisterState(sgsLoading, TLoadingState.Create(Self));
   FFsm.RegisterState(sgsWaitingPlayers, TWaitingPlayersState.Create(Self));
+  FFsm.RegisterState(sgsCountdown, TCountdownState.Create(Self));
   FFsm.RegisterState(sgsPlaying, TPlayingState.Create(Self));
   FFsm.RegisterState(sgsFinished, TFinishedState.Create(Self));
   FFsm.AddStateChangeListener(@OnStateChanged);

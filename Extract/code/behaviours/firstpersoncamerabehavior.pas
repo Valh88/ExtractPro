@@ -63,6 +63,7 @@ type
     FAccumulatedMouseDelta: TVector2;
     FCursorVisible: Boolean;
     FVisualRoot: TCastleTransform;
+    FInputEnabled: Boolean;
 
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
@@ -83,6 +84,7 @@ type
     property Camera: TCastleCamera read FCamera write FCamera;
     property Viewport: TCastleViewport read FViewport write FViewport;
     property CameraMode: TCameraMode read FCameraMode write FCameraMode;
+    property InputEnabled: Boolean read FInputEnabled write FInputEnabled;
     property MouseSensitivity: Single read FMouseSensitivity write FMouseSensitivity;
     property InvertVerticalMouseLook: Boolean
       read FInvertVerticalMouseLook write FInvertVerticalMouseLook;
@@ -134,6 +136,7 @@ begin
   FMouseLookMode := False;
   FAccumulatedMouseDelta := TVector2.Zero;
   FCursorVisible := False;
+  FInputEnabled := True;
 end;
 
 procedure TFirstPersonCameraBehavior.SetCursorVisible(const Value: Boolean);
@@ -231,6 +234,8 @@ var
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
+
+  if not FInputEnabled then Exit;
 
   if Parent = nil then Exit;
   if FCamera = nil then Exit;

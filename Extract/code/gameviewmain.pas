@@ -37,6 +37,8 @@ type
     FSceneRevealed: Boolean;
     FDotsAnim: TDotsAnimation;
     FFadeAnim: TDesignFadeAnimation;
+    FCountdownLeft: Single;
+    FLastShownCountdown: Integer;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
   end;
@@ -46,7 +48,7 @@ var
 
 implementation
 
-uses SysUtils;
+uses SysUtils, Math;
 
 constructor TViewMain.Create(AOwner: TComponent);
 begin
@@ -124,6 +126,17 @@ begin
     FGameClient.Update(SecondsPassed);
   if FAnimManager <> nil then
     FAnimManager.Update(SecondsPassed);
+  if FCountdownLeft > 0 then
+  begin
+    FCountdownLeft := FCountdownLeft - SecondsPassed;
+    if FCountdownLeft < 0 then
+      FCountdownLeft := 0;
+    if FLastShownCountdown <> Ceil(FCountdownLeft) then
+    begin
+      FLastShownCountdown := Ceil(FCountdownLeft);
+      ShowInfo('', Format('Игра начнётся через %d', [FLastShownCountdown]));
+    end;
+  end;
 end;
 
 function TViewMain.Press(const Event: TInputPressRelease): Boolean;
@@ -148,9 +161,11 @@ begin
       ShowInfo('', 'Загрузка мира');
     sgsWaitingPlayers:
       ShowInfo('', 'Ожидание игроков');
-    sgsPlaying:
+    sgsCountdown:
     begin
-      HideInfo;
+      FCountdownLeft := GameStartCountdownSeconds;
+      FLastShownCountdown := 0;
+      ShowInfo('', Format('Игра начнётся через %d', [Round(GameStartCountdownSeconds)]));
       if not FSceneRevealed then
       begin
         FSceneRevealed := True;
@@ -158,6 +173,15 @@ begin
         FAnimManager.Add(FA);
         FA.Start;
       end;
+      if FGameClient <> nil then
+        FGameClient.InputEnabled := False;
+    end;
+    sgsPlaying:
+    begin
+      FCountdownLeft := 0;
+      HideInfo;
+      if FGameClient <> nil then
+        FGameClient.InputEnabled := True;
     end;
   end;
 end;

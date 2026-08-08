@@ -35,6 +35,12 @@ type
     procedure Update(DeltaTime: Single); override;
   end;
 
+  TCountdownState = class(TServerGameStateBase)
+  public
+    procedure Enter(FromState: TServerGameState); override;
+    procedure Update(DeltaTime: Single); override;
+  end;
+
   TPlayingState = class(TServerGameStateBase)
   public
     procedure Enter(FromState: TServerGameState); override;
@@ -97,8 +103,22 @@ begin
   if FWorld.IsMatchFull then
   begin
     FWorld.DistributeParties;
-    ChangeState(sgsPlaying);
+    ChangeState(sgsCountdown);
   end;
+end;
+
+{ TCountdownState }
+
+procedure TCountdownState.Enter(FromState: TServerGameState);
+begin
+  FTimer := 0;
+end;
+
+procedure TCountdownState.Update(DeltaTime: Single);
+begin
+  FTimer := FTimer + DeltaTime;
+  if FTimer >= GameStartCountdownSeconds then
+    ChangeState(sgsPlaying);
 end;
 
 { TPlayingState }
