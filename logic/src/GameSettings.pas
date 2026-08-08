@@ -38,6 +38,11 @@ type
   PGameSettings = ^TGameSettings;
 
 const
+  { Минимальная длительность состояния sgsWaitingPlayers.
+    Нужна, чтобы клиент успел показать "Ожидание игроков" на чёрном оверлее
+    до reveal-анимации сцены (иначе текст мелькает вместе с ней). }
+  WaitingPlayersMinSeconds: Single = 2.0;
+
   { Длительность состояния sgsCountdown (отсчёт перед стартом игры).
     Клиент использует ту же константу для локального рендера цифр. }
   GameStartCountdownSeconds: Single = 3.0;

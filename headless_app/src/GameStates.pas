@@ -100,7 +100,8 @@ end;
 
 procedure TWaitingPlayersState.Update(DeltaTime: Single);
 begin
-  if FWorld.IsMatchFull then
+  FTimer := FTimer + DeltaTime;
+  if (FTimer >= WaitingPlayersMinSeconds) and FWorld.IsMatchFull then
   begin
     FWorld.DistributeParties;
     ChangeState(sgsCountdown);

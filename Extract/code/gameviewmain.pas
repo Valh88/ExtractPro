@@ -15,6 +15,7 @@ type
     LabelFps: TCastleLabel;
     Viewport1: TCastleViewport;
     InfoDesign: TCastleDesign;
+    TimerSceneStartDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -41,6 +42,7 @@ type
     FLastShownCountdown: Integer;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
+    procedure SetCountdownDigit(const AValue: Integer);
   end;
 
 var
@@ -134,7 +136,7 @@ begin
     if FLastShownCountdown <> Ceil(FCountdownLeft) then
     begin
       FLastShownCountdown := Ceil(FCountdownLeft);
-      ShowInfo('', Format('Игра начнётся через %d', [FLastShownCountdown]));
+      SetCountdownDigit(FLastShownCountdown);
     end;
   end;
 end;
@@ -165,7 +167,18 @@ begin
     begin
       FCountdownLeft := GameStartCountdownSeconds;
       FLastShownCountdown := 0;
-      ShowInfo('', Format('Игра начнётся через %d', [Round(GameStartCountdownSeconds)]));
+      if FFadeAnim <> nil then
+      begin
+        FAnimManager.Remove(FFadeAnim);
+        FreeAndNil(FFadeAnim);
+      end;
+      if InfoDesign <> nil then
+        InfoDesign.Exists := False;
+      if TimerSceneStartDesign <> nil then
+      begin
+        TimerSceneStartDesign.Exists := True;
+        SetCountdownDigit(Round(GameStartCountdownSeconds));
+      end;
       if not FSceneRevealed then
       begin
         FSceneRevealed := True;
@@ -179,6 +192,8 @@ begin
     sgsPlaying:
     begin
       FCountdownLeft := 0;
+      if TimerSceneStartDesign <> nil then
+        TimerSceneStartDesign.Exists := False;
       HideInfo;
       if FGameClient <> nil then
         FGameClient.InputEnabled := True;
@@ -222,6 +237,16 @@ begin
   FFadeAnim := nil;
   if InfoDesign <> nil then
     InfoDesign.Exists := False;
+end;
+
+procedure TViewMain.SetCountdownDigit(const AValue: Integer);
+var
+  Lbl: TCastleLabel;
+begin
+  if TimerSceneStartDesign = nil then Exit;
+  Lbl := TimerSceneStartDesign.DesignedComponent('TimerLabel') as TCastleLabel;
+  if Lbl <> nil then
+    Lbl.Caption := IntToStr(AValue);
 end;
 
 end.
