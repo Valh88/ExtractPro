@@ -42,11 +42,13 @@ type
     FCountdownLeft: Single;
     FLastShownCountdown: Integer;
     FCountdownAnim: TCountdownPulseAnimation;
+    FMenuHomeX: Single;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
     procedure OnCountdownAnimComplete(Sender: TObject);
     procedure SetCountdownDigit(const AValue: Integer);
     procedure SetMenuOpen(const Open: Boolean);
+    procedure OnMenuSlideOutComplete(Sender: TObject);
     procedure OnMenuPlayBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
   end;
@@ -62,6 +64,7 @@ const
   MenuDimDuration = 0.3;
   OverlayMenuAlpha = 0.5;
   MenuDimTag = 1;
+  MenuSlideTag = 2;
 
 constructor TViewMain.Create(AOwner: TComponent);
 begin
@@ -87,6 +90,7 @@ begin
   inherited;
 
   FSceneRevealed := False;
+  FMenuHomeX := GameMenuDesign.Translation.X;
   FAnimManager := TAnimationManager.Create;
   FDotsAnim := TDotsAnimation.Create(nil, '', 0.5);
   FAnimManager.Add(FDotsAnim);
@@ -177,16 +181,30 @@ end;
 procedure TViewMain.SetMenuOpen(const Open: Boolean);
 var
   FA: TFadeAnimation;
+  SA: TSlideAnimation;
+  SlideOffset: Single;
 begin
   FAnimManager.Cancel(MenuDimTag);
-  GameMenuDesign.Exists := Open;
+  FAnimManager.Cancel(MenuSlideTag);
+  SlideOffset := GameMenuDesign.Width + 100;
   if Open then
   begin
     GameMenuDesign.Parent.RemoveControl(GameMenuDesign);
     InsertFront(GameMenuDesign);
+    GameMenuDesign.Exists := True;
+    SA := TSlideAnimation.Create(GameMenuDesign, MenuDimDuration,
+      FMenuHomeX + SlideOffset, FMenuHomeX, True);
     FA := TFadeAnimation.Create(FOverlay, MenuDimDuration, 0, OverlayMenuAlpha);
   end else
+  begin
+    SA := TSlideAnimation.Create(GameMenuDesign, MenuDimDuration,
+      GameMenuDesign.Translation.X, FMenuHomeX + SlideOffset, False);
+    SA.OnComplete := @OnMenuSlideOutComplete;
     FA := TFadeAnimation.Create(FOverlay, MenuDimDuration, OverlayMenuAlpha, 0);
+  end;
+  SA.Tag := MenuSlideTag;
+  FAnimManager.Add(SA);
+  SA.Start;
   FA.Tag := MenuDimTag;
   FAnimManager.Add(FA);
   FA.Start;
@@ -194,6 +212,11 @@ begin
     FGameClient.Fsm.ChangeState(cgsMainMenu)
   else
     FGameClient.Fsm.ChangeState(cgsPlaying);
+end;
+
+procedure TViewMain.OnMenuSlideOutComplete(Sender: TObject);
+begin
+  GameMenuDesign.Exists := False;
 end;
 
 procedure TViewMain.OnMenuPlayBtn(const Sender: TCastleUserInterface;

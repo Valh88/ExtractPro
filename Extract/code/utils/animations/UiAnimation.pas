@@ -86,6 +86,21 @@ type
     procedure Stop; override;
   end;
 
+  { Горизонтальный выезд контрола: анимация Control.Translation.X
+    от AFromX до AToX. AEaseOut = True — плавное замедление в конце (въезд),
+    False — плавное ускорение (выезд). }
+  TSlideAnimation = class(TBaseAnimation)
+  private
+    FControl: TCastleUserInterface;
+    FFromX, FToX: Single;
+    FEaseOut: Boolean;
+  protected
+    procedure DoAnimate(const Progress: Single); override;
+  public
+    constructor Create(AControl: TCastleUserInterface; const ADuration: Single;
+      const AFromX, AToX: Single; const AEaseOut: Boolean = True);
+  end;
+
   { Анимация цифры обратного отсчёта: рост из точки с лёгким отскоком,
     удержание и сжатие обратно в точку. Длительность = 1 сек (тик отсчёта). }
   TCountdownPulseAnimation = class(TBaseAnimation)
@@ -281,6 +296,32 @@ end;
 procedure TScaleAnimation.DoAnimate(const Progress: Single);
 begin
   FLbl.FontScale := FFromScale + (FToScale - FFromScale) * Progress;
+end;
+
+{ TSlideAnimation }
+
+constructor TSlideAnimation.Create(AControl: TCastleUserInterface;
+  const ADuration: Single; const AFromX, AToX: Single; const AEaseOut: Boolean);
+begin
+  inherited Create(ADuration);
+  FControl := AControl;
+  FFromX := AFromX;
+  FToX := AToX;
+  FEaseOut := AEaseOut;
+end;
+
+procedure TSlideAnimation.DoAnimate(const Progress: Single);
+var
+  P: Single;
+  Pos: TVector2;
+begin
+  if FEaseOut then
+    P := 1 - Sqr(1 - Progress)
+  else
+    P := Sqr(Progress);
+  Pos := FControl.Translation;
+  Pos.X := FFromX + (FToX - FFromX) * P;
+  FControl.Translation := Pos;
 end;
 
 { TCountdownPulseAnimation }
