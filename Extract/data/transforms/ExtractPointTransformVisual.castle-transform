@@ -6,8 +6,8 @@
   },
   "SizePersistent" : {
     "$$ClassName" : "TCastleVector3Persistent",
-    "X" : 5.0000000000000000E+000,
-    "Z" : 5.0000000000000000E+000
+    "X" : 1.0000000000000000E+001,
+    "Z" : 1.0000000000000000E+001
   },
   "$Behaviors" : [
     {
@@ -16,12 +16,14 @@
       "Name" : "BoxCollider1",
       "SizePersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 5.0000000000000000E+000,
-        "Z" : 5.0000000000000000E+000
+        "X" : 1.0000000000000000E+001,
+        "Z" : 1.0000000000000000E+001
       }
     },
     {
       "$$ClassName" : "TCastleRigidBody",
+      "Dynamic" : false,
+      "Gravity" : false,
       "Name" : "RigidBody1"
     }
   ]

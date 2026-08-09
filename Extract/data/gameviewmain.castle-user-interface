@@ -142,6 +142,7 @@
       {
         "$$ClassName" : "TCastleTransformDesign",
         "CastShadows" : false,
+        "Exists" : false,
         "Name" : "ExtractPoint",
         "TranslationPersistent" : {
           "$$ClassName" : "TCastleVector3Persistent",
@@ -236,16 +237,16 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.4892647266387939E+000,
-      "X" : -2.6883208751678467E-001,
-      "Y" : -9.3502271175384521E-001,
-      "Z" : -2.3121821880340576E-001
+      "W" : 1.1497069597244263E+000,
+      "X" : -2.4624900519847870E-001,
+      "Y" : -9.5719546079635620E-001,
+      "Z" : -1.5211305022239685E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : -2.4454256057739258E+001,
-      "Y" : 6.5611920356750488E+000,
-      "Z" : 3.1585421562194824E+000
+      "X" : -5.3394622802734375E+001,
+      "Y" : 1.6103630065917969E+001,
+      "Z" : 1.3583097457885742E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {
