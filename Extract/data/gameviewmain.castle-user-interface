@@ -237,16 +237,21 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 1.1497069597244263E+000,
-      "X" : -2.4624900519847870E-001,
-      "Y" : -9.5719546079635620E-001,
-      "Z" : -1.5211305022239685E-001
+      "W" : 3.8973698019981384E-001,
+      "X" : -9.9901109933853149E-001,
+      "Y" : -4.4088922441005707E-002,
+      "Z" : -5.7355030439794064E-003
+    },
+    "ScalePersistent" : {
+      "$$ClassName" : "TCastleVector3Persistent",
+      "X" : 9.9999994039535522E-001,
+      "Z" : 9.9999994039535522E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : -5.3394622802734375E+001,
-      "Y" : 1.6103630065917969E+001,
-      "Z" : 1.3583097457885742E+001
+      "X" : -1.5229985237121582E+001,
+      "Y" : 1.3425151824951172E+001,
+      "Z" : 3.5784252166748047E+001
     }
   },
   "InternalDesignNavigations[dnFly]" : {

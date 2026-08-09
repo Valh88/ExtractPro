@@ -5,18 +5,18 @@
     {
       "$$ClassName" : "TCastleBoxCollider",
       "AutoSize" : false,
-      "Name" : "BoxCollider",
+      "Name" : "BoxCollider1",
       "SizePersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 10.0,
-        "Z" : 10.0
+        "X" : 1.0000000000000000E+001,
+        "Z" : 1.0000000000000000E+001
       }
     },
     {
       "$$ClassName" : "TCastleRigidBody",
       "Dynamic" : false,
       "Gravity" : false,
-      "Name" : "RigidBody",
+      "Name" : "RigidBody1",
       "Trigger" : true
     }
   ]

@@ -239,6 +239,7 @@ procedure TGameWorldServer.AttachExtractPointBehavior;
     for I := 0 to ARoot.Count - 1 do
     begin
       Result := FindNodeByName(ARoot.Items[I], AName);
+      WritelnLog('11111111111111111111111', [Result]);
       if Result <> nil then
         Exit;
     end;
@@ -254,6 +255,7 @@ begin
   Node := FindNodeByName(FWorldRoot, 'ExtractPoint');
   if Node = nil then
   begin
+    WritelnLog('Nil');
     Inc(FAttachAttempts);
     if (FAttachAttempts mod 60 = 0) or (FAttachAttempts = 1) then
       WritelnLog('Server', 'ExtractPoint node not found (attempt %d, root children: %d)',
@@ -294,7 +296,7 @@ begin
     Exit;
   MinDist := -1;
   for I := 0 to High(Data.Players) do
-    if (Data.Players[I].Visual <> nil) and (Data.Players[I].Status = psInRaid) then
+    if (Data.Players[I].Visual <> nil)  then
     begin
       P := Data.Players[I].Visual.WorldPosition;
       Dist := Sqrt(Sqr(P.X - FExtractZonePos.X) + Sqr(P.Z - FExtractZonePos.Z));
