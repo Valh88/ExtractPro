@@ -42,11 +42,13 @@ type
     FCountdownLeft: Single;
     FLastShownCountdown: Integer;
     FCountdownAnim: TCountdownPulseAnimation;
+    FMenuDimAnim: TFadeAnimation;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
     procedure OnCountdownAnimComplete(Sender: TObject);
     procedure SetCountdownDigit(const AValue: Integer);
     procedure SetMenuOpen(const Open: Boolean);
+    procedure OnMenuDimComplete(Sender: TObject);
     procedure OnMenuPlayBtn(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
   end;
@@ -57,6 +59,10 @@ var
 implementation
 
 uses SysUtils, Math;
+
+const
+  MenuDimDuration = 0.3;
+  OverlayMenuAlpha = 0.5;
 
 constructor TViewMain.Create(AOwner: TComponent);
 begin
@@ -123,6 +129,7 @@ begin
   FDotsAnim := nil;
   FFadeAnim := nil;
   FCountdownAnim := nil;
+  FMenuDimAnim := nil;
   FreeAndNil(FOverlay);
   Viewport1.Camera := nil;
   FGameClient.Free;
@@ -171,11 +178,31 @@ end;
 
 procedure TViewMain.SetMenuOpen(const Open: Boolean);
 begin
+  if FMenuDimAnim <> nil then
+  begin
+    FAnimManager.Remove(FMenuDimAnim);
+    FreeAndNil(FMenuDimAnim);
+  end;
   GameMenuDesign.Exists := Open;
+  if Open then
+  begin
+    GameMenuDesign.Parent.RemoveControl(GameMenuDesign);
+    InsertFront(GameMenuDesign);
+    FMenuDimAnim := TFadeAnimation.Create(FOverlay, MenuDimDuration, 0, OverlayMenuAlpha);
+  end else
+    FMenuDimAnim := TFadeAnimation.Create(FOverlay, MenuDimDuration, OverlayMenuAlpha, 0);
+  FMenuDimAnim.OnComplete := @OnMenuDimComplete;
+  FAnimManager.Add(FMenuDimAnim);
+  FMenuDimAnim.Start;
   if Open then
     FGameClient.Fsm.ChangeState(cgsMainMenu)
   else
     FGameClient.Fsm.ChangeState(cgsPlaying);
+end;
+
+procedure TViewMain.OnMenuDimComplete(Sender: TObject);
+begin
+  FMenuDimAnim := nil;
 end;
 
 procedure TViewMain.OnMenuPlayBtn(const Sender: TCastleUserInterface;
