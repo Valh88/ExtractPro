@@ -1,0 +1,19 @@
+{
+  "$$ClassName" : "TCastleCylinder",
+  "Name" : "ExtractPoint",
+  "Radius" : 5.0000000000000000E+000,
+  "RenderOptions" : {
+    "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+  },
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleMeshCollider",
+      "Mesh" : "ExtractPoint",
+      "Name" : "MeshCollider1"
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody1"
+    }
+  ]
+}
