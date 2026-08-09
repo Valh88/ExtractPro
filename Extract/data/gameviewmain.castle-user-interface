@@ -148,7 +148,7 @@
           "X" : -1.3649782180786133E+001,
           "Y" : 9.3623507022857666E-001
         },
-        "Url" : "castle-data:/transforms/ExtractPointTransform.castle-transform"
+        "Url" : "castle-data:/transforms/ExtractPointTransformVisual.castle-transform"
       }
     ]
   },
@@ -236,22 +236,16 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 5.4303365945816040E-001,
-      "X" : -4.2668052017688751E-002,
-      "Y" : 9.9907380342483521E-001,
-      "Z" : 5.7171317748725414E-003
-    },
-    "ScalePersistent" : {
-      "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 9.9999994039535522E-001,
-      "Y" : 9.9999994039535522E-001,
-      "Z" : 9.9999994039535522E-001
+      "W" : 1.4892647266387939E+000,
+      "X" : -2.6883208751678467E-001,
+      "Y" : -9.3502271175384521E-001,
+      "Z" : -2.3121821880340576E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : -1.1239308357238770E+001,
-      "Y" : 2.7174836397171021E-001,
-      "Z" : -8.7814140319824219E+000
+      "X" : -2.4454256057739258E+001,
+      "Y" : 6.5611920356750488E+000,
+      "Z" : 3.1585421562194824E+000
     }
   },
   "InternalDesignNavigations[dnFly]" : {

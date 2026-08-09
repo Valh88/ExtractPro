@@ -3,9 +3,14 @@
   "Name" : "ExtractPoint",
   "$Behaviors" : [
     {
-      "$$ClassName" : "TCastleSphereCollider",
-      "Name" : "SphereCollider",
-      "SizeScale" : 1.0000000000000000E+001
+      "$$ClassName" : "TCastleBoxCollider",
+      "AutoSize" : false,
+      "Name" : "BoxCollider",
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 10.0,
+        "Z" : 10.0
+      }
     },
     {
       "$$ClassName" : "TCastleRigidBody",

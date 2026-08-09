@@ -17,7 +17,10 @@ type
     geRaidPhaseChanged,
     geRaidTimeWarning,
     geExtractionStarted,
-    geItemPickedUp
+    geItemPickedUp,
+    geExtractZoneEntered,
+    geExtractZoneExited,
+    gePlayerDiedInZone
   );
 
   TGameEvent = record

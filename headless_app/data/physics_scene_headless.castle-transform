@@ -208,6 +208,16 @@
         "Y" : 0.1147,
         "Z" : -47.1347
       }
+    },
+    {
+      "$$ClassName" : "TCastleTransformDesign",
+      "Name" : "ExtractPoint",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : -13.64978,
+        "Y" : 0.936235
+      },
+      "Url" : "castle-data:/transforms/ExtractPointTransformHeadless.castle-transform"
     }
   ]
 }

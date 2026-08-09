@@ -1,19 +1,25 @@
 {
-  "$$ClassName" : "TCastleCylinder",
+  "$$ClassName" : "TCastleBox",
   "Name" : "ExtractPoint",
-  "Radius" : 5.0000000000000000E+000,
   "RenderOptions" : {
     "$$ClassName" : "TCastleScene.TSceneRenderOptions"
   },
+  "SizePersistent" : {
+    "$$ClassName" : "TCastleVector3Persistent",
+    "X" : 1.0000000000000000E+001,
+    "Z" : 1.0000000000000000E+001
+  },
   "$Behaviors" : [
     {
-      "$$ClassName" : "TCastleMeshCollider",
-      "Mesh" : "ExtractPoint",
-      "Name" : "MeshCollider1"
+      "$$ClassName" : "TCastleBoxCollider",
+      "Name" : "BoxCollider1"
     },
     {
       "$$ClassName" : "TCastleRigidBody",
-      "Name" : "RigidBody1"
+      "Dynamic" : false,
+      "Gravity" : false,
+      "Name" : "RigidBody1",
+      "Trigger" : true
     }
   ]
 }

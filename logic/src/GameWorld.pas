@@ -53,6 +53,8 @@ type
     function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
     function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
     procedure QueueEvent(const Ev: TGameEvent);
+    procedure SubscribeEvent(const EventType: TGameEventType; const ACallback: TGameEventProc);
+    procedure UnsubscribeEvent(const ACallback: TGameEventProc);
     procedure QueueDeadEntity(const AEntityId: TEntityId);
 
     property GameState: TServerGameState read GetGameState;
@@ -231,6 +233,16 @@ end;
 procedure TGameWorld.QueueEvent(const Ev: TGameEvent);
 begin
   FEventBus.Queue(Ev);
+end;
+
+procedure TGameWorld.SubscribeEvent(const EventType: TGameEventType; const ACallback: TGameEventProc);
+begin
+  FEventBus.Subscribe(EventType, ACallback);
+end;
+
+procedure TGameWorld.UnsubscribeEvent(const ACallback: TGameEventProc);
+begin
+  FEventBus.Unsubscribe(ACallback);
 end;
 
 procedure TGameWorld.QueueDeadEntity(const AEntityId: TEntityId);
