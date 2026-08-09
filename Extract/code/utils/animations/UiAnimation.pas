@@ -13,6 +13,7 @@ type
     FDuration: Single;
     FProgress: Single;
     FOnComplete: TNotifyEvent;
+    FTag: Integer;
   protected
     procedure DoAnimate(const Progress: Single); virtual; abstract;
   public
@@ -23,6 +24,7 @@ type
     function IsComplete: Boolean;
     property Duration: Single read FDuration write FDuration;
     property OnComplete: TNotifyEvent read FOnComplete write FOnComplete;
+    property Tag: Integer read FTag write FTag;
   end;
 
   TFadeAnimation = class(TBaseAnimation)

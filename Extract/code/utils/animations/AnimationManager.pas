@@ -18,6 +18,7 @@ type
     destructor Destroy; override;
     procedure Add(AAnim: TBaseAnimation);
     procedure Remove(AAnim: TBaseAnimation);
+    procedure Cancel(const ATag: Integer);
     procedure Update(const SecondsPassed: Single);
     procedure Clear;
     function Count: Integer;
@@ -52,6 +53,29 @@ begin
     FList.Remove(AAnim);
   finally
     FList.OwnsObjects := True;
+  end;
+end;
+
+procedure TAnimationManager.Cancel(const ATag: Integer);
+var
+  I: Integer;
+  Anim: TBaseAnimation;
+begin
+  I := 0;
+  while I < FList.Count do
+  begin
+    if FList[I].Tag = ATag then
+    begin
+      Anim := FList[I];
+      FList.OwnsObjects := False;
+      try
+        FList.Delete(I);
+      finally
+        FList.OwnsObjects := True;
+      end;
+      Anim.Free;
+    end else
+      Inc(I);
   end;
 end;
 
