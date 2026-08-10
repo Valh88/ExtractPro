@@ -9,12 +9,13 @@
       "SizePersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
         "X" : 1.0000000000000000E+001,
+        "Y" : 2.0000000000000000E+001,
         "Z" : 1.0000000000000000E+001
       }
     },
     {
       "$$ClassName" : "TCastleRigidBody",
-      "Dynamic" : false,
+      "Dynamic" : true,
       "Gravity" : false,
       "Name" : "RigidBody1",
       "Trigger" : true

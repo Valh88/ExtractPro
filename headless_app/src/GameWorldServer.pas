@@ -45,10 +45,10 @@ type
     FExtractPointHookDone: Boolean;
     FAttachAttempts: Integer;
     FExtractZonePos: CastleVectors.TVector3;
+    FExtractZoneTarget: TCastleTransform;
     FProximityTimer: Single;
-    FZoneInside: array of Boolean;
     procedure LogClosestPlayerToExtractPoint;
-    procedure UpdateExtractZoneDetection;
+    procedure ValidateExtractPointHook;
     procedure OnStateChanged(NewState, OldState: TServerGameState);
     function GeTServerGameState: TServerGameState;
     function GetGameState: TServerGameState; override;
@@ -239,7 +239,6 @@ procedure TGameWorldServer.AttachExtractPointBehavior;
     for I := 0 to ARoot.Count - 1 do
     begin
       Result := FindNodeByName(ARoot.Items[I], AName);
-      WritelnLog('11111111111111111111111', [Result]);
       if Result <> nil then
         Exit;
     end;
@@ -278,74 +277,63 @@ begin
   B.OnExit := @OnExtractPointExit;
   Target.AddBehavior(B);
   FExtractZonePos := Target.WorldTranslation;
+  FExtractZoneTarget := Target;
   FExtractPointHookDone := True;
-  WritelnLog('Server', 'ExtractPoint trigger attached (node=%s, target=%s, rb=%s, collider=%s, pos=%s)',
+  WritelnLog('Server', 'ExtractPoint trigger attached (node=%s, target=%s, rb=%s, rb_exists=%s, collider=%s, pos=%s)',
     [Node.Name, Target.Name,
      BoolToStr(RB <> nil, True),
+     BoolToStr((RB <> nil) and RB.Exists, True),
      BoolToStr(Target.Collider <> nil, True),
      FExtractZonePos.ToString]);
 end;
 
 procedure TGameWorldServer.LogClosestPlayerToExtractPoint;
 var
-  I: Integer;
+  I, ClosestIdx: Integer;
   Dist, MinDist: Single;
   P: help_types.TVector3;
 begin
   if not FExtractPointHookDone then
     Exit;
   MinDist := -1;
+  ClosestIdx := -1;
   for I := 0 to High(Data.Players) do
-    if (Data.Players[I].Visual <> nil)  then
+    if (Data.Players[I].Visual <> nil) and (Data.Players[I].Visual.Transform <> nil) then
     begin
       P := Data.Players[I].Visual.WorldPosition;
       Dist := Sqrt(Sqr(P.X - FExtractZonePos.X) + Sqr(P.Z - FExtractZonePos.Z));
       if (MinDist < 0) or (Dist < MinDist) then
+      begin
         MinDist := Dist;
+        ClosestIdx := I;
+      end;
     end;
   if MinDist < 0 then
     WritelnLog('Server', 'ExtractZone: no players')
   else
-    WritelnLog('Server', 'ExtractZone: closest player dist=%.1f', [MinDist]);
+    WritelnLog('Server', 'ExtractZone: closest player dist=%.1f, py=%.1f',
+      [MinDist, Data.Players[ClosestIdx].Visual.WorldPosition.Y]);
 end;
 
-procedure TGameWorldServer.UpdateExtractZoneDetection;
-const
-  ZoneRadius = 5.0; // половина стороны триггера 10x10
-  ZoneExitRadius = 6.0; // гистерезис, чтобы не дёргалось на границе
+procedure TGameWorldServer.ValidateExtractPointHook;
 var
-  I: Integer;
-  Dist: Single;
-  P: help_types.TVector3;
+  P: TCastleTransform;
 begin
   if not FExtractPointHookDone then
     Exit;
-  if Length(FZoneInside) <> Length(Data.Players) then
+  if FExtractZoneTarget = nil then
   begin
-    SetLength(FZoneInside, Length(Data.Players));
-    for I := 0 to High(FZoneInside) do
-      FZoneInside[I] := False;
+    FExtractPointHookDone := False;
+    Exit;
   end;
-  for I := 0 to High(Data.Players) do
+  P := FExtractZoneTarget;
+  while (P <> nil) and (P <> TCastleTransform(FWorldRoot)) do
+    P := P.Parent;
+  if P = nil then
   begin
-    if (Data.Players[I].Visual = nil) or (Data.Players[I].Visual.Transform = nil) or
-       (Data.Players[I].Status <> psInRaid) then
-    begin
-      FZoneInside[I] := False;
-      Continue;
-    end;
-    P := Data.Players[I].Visual.WorldPosition;
-    Dist := Sqrt(Sqr(P.X - FExtractZonePos.X) + Sqr(P.Z - FExtractZonePos.Z));
-    if (Dist <= ZoneRadius) and not FZoneInside[I] then
-    begin
-      FZoneInside[I] := True;
-      OnExtractPointEnter(Data.Players[I].Visual.Transform);
-    end
-    else if (Dist > ZoneExitRadius) and FZoneInside[I] then
-    begin
-      FZoneInside[I] := False;
-      OnExtractPointExit(Data.Players[I].Visual.Transform);
-    end;
+    WritelnLog('Server', 'ExtractPoint: target detached from world root, re-attaching');
+    FExtractPointHookDone := False;
+    FExtractZoneTarget := nil;
   end;
 end;
 
@@ -367,7 +355,6 @@ var
   Pid: UInt32;
   Ev: TGameEvent;
 begin
-  WritelnLog('Server', 'ExtractPoint');
   Eid := PlayerEntityIdByTransform(AOtherTransform);
   if Eid = 0 then
     Exit;
@@ -640,9 +627,9 @@ begin
   if FProximityTimer >= 2.0 then
   begin
     FProximityTimer := FProximityTimer - 2.0;
+    ValidateExtractPointHook;
     LogClosestPlayerToExtractPoint;
   end;
-  UpdateExtractZoneDetection;
   {$ifndef VISUAL}
   FWorldRoot.UpdateIncreaseTime(SecondsPassed);
   {$endif}

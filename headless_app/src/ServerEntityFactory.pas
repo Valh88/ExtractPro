@@ -99,6 +99,7 @@ begin
   {$else}
   Result := CreateSimplePhysicsEntity(AEntityId);
   {$endif}
+  Result.Transform.Name := 'Player' + IntToStr(AEntityId);
   if Result.Transform.RigidBody <> nil then
   begin
     {$ifdef VISUAL}
