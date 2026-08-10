@@ -11,7 +11,8 @@
         "$$ClassName" : "TCastleLayerCollisions"
       },
       "LayerNames" : {
-        "$$ClassName" : "TCastleLayerNames"
+        "$$ClassName" : "TCastleLayerNames",
+        "Name0" : "ExtractPoint"
       }
     },
     "$Children" : [
