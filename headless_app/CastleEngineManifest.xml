@@ -21,6 +21,7 @@
       <path value="../Extract/code/behaviours/" />
       <path value="src/systems/" />
       <path value="src/behaviours/" />
+      <path value="src/game/" />
       <path value="../../../mORMot2/src/" />
       <path value="../../../mORMot2/src/core/" />
       <path value="../../../mORMot2/src/crypt/" />

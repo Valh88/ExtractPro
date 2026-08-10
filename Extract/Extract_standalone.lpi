@@ -23,7 +23,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="code"/>
-            <OtherUnitFiles Value="code;code/systems;code/views;code/views/lobby_view;code/utils/animations;../../cge-3d-particle-emitter/src"/>
+            <OtherUnitFiles Value="code;code/systems;code/game;code/views;code/views/lobby_view;code/utils/animations;../../cge-3d-particle-emitter/src"/>
             <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -150,7 +150,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="code;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="code;code/systems;code/views;code/views/lobby_view;code/utils/animations;../../cge-3d-particle-emitter/src"/>
+      <OtherUnitFiles Value="code;code/systems;code/game;code/views;code/views/lobby_view;code/utils/animations;../../cge-3d-particle-emitter/src"/>
       <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

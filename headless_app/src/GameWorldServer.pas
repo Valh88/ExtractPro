@@ -7,11 +7,10 @@
 interface
 
   uses
-    SysUtils, Math, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
+    SysUtils, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
     ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
-    JobQueueSystem, GameSettings, CastleLog, help_types,
-    EntityTypes, ExtractPointTriggerBehavior, EventBus;
-
+    JobQueueSystem, GameSettings, CastleLog,
+    help_types, EntityTypes, ExtractPointSystem;
 type
   TMatchPlayerInfo = record
     PlayerId: UInt32;  // id игрока в лобби (matchmaking)
@@ -42,22 +41,11 @@ type
     FMatchTeams: array of Byte;          // команда на индекс матча, 255 = не назначена
     FEntityToMatch: array of TEntityMatchLink;
     FParties: array of TPartyData;
-    FExtractPointHookDone: Boolean;
-    FAttachAttempts: Integer;
-    FExtractZonePos: CastleVectors.TVector3;
-    FExtractZoneTarget: TCastleTransform;
-    FProximityTimer: Single;
-    procedure LogClosestPlayerToExtractPoint;
-    procedure ValidateExtractPointHook;
     procedure OnStateChanged(NewState, OldState: TServerGameState);
     function GeTServerGameState: TServerGameState;
     function GetGameState: TServerGameState; override;
     procedure RegisterSystems; override;
     procedure CollectSpawnPoints;
-    procedure AttachExtractPointBehavior;
-    procedure OnExtractPointEnter(const AOtherTransform: TCastleTransform);
-    procedure OnExtractPointExit(const AOtherTransform: TCastleTransform);
-    function PlayerEntityIdByTransform(const ATransform: TCastleTransform): TEntityId;
   public
     procedure Update(const SecondsPassed: Single); override;
     constructor Create(const ARoot: TCastleAbstractRootTransform;
@@ -139,7 +127,6 @@ end;
 procedure TGameWorldServer.LoadMapData;
 begin
   CollectSpawnPoints;
-  AttachExtractPointBehavior;
 end;
 
 procedure TGameWorldServer.CollectSpawnPoints;
@@ -223,174 +210,6 @@ begin
     FSettings.SpawnPoints := LocalSpawn;
   if Length(LocalTeams) > 0 then
     FSettings.TeamSpawnSets := LocalTeams;
-end;
-
-procedure TGameWorldServer.AttachExtractPointBehavior;
-
-  function FindNodeByName(const ARoot: TCastleTransform; const AName: String): TCastleTransform;
-  var
-    I: Integer;
-  begin
-    Result := nil;
-    if ARoot = nil then
-      Exit;
-    if ARoot.Name = AName then
-      Exit(ARoot);
-    for I := 0 to ARoot.Count - 1 do
-    begin
-      Result := FindNodeByName(ARoot.Items[I], AName);
-      if Result <> nil then
-        Exit;
-    end;
-  end;
-
-var
-  Node, Target: TCastleTransform;
-  B: TExtractPointTriggerBehavior;
-  RB: TCastleRigidBody;
-begin
-  if FExtractPointHookDone then
-    Exit;
-  Node := FindNodeByName(FWorldRoot, 'ExtractPoint');
-  if Node = nil then
-  begin
-    WritelnLog('Nil');
-    Inc(FAttachAttempts);
-    if (FAttachAttempts mod 60 = 0) or (FAttachAttempts = 1) then
-      WritelnLog('Server', 'ExtractPoint node not found (attempt %d, root children: %d)',
-        [FAttachAttempts, FWorldRoot.Count]);
-    Exit;
-  end;
-  if Node is TCastleTransformDesign then
-    Target := TCastleTransformDesign(Node).DesignRoot
-  else
-    Target := Node;
-  if Target = nil then
-  begin
-    WritelnLog('Server', 'ExtractPoint node "%s" found but DesignRoot is nil',
-      [Node.Name]);
-    Exit;
-  end;
-  RB := Target.FindBehavior(TCastleRigidBody) as TCastleRigidBody;
-  B := TExtractPointTriggerBehavior.Create(nil);
-  B.OnEnter := @OnExtractPointEnter;
-  B.OnExit := @OnExtractPointExit;
-  Target.AddBehavior(B);
-  FExtractZonePos := Target.WorldTranslation;
-  FExtractZoneTarget := Target;
-  FExtractPointHookDone := True;
-  WritelnLog('Server', 'ExtractPoint trigger attached (node=%s, target=%s, rb=%s, rb_exists=%s, collider=%s, pos=%s)',
-    [Node.Name, Target.Name,
-     BoolToStr(RB <> nil, True),
-     BoolToStr((RB <> nil) and RB.Exists, True),
-     BoolToStr(Target.Collider <> nil, True),
-     FExtractZonePos.ToString]);
-end;
-
-procedure TGameWorldServer.LogClosestPlayerToExtractPoint;
-var
-  I, ClosestIdx: Integer;
-  Dist, MinDist: Single;
-  P: help_types.TVector3;
-begin
-  if not FExtractPointHookDone then
-    Exit;
-  MinDist := -1;
-  ClosestIdx := -1;
-  for I := 0 to High(Data.Players) do
-    if (Data.Players[I].Visual <> nil) and (Data.Players[I].Visual.Transform <> nil) then
-    begin
-      P := Data.Players[I].Visual.WorldPosition;
-      Dist := Sqrt(Sqr(P.X - FExtractZonePos.X) + Sqr(P.Z - FExtractZonePos.Z));
-      if (MinDist < 0) or (Dist < MinDist) then
-      begin
-        MinDist := Dist;
-        ClosestIdx := I;
-      end;
-    end;
-  if MinDist < 0 then
-    WritelnLog('Server', 'ExtractZone: no players')
-  else
-    WritelnLog('Server', 'ExtractZone: closest player dist=%.1f, py=%.1f',
-      [MinDist, Data.Players[ClosestIdx].Visual.WorldPosition.Y]);
-end;
-
-procedure TGameWorldServer.ValidateExtractPointHook;
-var
-  P: TCastleTransform;
-begin
-  if not FExtractPointHookDone then
-    Exit;
-  if FExtractZoneTarget = nil then
-  begin
-    FExtractPointHookDone := False;
-    Exit;
-  end;
-  P := FExtractZoneTarget;
-  while (P <> nil) and (P <> TCastleTransform(FWorldRoot)) do
-    P := P.Parent;
-  if P = nil then
-  begin
-    WritelnLog('Server', 'ExtractPoint: target detached from world root, re-attaching');
-    FExtractPointHookDone := False;
-    FExtractZoneTarget := nil;
-  end;
-end;
-
-function TGameWorldServer.PlayerEntityIdByTransform(const ATransform: TCastleTransform): TEntityId;
-var
-  I: Integer;
-begin
-  if ATransform <> nil then
-    for I := 0 to High(Data.Players) do
-      if (Data.Players[I].Visual <> nil) and
-         (Data.Players[I].Visual.Transform = ATransform) then
-        Exit(Data.Players[I].Id);
-  Result := 0;
-end;
-
-procedure TGameWorldServer.OnExtractPointEnter(const AOtherTransform: TCastleTransform);
-var
-  Eid: TEntityId;
-  Pid: UInt32;
-  Ev: TGameEvent;
-begin
-  Eid := PlayerEntityIdByTransform(AOtherTransform);
-  if Eid = 0 then
-    Exit;
-  Pid := FNetSystem.Server.FindPlayerIdByEntityId(Eid);
-  Ev.EventType := geExtractZoneEntered;
-  Ev.EntityId := Eid;
-  Ev.SourceId := 0;
-  Ev.Amount := 0;
-  Ev.Position.X := AOtherTransform.Translation.X;
-  Ev.Position.Y := AOtherTransform.Translation.Z;
-  Ev.Data := nil;
-  QueueEvent(Ev);
-  WritelnLog('Server', 'ExtractPoint: player %d (entity %d) entered zone',
-    [Pid, Eid]);
-end;
-
-procedure TGameWorldServer.OnExtractPointExit(const AOtherTransform: TCastleTransform);
-var
-  Eid: TEntityId;
-  Pid: UInt32;
-  Ev: TGameEvent;
-begin
-  Eid := PlayerEntityIdByTransform(AOtherTransform);
-  if Eid = 0 then
-    Exit;
-  Pid := FNetSystem.Server.FindPlayerIdByEntityId(Eid);
-  Ev.EventType := geExtractZoneExited;
-  Ev.EntityId := Eid;
-  Ev.SourceId := 0;
-  Ev.Amount := 0;
-  Ev.Position.X := AOtherTransform.Translation.X;
-  Ev.Position.Y := AOtherTransform.Translation.Z;
-  Ev.Data := nil;
-  QueueEvent(Ev);
-  WritelnLog('Server', 'ExtractPoint: player %d (entity %d) left zone',
-    [Pid, Eid]);
 end;
 
 procedure TGameWorldServer.SetMatchPlayers(const APlayers: array of TMatchPlayerInfo);
@@ -615,21 +434,13 @@ begin
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
   AddSystem(FShotSystem);
   AddSystem(TJobQueueSystem.Create(Self));
+  AddSystem(TExtractPointSystem.Create(Self, FWorldRoot));
 end;
 
 procedure TGameWorldServer.Update(const SecondsPassed: Single);
 begin
   FFsm.Update(SecondsPassed);
   inherited Update(SecondsPassed);
-  if not FExtractPointHookDone then
-    AttachExtractPointBehavior;
-  FProximityTimer := FProximityTimer + SecondsPassed;
-  if FProximityTimer >= 2.0 then
-  begin
-    FProximityTimer := FProximityTimer - 2.0;
-    ValidateExtractPointHook;
-    LogClosestPlayerToExtractPoint;
-  end;
   {$ifndef VISUAL}
   FWorldRoot.UpdateIncreaseTime(SecondsPassed);
   {$endif}

@@ -5,10 +5,6 @@
     {
       "$$ClassName" : "TCastleTransform",
       "Name" : "Ground",
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "Y" : 0
-      },
       "$Behaviors" : [
         {
           "$$ClassName" : "TCastlePlaneCollider",
@@ -25,17 +21,11 @@
     {
       "$$ClassName" : "TCastleTransform",
       "Name" : "Wall1",
-      "SizePersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 7.0,
-        "Y" : 30.0,
-        "Z" : 7.0
-      },
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -2.08,
-        "Y" : 14.94,
-        "Z" : -31.7
+        "X" : -2.0799999237060547E+000,
+        "Y" : 1.4939999580383301E+001,
+        "Z" : -3.1700000762939453E+001
       },
       "$Behaviors" : [
         {
@@ -44,85 +34,67 @@
         },
         {
           "$$ClassName" : "TCastleRigidBody",
-          "Name" : "RigidBody"
+          "Name" : "RigidBody1"
         }
       ]
     },
     {
       "$$ClassName" : "TCastleTransform",
       "Name" : "Wall2",
-      "SizePersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 7.0,
-        "Y" : 30.0,
-        "Z" : 7.0
-      },
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 7.27,
-        "Y" : 14.68,
-        "Z" : 11.66
+        "X" : 7.2699999809265137E+000,
+        "Y" : 1.4680000305175781E+001,
+        "Z" : 1.1659999847412109E+001
       },
       "$Behaviors" : [
         {
           "$$ClassName" : "TCastleBoxCollider",
-          "Name" : "BoxCollider"
+          "Name" : "BoxCollider1"
         },
         {
           "$$ClassName" : "TCastleRigidBody",
-          "Name" : "RigidBody"
+          "Name" : "RigidBody2"
         }
       ]
     },
     {
       "$$ClassName" : "TCastleTransform",
       "Name" : "Wall3",
-      "SizePersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 7.0,
-        "Y" : 30.0,
-        "Z" : 7.0
-      },
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 27.74,
-        "Y" : 14.92,
-        "Z" : -31.7
+        "X" : 2.7739999771118164E+001,
+        "Y" : 1.4920000076293945E+001,
+        "Z" : -3.1700000762939453E+001
       },
       "$Behaviors" : [
         {
           "$$ClassName" : "TCastleBoxCollider",
-          "Name" : "BoxCollider"
+          "Name" : "BoxCollider2"
         },
         {
           "$$ClassName" : "TCastleRigidBody",
-          "Name" : "RigidBody"
+          "Name" : "RigidBody3"
         }
       ]
     },
     {
       "$$ClassName" : "TCastleTransform",
       "Name" : "Wall4",
-      "SizePersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 7.0,
-        "Y" : 30.0,
-        "Z" : 7.0
-      },
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -37.23,
-        "Y" : 14.83,
-        "Z" : -13.15
+        "X" : -3.7229999542236328E+001,
+        "Y" : 1.4829999923706055E+001,
+        "Z" : -1.3149999618530273E+001
       },
       "$Behaviors" : [
         {
           "$$ClassName" : "TCastleBoxCollider",
-          "Name" : "BoxCollider"
+          "Name" : "BoxCollider3"
         },
         {
           "$$ClassName" : "TCastleRigidBody",
-          "Name" : "RigidBody"
+          "Name" : "RigidBody4"
         }
       ]
     },
@@ -131,7 +103,7 @@
       "Name" : "Spawn_Red_1",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 40.8417
+        "X" : 4.0841701507568359E+001
       }
     },
     {
@@ -139,8 +111,8 @@
       "Name" : "Spawn_Red_2",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 40.8417,
-        "Z" : 3.8304
+        "X" : 4.0841701507568359E+001,
+        "Z" : 3.8303999900817871E+000
       }
     },
     {
@@ -148,8 +120,8 @@
       "Name" : "Spawn_Red_3",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 40.8417,
-        "Z" : -2.7470
+        "X" : 4.0841701507568359E+001,
+        "Z" : -2.7469999790191650E+000
       }
     },
     {
@@ -157,8 +129,8 @@
       "Name" : "Spawn_Green_1",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -3.9996,
-        "Z" : 46.8131
+        "X" : -3.9995999336242676E+000,
+        "Z" : 4.6813098907470703E+001
       }
     },
     {
@@ -166,8 +138,8 @@
       "Name" : "Spawn_Green_2",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -2.6936,
-        "Z" : 46.8131
+        "X" : -2.6935999393463135E+000,
+        "Z" : 4.6813098907470703E+001
       }
     },
     {
@@ -175,8 +147,8 @@
       "Name" : "Spawn_Green_3",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -1.2238,
-        "Z" : 46.8131
+        "X" : -1.2237999439239502E+000,
+        "Z" : 4.6813098907470703E+001
       }
     },
     {
@@ -184,9 +156,9 @@
       "Name" : "Spawn_Blue_1",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -13.2706,
-        "Y" : 0.1147,
-        "Z" : -47.1347
+        "X" : -1.3270600318908691E+001,
+        "Y" : 1.1469999700784683E-001,
+        "Z" : -4.7134700775146484E+001
       }
     },
     {
@@ -194,9 +166,9 @@
       "Name" : "Spawn_Blue_2",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -14.0782,
-        "Y" : 0.1147,
-        "Z" : -47.1347
+        "X" : -1.4078200340270996E+001,
+        "Y" : 1.1469999700784683E-001,
+        "Z" : -4.7134700775146484E+001
       }
     },
     {
@@ -204,9 +176,9 @@
       "Name" : "Spawn_Blue_3",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -14.9553,
-        "Y" : 0.1147,
-        "Z" : -47.1347
+        "X" : -1.4955300331115723E+001,
+        "Y" : 1.1469999700784683E-001,
+        "Z" : -4.7134700775146484E+001
       }
     },
     {
@@ -214,8 +186,8 @@
       "Name" : "ExtractPoint",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "X" : -13.64978,
-        "Y" : 0.936235
+        "X" : -1.3649780273437500E+001,
+        "Y" : 9.3623501062393188E-001
       },
       "Url" : "castle-data:/transforms/ExtractPointTransformHeadless.castle-transform"
     }
