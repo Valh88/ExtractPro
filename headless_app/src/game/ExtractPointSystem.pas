@@ -10,10 +10,6 @@ uses
   ExtractPointTriggerBehavior;
 
 type
-  { Серверная система зоны эвакуации (ExtractPoint).
-    Вешает физический триггер на зону (поведение TExtractPointTriggerBehavior),
-    транслирует вход/выход игроков в события шины (geExtractZoneEntered/Exited).
-    Вся дальнейшая игровая логика эвакуации будет здесь. }
   TExtractPointSystem = class(TWorldSystemBase)
   private
     FWorldRoot: TCastleAbstractRootTransform;
