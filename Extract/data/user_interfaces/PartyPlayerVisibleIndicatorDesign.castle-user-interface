@@ -5,5 +5,14 @@
     "$$ClassName" : "TCastleVector2Persistent",
     "X" : 7.2000000000000000E+002,
     "Y" : 5.6000000000000000E+002
-  }
+  },
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleImageControl",
+      "Name" : "PartyIndicator",
+      "Height" : 2.4000000000000000E+001,
+      "Url" : "castle-data:/ui/party_indicator.png",
+      "Width" : 2.4000000000000000E+001
+    }
+  ]
 }
