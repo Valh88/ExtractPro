@@ -208,11 +208,13 @@ begin
   if (Event.Amount > 0.5) and (Event.Amount < 1.5) then
   begin
     ReadyDesign.Exists := True;
-    // CheckReadingPlayersDesign shown only after clicking "PLAY"
   end
   else
   begin
     ReadyDesign.Exists := False;
+    if CheckReadingPlayersDesign <> nil then
+      CheckReadingPlayersDesign.Exists := False;
+    ClearCheckSlots;
   end;
 end;
 
@@ -306,6 +308,9 @@ begin
     WritelnLog('Client', 'Player cancelled ready check');
     FLobbyClient.MatchmakingSystem.SendReadyCancel;
   end;
+  ReadyDesign.Exists := False;
+  if CheckReadingPlayersDesign <> nil then
+    CheckReadingPlayersDesign.Exists := False;
   Handled := True;
 end;
 
