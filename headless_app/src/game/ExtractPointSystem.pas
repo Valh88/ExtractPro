@@ -1,19 +1,27 @@
 unit ExtractPointSystem;
 
 {$mode objfpc}{$H+}
+{$modeswitch anonymousfunctions}
+{$modeswitch functionreferences}
 
 interface
 
 uses
   CastleTransform, CastleLog,
   GameWorld, WorldSystemBase, EventBus, EntityTypes, help_types,
+  NetMessages,
   ExtractPointTriggerBehavior;
 
 type
+  { Обратный вызов для отправки события зоны в сеть (настраивается из
+    RegisterSystems, как SendHitProc у TServerShotSystem). }
+  TExtractZoneEventProc = reference to procedure(const ZoneEvent: TExtractZoneEvent);
+
   TExtractPointSystem = class(TWorldSystemBase)
   private
     FWorldRoot: TCastleAbstractRootTransform;
     FExtractPointHookDone: Boolean;
+    FSendZoneEventProc: TExtractZoneEventProc;
     function FindNodeByName(const ARoot: TCastleTransform; const AName: String): TCastleTransform;
     procedure AttachExtractPointBehavior;
     procedure OnExtractPointEnter(const AOtherTransform: TCastleTransform);
@@ -22,6 +30,7 @@ type
   public
     constructor Create(AWorldObj: TGameWorld; const AWorldRoot: TCastleAbstractRootTransform);
     procedure Update(const SecondsPassed: Single); override;
+    property SendZoneEventProc: TExtractZoneEventProc read FSendZoneEventProc write FSendZoneEventProc;
   end;
 
 implementation
@@ -93,6 +102,7 @@ procedure TExtractPointSystem.OnExtractPointEnter(const AOtherTransform: TCastle
 var
   Eid: TEntityId;
   Ev: TGameEvent;
+  ZoneEvent: TExtractZoneEvent;
 begin
   Eid := PlayerEntityIdByTransform(AOtherTransform);
   if Eid = 0 then
@@ -105,6 +115,16 @@ begin
   Ev.Position.Y := AOtherTransform.Translation.Z;
   Ev.Data := nil;
   WorldObj.QueueEvent(Ev);
+  if Assigned(FSendZoneEventProc) then
+  begin
+    ZoneEvent.EntityId := Eid;
+    ZoneEvent.Entered := 1;
+    ZoneEvent.ZoneIndex := 0;
+    ZoneEvent.PosX := AOtherTransform.Translation.X;
+    ZoneEvent.PosY := AOtherTransform.Translation.Z;
+    ZoneEvent.PosZ := 0;
+    FSendZoneEventProc(ZoneEvent);
+  end;
   WritelnLog('Server', 'ExtractPoint: player (entity %d) entered zone', [Eid]);
 end;
 
@@ -112,6 +132,7 @@ procedure TExtractPointSystem.OnExtractPointExit(const AOtherTransform: TCastleT
 var
   Eid: TEntityId;
   Ev: TGameEvent;
+  ZoneEvent: TExtractZoneEvent;
 begin
   Eid := PlayerEntityIdByTransform(AOtherTransform);
   if Eid = 0 then
@@ -124,6 +145,16 @@ begin
   Ev.Position.Y := AOtherTransform.Translation.Z;
   Ev.Data := nil;
   WorldObj.QueueEvent(Ev);
+  if Assigned(FSendZoneEventProc) then
+  begin
+    ZoneEvent.EntityId := Eid;
+    ZoneEvent.Entered := 0;
+    ZoneEvent.ZoneIndex := 0;
+    ZoneEvent.PosX := AOtherTransform.Translation.X;
+    ZoneEvent.PosY := AOtherTransform.Translation.Z;
+    ZoneEvent.PosZ := 0;
+    FSendZoneEventProc(ZoneEvent);
+  end;
   WritelnLog('Server', 'ExtractPoint: player (entity %d) left zone', [Eid]);
 end;
 

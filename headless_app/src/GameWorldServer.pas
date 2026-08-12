@@ -415,6 +415,8 @@ begin
 end;
 
 procedure TGameWorldServer.RegisterSystems;
+var
+  ExtractSys: TExtractPointSystem;
 begin
   inherited;
   FNetSystem := TServerNetSystem.Create(Self, FPort, FMaxPlayers);
@@ -434,7 +436,15 @@ begin
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
   AddSystem(FShotSystem);
   AddSystem(TJobQueueSystem.Create(Self));
-  AddSystem(TExtractPointSystem.Create(Self, FWorldRoot));
+  ExtractSys := TExtractPointSystem.Create(Self, FWorldRoot);
+  ExtractSys.SendZoneEventProc := procedure(const ZoneEvent: TExtractZoneEvent)
+  var
+    M: TNetMessage;
+  begin
+    M.Init(msgExtractZone, ZoneEvent.ToBytes);
+    FNetSystem.Broadcast(M);
+  end;
+  AddSystem(ExtractSys);
 end;
 
 procedure TGameWorldServer.Update(const SecondsPassed: Single);

@@ -284,6 +284,8 @@ var
   DenyCode: string;
   E: TClientGameEvent;
   PartyInfo: TPartyInfoData;
+  ZoneEv: TExtractZoneEvent;
+  ZonePayload: TExtractZonePayload;
   i: Integer;
 begin
   if not FConnectedReported then
@@ -362,6 +364,26 @@ begin
     end;
     msgHit:
     begin end;
+    msgExtractZone:
+    begin
+      if TExtractZoneEvent.FromBytes(Msg.Payload, ZoneEv) then
+      begin
+        ZonePayload := TExtractZonePayload.Create;
+        ZonePayload.EntityId := ZoneEv.EntityId;
+        ZonePayload.ZoneIndex := ZoneEv.ZoneIndex;
+        ZonePayload.PosX := ZoneEv.PosX;
+        ZonePayload.PosY := ZoneEv.PosY;
+        ZonePayload.PosZ := ZoneEv.PosZ;
+        if ZoneEv.Entered = 1 then
+          E.EventType := cgeExtractZoneEntered
+        else
+          E.EventType := cgeExtractZoneExited;
+        E.Amount := ZoneEv.ZoneIndex;
+        E.Data := ZonePayload;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
+      end;
+    end;
     msgRpcResponse:
     begin
       if FRpc <> nil then

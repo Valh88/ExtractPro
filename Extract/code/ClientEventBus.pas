@@ -14,8 +14,17 @@ type
     cgeReadyCheck,        // Amount=1.0: показать дизайн, 0.0: скрыть
     cgeReadyCheckUpdate,
     cgeStartGame,         // Amount = port game server
-    cgeGameStateChanged   // Amount = ординал TServerGameState
+    cgeGameStateChanged,   // Amount = ординал TServerGameState
+    cgeExtractZoneEntered, // игрок вошёл в зону эвакуации (Data = TExtractZonePayload)
+    cgeExtractZoneExited   // игрок вышел из зоны эвакуации (Data = TExtractZonePayload)
   );
+
+  TExtractZonePayload = class
+  public
+    EntityId: UInt32;
+    ZoneIndex: Byte;
+    PosX, PosY, PosZ: Single;
+  end;
 
   TReadyCheckPlayerInfo = record
     PlayerId: UInt32;

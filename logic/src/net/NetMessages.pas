@@ -93,6 +93,7 @@ const
   msgStartGame = 26;        // server→client: порт game server для подключения
   msgGameStateChanged = 27; // server→client: текущее состояние TServerGameState (payload: 1 byte)
   msgPartyInfo = 28;        // server→client: состав пати (TPartyInfoData)
+  msgExtractZone = 29;      // server→client: игрок вошёл/вышел из зоны эвакуации (TExtractZoneEvent)
 
   rpcQueueJoin  = 30;
   rpcQueueLeave = 31;
@@ -137,6 +138,17 @@ type
     SourceEntityId: UInt32;
     function ToBytes: TBytes;
     class function FromBytes(const Data: TBytes; out Value: THitData): Boolean; static;
+  end;
+
+  { Событие зоны эвакуации: игрок (EntityId) вошёл (Entered=1) или вышел (Entered=0)
+    из зоны ZoneIndex. Позиция — точка входа/выхода. }
+  TExtractZoneEvent = packed record
+    EntityId: UInt32;
+    Entered: Byte;
+    ZoneIndex: Byte;
+    PosX, PosY, PosZ: Single;
+    function ToBytes: TBytes;
+    class function FromBytes(const Data: TBytes; out Value: TExtractZoneEvent): Boolean; static;
   end;
 
 type
@@ -236,6 +248,21 @@ begin
   Result := Length(Data) >= SizeOf(THitData);
   if not Result then Exit;
   Move(Data[0], Value, SizeOf(THitData));
+end;
+
+{ TExtractZoneEvent }
+
+function TExtractZoneEvent.ToBytes: TBytes;
+begin
+  SetLength(Result, SizeOf(TExtractZoneEvent));
+  Move(Self, Result[0], SizeOf(TExtractZoneEvent));
+end;
+
+class function TExtractZoneEvent.FromBytes(const Data: TBytes; out Value: TExtractZoneEvent): Boolean;
+begin
+  Result := Length(Data) >= SizeOf(TExtractZoneEvent);
+  if not Result then Exit;
+  Move(Data[0], Value, SizeOf(TExtractZoneEvent));
 end;
 
 { TSnapshotData }
