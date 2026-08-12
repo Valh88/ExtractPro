@@ -14,9 +14,6 @@ type
     Members: array of TEntityId;
   end;
 
-  { Серверная система отрядов — хранит сформированные отряды (FParties),
-    которые заполняет GameWorldServer (DistributeParties). Даёт удобный доступ
-    к отрядам для игровой логики (эвакуация всего отряда, HUD, подсветка союзников). }
   TServerPartySystem = class(TWorldSystemBase)
   private
     FParties: array of TPartyData;
