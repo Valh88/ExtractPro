@@ -35,6 +35,35 @@
           }
         }
       ]
+    },
+    {
+      "$$ClassName" : "TCastleImageTransform",
+      "CastShadows" : false,
+      "Exists" : false,
+      "Name" : "PartyPlayerIndicator",
+      "RenderOptions" : {
+        "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+      },
+      "RotationPersistent" : {
+        "$$ClassName" : "TCastleVector4RotationPersistent",
+        "Z" : 1.0000000000000000E+000
+      },
+      "SizePersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 1.0000000149011612E-001,
+        "Y" : 1.0000000149011612E-001
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : 1.5691899061203003E+000
+      },
+      "Url" : "castle-data:/ui/party_indicator.png",
+      "$Behaviors" : [
+        {
+          "$$ClassName" : "TCastleBillboard",
+          "Name" : "Billboard"
+        }
+      ]
     }
   ],
   "$Behaviors" : [
