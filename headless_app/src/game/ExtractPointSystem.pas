@@ -7,6 +7,7 @@ unit ExtractPointSystem;
 interface
 
 uses
+  SysUtils,
   CastleTransform, CastleLog,
   GameWorld, WorldSystemBase, EventBus, EntityTypes, help_types,
   NetMessages,
@@ -24,8 +25,8 @@ type
     FSendZoneEventProc: TExtractZoneEventProc;
     function FindNodeByName(const ARoot: TCastleTransform; const AName: String): TCastleTransform;
     procedure AttachExtractPointBehavior;
-    procedure OnExtractPointEnter(const AOtherTransform: TCastleTransform);
-    procedure OnExtractPointExit(const AOtherTransform: TCastleTransform);
+    procedure OnExtractPointEnter(const AOtherTransform: TCastleTransform; const AZoneIndex: Byte);
+    procedure OnExtractPointExit(const AOtherTransform: TCastleTransform; const AZoneIndex: Byte);
     function PlayerEntityIdByTransform(const ATransform: TCastleTransform): TEntityId;
   public
     constructor Create(AWorldObj: TGameWorld; const AWorldRoot: TCastleAbstractRootTransform);
@@ -63,26 +64,39 @@ begin
 end;
 
 procedure TExtractPointSystem.AttachExtractPointBehavior;
+const
+  MaxZones = 3;
 var
+  I: Integer;
+  NodeName: String;
   Node, Target: TCastleTransform;
   B: TExtractPointTriggerBehavior;
 begin
   if FExtractPointHookDone then
     Exit;
-  Node := FindNodeByName(FWorldRoot, 'ExtractPoint');
-  if Node = nil then
-    Exit;
-  if Node is TCastleTransformDesign then
-    Target := TCastleTransformDesign(Node).DesignRoot
-  else
-    Target := Node;
-  if Target = nil then
-    Exit;
-  B := TExtractPointTriggerBehavior.Create(nil);
-  B.OnEnter := @OnExtractPointEnter;
-  B.OnExit := @OnExtractPointExit;
-  Target.AddBehavior(B);
-  FExtractPointHookDone := True;
+  for I := 0 to MaxZones - 1 do
+  begin
+    if I = 0 then
+      NodeName := 'ExtractPoint'
+    else
+      NodeName := 'ExtractPoint' + IntToStr(I + 1);
+    Node := FindNodeByName(FWorldRoot, NodeName);
+    if Node = nil then
+      Continue;
+    if Node is TCastleTransformDesign then
+      Target := TCastleTransformDesign(Node).DesignRoot
+    else
+      Target := Node;
+    if Target = nil then
+      Continue;
+    B := TExtractPointTriggerBehavior.Create(nil);
+    B.ZoneIndex := Byte(I);
+    B.OnEnter := @OnExtractPointEnter;
+    B.OnExit := @OnExtractPointExit;
+    Target.AddBehavior(B);
+    FExtractPointHookDone := True;
+    WritelnLog('Server', 'ExtractPoint zone %d attached (node=%s)', [I, NodeName]);
+  end;
 end;
 
 function TExtractPointSystem.PlayerEntityIdByTransform(
@@ -98,7 +112,8 @@ begin
   Result := 0;
 end;
 
-procedure TExtractPointSystem.OnExtractPointEnter(const AOtherTransform: TCastleTransform);
+procedure TExtractPointSystem.OnExtractPointEnter(const AOtherTransform: TCastleTransform;
+  const AZoneIndex: Byte);
 var
   Eid: TEntityId;
   Ev: TGameEvent;
@@ -119,16 +134,17 @@ begin
   begin
     ZoneEvent.EntityId := Eid;
     ZoneEvent.Entered := 1;
-    ZoneEvent.ZoneIndex := 0;
+    ZoneEvent.ZoneIndex := AZoneIndex;
     ZoneEvent.PosX := AOtherTransform.Translation.X;
     ZoneEvent.PosY := AOtherTransform.Translation.Z;
     ZoneEvent.PosZ := 0;
     FSendZoneEventProc(ZoneEvent);
   end;
-  WritelnLog('Server', 'ExtractPoint: player (entity %d) entered zone', [Eid]);
+  WritelnLog('Server', 'ExtractPoint: player (entity %d) entered zone %d', [Eid, AZoneIndex]);
 end;
 
-procedure TExtractPointSystem.OnExtractPointExit(const AOtherTransform: TCastleTransform);
+procedure TExtractPointSystem.OnExtractPointExit(const AOtherTransform: TCastleTransform;
+  const AZoneIndex: Byte);
 var
   Eid: TEntityId;
   Ev: TGameEvent;
@@ -149,13 +165,13 @@ begin
   begin
     ZoneEvent.EntityId := Eid;
     ZoneEvent.Entered := 0;
-    ZoneEvent.ZoneIndex := 0;
+    ZoneEvent.ZoneIndex := AZoneIndex;
     ZoneEvent.PosX := AOtherTransform.Translation.X;
     ZoneEvent.PosY := AOtherTransform.Translation.Z;
     ZoneEvent.PosZ := 0;
     FSendZoneEventProc(ZoneEvent);
   end;
-  WritelnLog('Server', 'ExtractPoint: player (entity %d) left zone', [Eid]);
+  WritelnLog('Server', 'ExtractPoint: player (entity %d) left zone %d', [Eid, AZoneIndex]);
 end;
 
 procedure TExtractPointSystem.Update(const SecondsPassed: Single);

@@ -9,8 +9,10 @@ uses
   CastleTransform;
 
 type
-  { Колбек срабатывания триггера зоны. AOtherTransform — трансформ, вошедший в зону }
-  TExtractPointTriggerEvent = procedure(const AOtherTransform: TCastleTransform) of object;
+  { Колбек срабатывания триггера зоны. AOtherTransform — трансформ, вошедший в зону,
+    AZoneIndex — индекс зоны (задаётся при прикреплении поведения). }
+  TExtractPointTriggerEvent = procedure(const AOtherTransform: TCastleTransform;
+    const AZoneIndex: Byte) of object;
 
   { Поведение зоны эвакуации: подписывается на события физики своего RigidBody
     (триггер шлёт обычные OnCollisionEnter/OnCollisionExit) и транслирует их
@@ -20,6 +22,7 @@ type
     FRigidBody: TCastleRigidBody;
     FOnEnter: TExtractPointTriggerEvent;
     FOnExit: TExtractPointTriggerEvent;
+    FZoneIndex: Byte;
     procedure HookRigidBody;
     procedure HandleEnter(const CollisionDetails: TPhysicsCollisionDetails);
     procedure HandleExit(const CollisionDetails: TPhysicsCollisionDetails);
@@ -30,6 +33,7 @@ type
   public
     property OnEnter: TExtractPointTriggerEvent read FOnEnter write FOnEnter;
     property OnExit: TExtractPointTriggerEvent read FOnExit write FOnExit;
+    property ZoneIndex: Byte read FZoneIndex write FZoneIndex;
   end;
 
 implementation
@@ -72,13 +76,13 @@ end;
 procedure TExtractPointTriggerBehavior.HandleEnter(const CollisionDetails: TPhysicsCollisionDetails);
 begin
   if Assigned(FOnEnter) then
-    FOnEnter(CollisionDetails.OtherTransform);
+    FOnEnter(CollisionDetails.OtherTransform, FZoneIndex);
 end;
 
 procedure TExtractPointTriggerBehavior.HandleExit(const CollisionDetails: TPhysicsCollisionDetails);
 begin
   if Assigned(FOnExit) then
-    FOnExit(CollisionDetails.OtherTransform);
+    FOnExit(CollisionDetails.OtherTransform, FZoneIndex);
 end;
 
 end.
