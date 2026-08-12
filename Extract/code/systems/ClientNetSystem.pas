@@ -284,8 +284,10 @@ var
   DenyCode: string;
   E: TClientGameEvent;
   PartyInfo: TPartyInfoData;
+  PartyPayload: TPartyInfoPayload;
   ZoneEv: TExtractZoneEvent;
   ZonePayload: TExtractZonePayload;
+  Hit: THitData;
   i: Integer;
 begin
   if not FConnectedReported then
@@ -363,7 +365,11 @@ begin
           (Msg.Payload[2] shl 16) or (Msg.Payload[3] shl 24));
     end;
     msgHit:
-    begin end;
+    begin
+      if THitData.FromBytes(Msg.Payload, Hit) then
+        WritelnLog('Client', 'Hit: entity %d got %.1f damage from entity %d',
+          [Hit.TargetEntityId, Hit.DamageAmount, Hit.SourceEntityId]);
+    end;
     msgExtractZone:
     begin
       if TExtractZoneEvent.FromBytes(Msg.Payload, ZoneEv) then
@@ -404,9 +410,16 @@ begin
     begin
       if TPartyInfoData.FromBytes(Msg.Payload, PartyInfo) then
       begin
-        WritelnLog('Client', 'Party info: team=%d members=%d', [PartyInfo.TeamIndex, PartyInfo.MemberCount]);
-        for i := 0 to High(PartyInfo.MemberIds) do
-          WritelnLog('Client', '  member[%d] = %d', [i, PartyInfo.MemberIds[i]]);
+        PartyPayload := TPartyInfoPayload.Create;
+        PartyPayload.TeamIndex := PartyInfo.TeamIndex;
+        SetLength(PartyPayload.Members, PartyInfo.MemberCount);
+        for i := 0 to High(PartyPayload.Members) do
+          PartyPayload.Members[i] := PartyInfo.MemberIds[i];
+        E.EventType := cgePartyInfo;
+        E.Amount := 0;
+        E.Data := PartyPayload;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
       end;
     end;
   end;

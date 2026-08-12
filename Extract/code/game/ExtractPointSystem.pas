@@ -9,10 +9,6 @@ uses
   GameWorld, WorldSystemBase, ClientEventBus;
 
 type
-  { Клиентская система зоны эвакуации (ExtractPoint).
-    Подписывается на события зоны из ClientEventBus (cgeExtractZoneEntered/Exited),
-    которые публикует TClientNetSystem при приходе msgExtractZone.
-    Здесь будет вся клиентская игровая логика эвакуации (UI и т.п.). }
   TExtractPointSystem = class(TWorldSystemBase)
   private
     FSubscribed: Boolean;

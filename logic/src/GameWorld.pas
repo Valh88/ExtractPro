@@ -50,6 +50,7 @@ type
     { Доступ для систем }
     property Data: TGameWorldData read FData;
     function FindEntity(const AEntityId: TEntityId): IGameEntity;
+    function FindPlayerEntity(const AEntityId: TEntityId): IGameEntity;
     function FindClosestPlayer(const FromPos: TVector2; out Dist: Single): Integer;
     function FindAlivePlayer(const FromPos: TVector2; ExcludeId: TEntityId; out Dist: Single): Integer;
     procedure QueueEvent(const Ev: TGameEvent);
@@ -371,6 +372,16 @@ begin
   for i := 0 to High(FData.Bullets) do
     if (FData.Bullets[i].Id = AEntityId) and (FData.Bullets[i].Visual <> nil) then
       Exit(FData.Bullets[i].Visual);
+  Result := nil;
+end;
+
+function TGameWorld.FindPlayerEntity(const AEntityId: TEntityId): IGameEntity;
+var
+  i: Integer;
+begin
+  for i := 0 to High(FData.Players) do
+    if (FData.Players[i].Id = AEntityId) and (FData.Players[i].Visual <> nil) then
+      Exit(FData.Players[i].Visual);
   Result := nil;
 end;
 

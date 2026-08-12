@@ -1,0 +1,9 @@
+{
+  "$$ClassName" : "TCastleDesign",
+  "Name" : "PartyPlayerVisibleIndicator",
+  "TranslationPersistent" : {
+    "$$ClassName" : "TCastleVector2Persistent",
+    "X" : 7.2000000000000000E+002,
+    "Y" : 5.6000000000000000E+002
+  }
+}

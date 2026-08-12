@@ -10,7 +10,7 @@ interface
     SysUtils, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
     ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
     JobQueueSystem, GameSettings, CastleLog,
-    help_types, EntityTypes, ExtractPointSystem;
+    help_types, EntityTypes, ExtractPointSystem, ServerPartySystem;
 type
   TMatchPlayerInfo = record
     PlayerId: UInt32;  // id игрока в лобби (matchmaking)
@@ -22,25 +22,21 @@ type
     MatchIndex: Integer; // индекс в FMatchPlayers, -1 = не связан
   end;
 
-  TPartyData = record
-    TeamIndex: Byte;
-    Members: array of TEntityId;
-  end;
-
   TGameWorldServer = class(TGameWorld)
-  protected
+  private
     FWorldRoot: TCastleAbstractRootTransform;
     FPort: Word;
     FMaxPlayers: Integer;
     FNetSystem: TServerNetSystem;
     FShotSystem: TServerShotSystem;
     FDbSystem: TServerDbSystem;
+    FPartySystem: TServerPartySystem;
     FSettings: TGameSettings;
     FFsm: TServerGameFsm;
     FMatchPlayers: array of TMatchPlayerInfo;
     FMatchTeams: array of Byte;          // команда на индекс матча, 255 = не назначена
     FEntityToMatch: array of TEntityMatchLink;
-    FParties: array of TPartyData;
+  protected
     procedure OnStateChanged(NewState, OldState: TServerGameState);
     function GeTServerGameState: TServerGameState;
     function GetGameState: TServerGameState; override;
@@ -64,6 +60,7 @@ type
     procedure DistributeParties;
     property NetSystem: TServerNetSystem read FNetSystem;
     property DbSystem: TServerDbSystem read FDbSystem;
+    property PartySystem: TServerPartySystem read FPartySystem;
     property Settings: TGameSettings read FSettings write FSettings;
     property GameState: TServerGameState read GeTServerGameState;
   end;
@@ -219,7 +216,8 @@ begin
   FMatchPlayers := nil;
   FMatchTeams := nil;
   FEntityToMatch := nil;
-  FParties := nil;
+  if FPartySystem <> nil then
+    FPartySystem.ResetParties;
   SetLength(FMatchPlayers, Length(APlayers));
   SetLength(FMatchTeams, Length(APlayers));
   for i := 0 to High(APlayers) do
@@ -315,11 +313,11 @@ begin
       if PartySize > 0 then
       begin
         PartyIdx := Mi div PartySize;
-        if PartyIdx < Length(FParties) then
-          for Mi := 0 to High(FParties[PartyIdx].Members) do
+        if (FPartySystem <> nil) and (PartyIdx < FPartySystem.PartyCount) then
+          for Mi := 0 to FPartySystem.GetPartyMemberCount(PartyIdx) - 1 do
           begin
             SetLength(Info.MemberIds, Length(Info.MemberIds) + 1);
-            Info.MemberIds[High(Info.MemberIds)] := FParties[PartyIdx].Members[Mi];
+            Info.MemberIds[High(Info.MemberIds)] := FPartySystem.GetPartyMember(PartyIdx, Mi);
           end;
       end;
       Info.MemberCount := Byte(Length(Info.MemberIds));
@@ -338,6 +336,7 @@ var
   Info: TPartyInfoData;
   M: TNetMessage;
   Pid: UInt32;
+  LocalParties: array of TPartyData;
 begin
   if Length(FMatchPlayers) = 0 then
     Exit;
@@ -348,19 +347,30 @@ begin
   if PartySize = 0 then
     PartySize := 1;
 
-  FParties := nil;
+  LocalParties := nil;
   for i := 0 to High(FMatchPlayers) do
   begin
     FMatchTeams[i] := Byte((i div PartySize) mod TeamCount);
     PartyIdx := i div PartySize;
-    if Length(FParties) <= PartyIdx then
-      SetLength(FParties, PartyIdx + 1);
-    if Length(FParties[PartyIdx].Members) = 0 then
-      FParties[PartyIdx].TeamIndex := FMatchTeams[i];
-    SetLength(FParties[PartyIdx].Members, Length(FParties[PartyIdx].Members) + 1);
+    if Length(LocalParties) <= PartyIdx then
+      SetLength(LocalParties, PartyIdx + 1);
+    if Length(LocalParties[PartyIdx].Members) = 0 then
+      LocalParties[PartyIdx].TeamIndex := FMatchTeams[i];
+    SetLength(LocalParties[PartyIdx].Members, Length(LocalParties[PartyIdx].Members) + 1);
+    LocalParties[PartyIdx].Members[High(LocalParties[PartyIdx].Members)] := 0;
   end;
+  for i := 0 to High(FEntityToMatch) do
+  begin
+    Mi := FEntityToMatch[i].MatchIndex;
+    if (Mi < 0) or (Mi >= Length(FMatchPlayers)) then Continue;
+    PartyIdx := Mi div PartySize;
+    if (PartyIdx < Length(LocalParties)) then
+      LocalParties[PartyIdx].Members[(Mi mod PartySize)] := FEntityToMatch[i].EntityId;
+  end;
+  if FPartySystem <> nil then
+    FPartySystem.SetParties(LocalParties);
   WritelnLog('Server', 'Parties distributed: %d parties, %d teams',
-    [Length(FParties), TeamCount]);
+    [Length(LocalParties), TeamCount]);
 
   SetLength(TeamUsed, TeamCount);
   for i := 0 to High(FEntityToMatch) do
@@ -445,6 +455,8 @@ begin
     FNetSystem.Broadcast(M);
   end;
   AddSystem(ExtractSys);
+  FPartySystem := TServerPartySystem.Create(Self);
+  AddSystem(FPartySystem);
 end;
 
 procedure TGameWorldServer.Update(const SecondsPassed: Single);

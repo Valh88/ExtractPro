@@ -5,7 +5,7 @@ unit ClientEventBus;
 interface
 
 uses
-  SysUtils, Classes, Contnrs;
+  SysUtils, Classes, Contnrs, help_types;
 
 type
   TClientGameEventType = (
@@ -16,8 +16,15 @@ type
     cgeStartGame,         // Amount = port game server
     cgeGameStateChanged,   // Amount = ординал TServerGameState
     cgeExtractZoneEntered, // игрок вошёл в зону эвакуации (Data = TExtractZonePayload)
-    cgeExtractZoneExited   // игрок вышел из зоны эвакуации (Data = TExtractZonePayload)
+    cgeExtractZoneExited,  // игрок вышел из зоны эвакуации (Data = TExtractZonePayload)
+    cgePartyInfo           // состав отряда (Data = TPartyInfoPayload)
   );
+
+  TPartyInfoPayload = class
+  public
+    TeamIndex: Byte;
+    Members: array of TEntityId; // EntityId членов отряда (включая себя)
+  end;
 
   TExtractZonePayload = class
   public

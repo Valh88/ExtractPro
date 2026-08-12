@@ -13,7 +13,7 @@ uses
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
   GameViewSystem, GameSettings, State, StateMachine,
-  ClientGameStateSystem, ExtractPointSystem;
+  ClientGameStateSystem, ExtractPointSystem, PartySystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -214,6 +214,7 @@ begin
   AddSystem(FOutbox);
   AddSystem(TJobQueueSystem.Create(Self));
   AddSystem(TExtractPointSystem.Create(Self));
+  AddSystem(TPartySystem.Create(Self));
   FViewSystem := TGameViewSystem.Create(nil);
   AddSystem(FViewSystem);
 end;
