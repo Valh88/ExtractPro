@@ -33,7 +33,7 @@
                 "$$ClassName" : "TCastleColorPersistent",
                 "Alpha" : 8.0000001192092896E-001
               },
-              "FontScale" : 8.5000002384185791E-001,
+              "FontScale" : 6.0000000000000000E-001,
               "Name" : "FpsCaption",
               "Text" : [
                 "Fps:"
@@ -48,7 +48,7 @@
                 "$$ClassName" : "TCastleColorPersistent",
                 "Alpha" : 8.0000001192092896E-001
               },
-              "FontScale" : 8.5000002384185791E-001,
+              "FontScale" : 6.0000000000000000E-001,
               "Name" : "FpsValue",
               "Text" : [
                 " 0"
@@ -80,7 +80,7 @@
                 "$$ClassName" : "TCastleColorPersistent",
                 "Alpha" : 8.0000001192092896E-001
               },
-              "FontScale" : 8.5000002384185791E-001,
+              "FontScale" : 6.0000000000000000E-001,
               "Name" : "PingCaption",
               "Text" : [
                 "Ping:"
@@ -95,7 +95,7 @@
                 "$$ClassName" : "TCastleColorPersistent",
                 "Alpha" : 8.0000001192092896E-001
               },
-              "FontScale" : 8.5000002384185791E-001,
+              "FontScale" : 6.0000000000000000E-001,
               "Name" : "PingValue",
               "Text" : [
                 "0"
