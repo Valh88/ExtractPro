@@ -1,0 +1,116 @@
+{
+  "$$ClassName" : "TCastleUserInterface",
+  "FullSize" : true,
+  "HorizontalAnchorParent" : "hpRight",
+  "HorizontalAnchorSelf" : "hpRight",
+  "Name" : "Statistic",
+  "VerticalAnchorParent" : "vpTop",
+  "VerticalAnchorSelf" : "vpTop",
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleVerticalGroup",
+      "HorizontalAnchorParent" : "hpRight",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Name" : "StatsGroup",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : -1.0000000000000000E+001,
+        "Y" : -1.0000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "Name" : "FpsRow",
+          "Spacing" : 6.0000000000000000E+000,
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 8.0000001192092896E-001
+              },
+              "FontScale" : 8.5000002384185791E-001,
+              "Name" : "FpsCaption",
+              "Text" : [
+                "Fps:"
+              ],
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 4.5000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 8.0000001192092896E-001
+              },
+              "FontScale" : 8.5000002384185791E-001,
+              "Name" : "FpsValue",
+              "Text" : [
+                " 0"
+              ],
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 4.1700000762939453E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 5.0000000000000000E+001
+            }
+          ]
+        },
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "Name" : "PingRow",
+          "Spacing" : 6.0000000000000000E+000,
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "Y" : -1.8700000762939453E+001
+          },
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 8.0000001192092896E-001
+              },
+              "FontScale" : 8.5000002384185791E-001,
+              "Name" : "PingCaption",
+              "Text" : [
+                "Ping:"
+              ],
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 4.5000000000000000E+001
+            },
+            {
+              "$$ClassName" : "TCastleLabel",
+              "ColorPersistent" : {
+                "$$ClassName" : "TCastleColorPersistent",
+                "Alpha" : 8.0000001192092896E-001
+              },
+              "FontScale" : 8.5000002384185791E-001,
+              "Name" : "PingValue",
+              "Text" : [
+                "0"
+              ],
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "X" : 4.9349998474121094E+001
+              },
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "Width" : 5.0000000000000000E+001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

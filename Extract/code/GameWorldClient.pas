@@ -14,7 +14,7 @@ uses
   ClientAuthSystem, RpcClient, JobQueueSystem,
   GameViewSystem, GameSettings, State, StateMachine,
   ClientGameStateSystem, ExtractPointSystem, PartySystem,
-  PartyIndicatorOverlay;
+  PartyIndicatorOverlay, ClientStatsSystem;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -220,6 +220,7 @@ begin
   AddSystem(TJobQueueSystem.Create(Self));
   AddSystem(TExtractPointSystem.Create(Self));
   AddSystem(TPartySystem.Create(Self));
+  AddSystem(TClientStatsSystem.Create(Self));
   FViewSystem := TGameViewSystem.Create(nil);
   AddSystem(FViewSystem);
 end;

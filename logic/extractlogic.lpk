@@ -7,7 +7,7 @@
       <Version Value="11"/>
       <SearchPaths>
         <IncludeFiles Value="../../../mORMot2/packages/lazarus"/>
-        <OtherUnitFiles Value="src;src/db;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;src/auth_server;../Extract/code/systems;../Extract/code;src/fsm;../Extract/code/utils/animations"/>
+        <OtherUnitFiles Value="src;src/db;src/castle_bridges;../Extract/code/behaviours;src/world_systems;src/net;src/behaviors;src/auth_server;../Extract/code/systems;../Extract/code;../Extract/code/game;src/fsm;../Extract/code/utils/animations"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>

@@ -168,20 +168,7 @@
   ],
   "$Children" : [
     {
-      "$$ClassName" : "TCastleLabel",
-      "Name" : "LabelFps",
-      "Text" : [
-        "LabelFps"
-      ],
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector2Persistent",
-        "X" : 1.2500000000000000E+003,
-        "Y" : 8.8000000000000000E+002
-      }
-    },
-    {
       "$$ClassName" : "TCastleDesign",
-      "Exists" : false,
       "FullSize" : true,
       "Height" : 9.9000000000000000E+002,
       "Name" : "Hud",

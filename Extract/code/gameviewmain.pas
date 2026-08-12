@@ -12,11 +12,11 @@ uses Classes,
 type
   TViewMain = class(TCastleView)
   published
-    LabelFps: TCastleLabel;
     Viewport1: TCastleViewport;
     InfoDesign: TCastleDesign;
     TimerSceneStartDesign: TCastleDesign;
     GameMenuDesign: TCastleDesign;
+    Hud: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -34,6 +34,8 @@ type
     FGameLobbyId: UInt32;
     FGamePlayerId: UInt32;
     FGameToken: string;
+    FFpsValue: TCastleLabel;
+    FPingValue: TCastleLabel;
     FOverlay: TCastleRectangleControl;
     FAnimManager: TAnimationManager;
     FSceneRevealed: Boolean;
@@ -44,6 +46,7 @@ type
     FCountdownAnim: TCountdownPulseAnimation;
     FMenuHomeX: Single;
     procedure OnGameStateChanged(const Event: TClientGameEvent);
+    procedure OnPingUpdate(const Event: TClientGameEvent);
     procedure OnFadeOutComplete(Sender: TObject);
     procedure OnCountdownAnimComplete(Sender: TObject);
     procedure SetCountdownDigit(const AValue: Integer);
@@ -103,6 +106,15 @@ begin
   InsertFront(InfoDesign);
 
   GlobalClientEventBus.Subscribe(cgeGameStateChanged, @OnGameStateChanged);
+  GlobalClientEventBus.Subscribe(cgePingUpdate, @OnPingUpdate);
+
+  if Hud <> nil then
+  begin
+    FFpsValue := (Hud.DesignedComponent('StatisticDesign') as TCastleDesign)
+      .DesignedComponent('FpsValue') as TCastleLabel;
+    FPingValue := (Hud.DesignedComponent('StatisticDesign') as TCastleDesign)
+      .DesignedComponent('PingValue') as TCastleLabel;
+  end;
 
   Factory := TEntityManager.Create(
     'castle-data:/PlayerProto.castle-transform',
@@ -125,6 +137,7 @@ end;
 procedure TViewMain.Stop;
 begin
   GlobalClientEventBus.Unsubscribe(@OnGameStateChanged);
+  GlobalClientEventBus.Unsubscribe(@OnPingUpdate);
   FDotsAnim.Stop;
   if FFadeAnim <> nil then
     FFadeAnim.Stop;
@@ -141,7 +154,8 @@ end;
 procedure TViewMain.Update(const SecondsPassed: Single; var HandleInput: Boolean);
 begin
   inherited;
-  LabelFps.Caption := 'FPS: ' + Container.Fps.ToString;
+  if FFpsValue <> nil then
+    FFpsValue.Caption := IntToStr(Round(Container.Fps.RealFps));
   if FGameClient <> nil then
     FGameClient.Update(SecondsPassed);
   if FAnimManager <> nil then
@@ -284,6 +298,12 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TViewMain.OnPingUpdate(const Event: TClientGameEvent);
+begin
+  if FPingValue <> nil then
+    FPingValue.Caption := Format('%.0f', [Event.Amount]);
 end;
 
 procedure TViewMain.ShowInfo(const ATitle, AText: String);

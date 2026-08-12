@@ -76,6 +76,7 @@ type
     procedure Service(ATimeoutMs: Integer = 0);
     function Send(const Msg: TNetMessage): Boolean; overload;
     function Send(const Msg: TNetMessage; AChannel: Integer): Boolean; overload;
+    function GetRoundTripTimeMS: Single;
     property Peer: TRNLPeer read FPeer;
     property State: TClientState read FState;
     property OnConnected: TClientConnectEvent read FOnConnected write FOnConnected;
@@ -214,6 +215,14 @@ begin
   finally
     RNLMsg.DecRef;
   end;
+end;
+
+function TGameClient.GetRoundTripTimeMS: Single;
+begin
+  if FPeer <> nil then
+    Result := FPeer.GetRoundTripTimeMS
+  else
+    Result := 0;
 end;
 
 end.

@@ -3518,6 +3518,7 @@ type PRNLVersion=^TRNLVersion;
       public
        constructor Create(const aHost:TRNLHost); reintroduce;
        destructor Destroy; override;
+       function GetRoundTripTimeMS:Single;
        procedure IncRef;
        procedure DecRef;
        procedure Disconnect(const aData:TRNLUInt64=0;const aDelayed:boolean=false);
@@ -22731,6 +22732,11 @@ end;
 function TRNLPeer.GetOutgoingBandwidthRate:TRNLUInt32;
 begin
  result:=fOutgoingBandwidthRateTracker.UnitsPerSecond;
+end;
+
+function TRNLPeer.GetRoundTripTimeMS:Single;
+begin
+ result:=fRoundTripTime*OneDiv32Bit;
 end;
 
 function TRNLPeer.GetCountChannels:TRNLSizeInt;
