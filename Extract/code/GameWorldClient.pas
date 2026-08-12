@@ -13,7 +13,8 @@ uses
   ClientSnapshotSystem, ClientOutbox, NetMessages, ClientPlayerSyncBehavior,
   ClientAuthSystem, RpcClient, JobQueueSystem,
   GameViewSystem, GameSettings, State, StateMachine,
-  ClientGameStateSystem, ExtractPointSystem, PartySystem;
+  ClientGameStateSystem, ExtractPointSystem, PartySystem,
+  PartyIndicatorOverlay;
 
 type
   TGameWorldClient = class(TGameWorld)
@@ -21,6 +22,7 @@ type
     FMainPlayerId: TEntityId;
     FViewport: TCastleViewport;
     FMouseLookUi: TMouseLookOverlay;
+    FPartyIndicatorOverlay: TPartyIndicatorOverlay;
     FSnapSystem: TClientSnapshotSystem;
     FOutbox: TClientOutbox;
     FNetSystem: TClientNetSystem;
@@ -82,6 +84,8 @@ begin
   B.GameLogic := Self;
   FViewport := AViewport;
   FMouseLookUi := nil;
+  FPartyIndicatorOverlay := TPartyIndicatorOverlay.Create(nil, FViewport, Self);
+  FViewport.InsertBack(FPartyIndicatorOverlay);
   FLobbyId := 1;
   FInputEnabled := True;
   FMainPlayerTransform := nil;
@@ -91,6 +95,7 @@ end;
 destructor TGameWorldClient.Destroy;
 begin
   FreeAndNil(FMouseLookUi);
+  FreeAndNil(FPartyIndicatorOverlay);
   FRpc.Free;
   inherited;
 end;

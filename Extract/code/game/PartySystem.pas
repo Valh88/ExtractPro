@@ -5,9 +5,8 @@ unit PartySystem;
 interface
 
 uses
-  SysUtils, CastleLog, CastleTransform,
-  GameWorld, WorldSystemBase, ClientEventBus, help_types,
-  Interfaces;
+  SysUtils, CastleLog,
+  GameWorld, WorldSystemBase, ClientEventBus, help_types;
 
 type
   TPartySystem = class(TWorldSystemBase)
@@ -18,8 +17,6 @@ type
     procedure OnPartyInfo(const Event: TClientGameEvent);
     procedure Subscribe;
     procedure Unsubscribe;
-    function FindNodeByName(const ARoot: TCastleTransform; const AName: String): TCastleTransform;
-    procedure UpdateIndicators;
   public
     constructor Create(AWorldObj: TGameWorld);
     destructor Destroy; override;
@@ -32,8 +29,6 @@ type
   end;
 
 implementation
-
-uses GameWorldClient;
 
 { TPartySystem }
 
@@ -79,44 +74,6 @@ begin
     S := S + Format('%d ', [FMembers[I]]);
   WritelnLog('Client', 'PartySystem: team=%d members=%d [%s]',
     [FTeamIndex, Length(FMembers), S]);
-  UpdateIndicators;
-end;
-
-function TPartySystem.FindNodeByName(const ARoot: TCastleTransform;
-  const AName: String): TCastleTransform;
-var
-  I: Integer;
-begin
-  Result := nil;
-  if ARoot = nil then
-    Exit;
-  if ARoot.Name = AName then
-    Exit(ARoot);
-  for I := 0 to ARoot.Count - 1 do
-  begin
-    Result := FindNodeByName(ARoot.Items[I], AName);
-    if Result <> nil then
-      Exit;
-  end;
-end;
-
-procedure TPartySystem.UpdateIndicators;
-var
-  I: Integer;
-  E: IGameEntity;
-  Ind: TCastleTransform;
-begin
-  for I := 0 to High(FMembers) do
-  begin
-    if FMembers[I] = (WorldObj as TGameWorldClient).MainPlayerId then
-      Continue;
-    E := WorldObj.FindPlayerEntity(FMembers[I]);
-    if E = nil then
-      Continue;
-    Ind := FindNodeByName(E.Transform, 'PartyPlayerIndicator');
-    if Ind <> nil then
-      Ind.Exists := True;
-  end;
 end;
 
 function TPartySystem.IsInParty: Boolean;
