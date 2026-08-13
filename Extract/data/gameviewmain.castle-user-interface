@@ -211,6 +211,20 @@
       },
       "Url" : "castle-data:/user_interfaces/GameMenuDesign.castle-user-interface",
       "Width" : 3.1000000000000000E+002
+    },
+    {
+      "$$ClassName" : "TCastleDesign",
+      "Exists" : false,
+      "FullSize" : true,
+      "Height" : 1.6000000000000000E+002,
+      "Name" : "ExtractTimerDesign",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : 7.1000000000000000E+002,
+        "Y" : 6.0000000000000000E+002
+      },
+      "Url" : "castle-data:/user_interfaces/ExtractTimerDesign.castle-user-interface",
+      "Width" : 1.9000000000000000E+002
     }
   ],
   "InternalDesignCamera" : {
@@ -224,15 +238,14 @@
     },
     "RotationPersistent" : {
       "$$ClassName" : "TCastleVector4RotationPersistent",
-      "W" : 3.8973698019981384E-001,
-      "X" : -9.9901109933853149E-001,
-      "Y" : -4.4088922441005707E-002,
-      "Z" : -5.7355030439794064E-003
+      "W" : 4.5282757282257080E-001,
+      "X" : -9.9855834245681763E-001,
+      "Y" : -5.2818849682807922E-002,
+      "Z" : -9.5676640048623085E-003
     },
     "ScalePersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
-      "X" : 9.9999994039535522E-001,
-      "Z" : 9.9999994039535522E-001
+      "X" : 9.9999994039535522E-001
     },
     "TranslationPersistent" : {
       "$$ClassName" : "TCastleVector3Persistent",
