@@ -110,6 +110,8 @@ begin
   FPSCam.CameraMode := cmFirstPerson;
   FPSCam.CursorVisible := False;
   FPSCam.InvertHorizontalMouseLook := False;
+  if (HeadCamera <> nil) and (HeadCamera.Translation.Y <> 0) then
+    FPSCam.EyeHeight := HeadCamera.Translation.Y;
   Cylinder.AddBehavior(FPSCam);
 
   CharCtrl := TCharacterControllerBehavior.Create(Cylinder);

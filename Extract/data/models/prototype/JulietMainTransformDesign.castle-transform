@@ -1,38 +1,34 @@
 {
   "$$ClassName" : "TCastleTransform",
   "Name" : "PlayerPrototype",
-  "$Behaviors" : [
-    {
-      "$$ClassName" : "TCastleMeshCollider",
-      "Mesh" : "VisualRoot",
-      "Name" : "MeshCollider1"
-    },
-    {
-      "$$ClassName" : "TCastleRigidBody",
-      "Name" : "RigidBody1"
-    }
-  ],
   "$Children" : [
     {
-      "$$ClassName" : "TCastleScene",
-      "ExposeTransforms" : [
-      ],
+      "$$ClassName" : "TCastleTransform",
       "Name" : "VisualRoot",
-      "RenderOptions" : {
-        "$$ClassName" : "TCastleScene.TSceneRenderOptions"
-      },
-      "RotationPersistent" : {
-        "$$ClassName" : "TCastleVector4RotationPersistent",
-        "W" : 1.5707963705062866E+000,
-        "Y" : -1.0000000000000000E+000
-      },
-      "ScalePersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "X" : 6.8000000901520252E-003,
-        "Y" : 6.8000000901520252E-003,
-        "Z" : 6.8000000901520252E-003
-      },
-      "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb"
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleScene",
+          "Exists" : false,
+          "ExposeTransforms" : [
+          ],
+          "Name" : "Model",
+          "RenderOptions" : {
+            "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+          },
+          "RotationPersistent" : {
+            "$$ClassName" : "TCastleVector4RotationPersistent",
+            "W" : 1.6738450527191162E+000,
+            "Y" : -9.0000000000000000E+001
+          },
+          "ScalePersistent" : {
+            "$$ClassName" : "TCastleVector3Persistent",
+            "X" : 6.8000000901520252E-003,
+            "Y" : 6.8000000901520252E-003,
+            "Z" : 6.8000000901520252E-003
+          },
+          "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb"
+        }
+      ]
     },
     {
       "$$ClassName" : "TCastleCamera",
@@ -43,11 +39,27 @@
       "Perspective" : {
         "$$ClassName" : "TCastlePerspective"
       },
+      "RotationPersistent" : {
+        "$$ClassName" : "TCastleVector4RotationPersistent",
+        "W" : 1.5707963705062866E+000
+      },
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector3Persistent",
-        "Y" : 6.2491643428802490E-001,
-        "Z" : -5.6520670652389526E-002
+        "Y" : 6.2458217144012451E-001
       }
+    }
+  ],
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleCapsuleCollider",
+      "AutoSize" : false,
+      "Height" : 8.9999997615814209E-001,
+      "Name" : "CapsuleCollider1",
+      "Radius" : 6.2500000000000000E-001
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody1"
     }
   ]
 }
