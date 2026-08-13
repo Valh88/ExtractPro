@@ -22,7 +22,7 @@
             <Filename Value="ExtractProServer"/>
           </Target>
           <SearchPaths>
-            <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+            <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;src/game/rules;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
             <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -57,7 +57,7 @@
             <Filename Value="ExtractProServer_visual"/>
           </Target>
           <SearchPaths>
-            <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+            <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;src/game/rules;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
             <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -167,7 +167,7 @@
       <Filename Value="ExtractProServer"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
+      <OtherUnitFiles Value="src;src/systems;src/behaviours;src/game;src/game/rules;../logic/src;../logic/src/db;../logic/src/behaviors;../logic/src/net;../logic/src/auth_server;../logic/src/castle_bridges;../logic/src/world_systems;../Extract/code/behaviours"/>
       <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
