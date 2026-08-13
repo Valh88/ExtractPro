@@ -26,9 +26,7 @@
       "$$ClassName" : "TCastleLabel",
       "ColorPersistent" : {
         "$$ClassName" : "TCastleColorPersistent",
-        "Blue" : 9.5999997854232788E-001,
-        "Green" : 9.5999997854232788E-001,
-        "Red" : 1.0000000000000000E+000
+        "Alpha" : 8.0000001192092896E-001
       },
       "FontSize" : 2.5000000000000000E+001,
       "HorizontalAnchorParent" : "hpMiddle",
