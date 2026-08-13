@@ -1,0 +1,53 @@
+{
+  "$$ClassName" : "TCastleTransform",
+  "Name" : "PlayerPrototype",
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleMeshCollider",
+      "Mesh" : "VisualRoot",
+      "Name" : "MeshCollider1"
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody1"
+    }
+  ],
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleScene",
+      "ExposeTransforms" : [
+      ],
+      "Name" : "VisualRoot",
+      "RenderOptions" : {
+        "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+      },
+      "RotationPersistent" : {
+        "$$ClassName" : "TCastleVector4RotationPersistent",
+        "W" : 1.5707963705062866E+000,
+        "Y" : -1.0000000000000000E+000
+      },
+      "ScalePersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "X" : 6.8000000901520252E-003,
+        "Y" : 6.8000000901520252E-003,
+        "Z" : 6.8000000901520252E-003
+      },
+      "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb"
+    },
+    {
+      "$$ClassName" : "TCastleCamera",
+      "Name" : "HeadCamera",
+      "Orthographic" : {
+        "$$ClassName" : "TCastleOrthographic"
+      },
+      "Perspective" : {
+        "$$ClassName" : "TCastlePerspective"
+      },
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : 6.2491643428802490E-001,
+        "Z" : -5.6520670652389526E-002
+      }
+    }
+  ]
+}
