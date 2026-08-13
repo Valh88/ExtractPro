@@ -10,7 +10,7 @@ interface
     SysUtils, StrUtils, GameWorld, WorldBridge, CastleTransform, CastleVectors, Interfaces, ServerNetSystem, RNL, NetMessages,
     ServerSnapshotSystem, ServerShotSystem, ServerDbSystem,
     JobQueueSystem, GameSettings, CastleLog,
-    help_types, EntityTypes, ExtractPointSystem, ServerPartySystem;
+    help_types, EntityTypes, ExtractPointSystem, ServerPartySystem, EnemyPartyInZoneRule;
 type
   TMatchPlayerInfo = record
     PlayerId: UInt32;  // id игрока в лобби (matchmaking)
@@ -457,6 +457,7 @@ begin
     FNetSystem.Broadcast(M);
   end;
   ExtractSys.PartySystem := FPartySystem;
+  ExtractSys.AddRule(TEnemyPartyInZoneRule.Create);
   AddSystem(ExtractSys);
 end;
 

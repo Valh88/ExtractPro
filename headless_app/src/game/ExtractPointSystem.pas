@@ -27,6 +27,7 @@ type
     FPartySystem: TServerPartySystem;
     FRules: TObjectList;
     FZonePlayers: array of array of TEntityId;
+    FZoneConflicted: array of Boolean;
     FZoneCount: Integer;
     function FindNodeByName(const ARoot: TCastleTransform; const AName: String): TCastleTransform;
     procedure AttachExtractPointBehavior;
@@ -41,6 +42,7 @@ type
     function PlayerZone(const AEntityId: TEntityId): Integer;
     function EvaluateRules(const APlayerId: TEntityId; const AZoneIndex: Byte): Boolean;
     procedure CancelExtraction(const APlayerId: TEntityId; const AZoneIndex: Byte);
+    procedure StartExtraction(const APlayerId: TEntityId; const AZoneIndex: Byte);
     function PlayerIndex(const AEntityId: TEntityId): Integer;
   public
     constructor Create(AWorldObj: TGameWorld; const AWorldRoot: TCastleAbstractRootTransform);
@@ -125,7 +127,10 @@ begin
     Target.AddBehavior(B);
     FZoneCount := I + 1;
     if FZoneCount > Length(FZonePlayers) then
+    begin
       SetLength(FZonePlayers, FZoneCount);
+      SetLength(FZoneConflicted, FZoneCount);
+    end;
     WritelnLog('Server', 'ExtractPoint zone %d attached (node=%s)', [I, NodeName]);
   end;
   FExtractPointHookDone := True;
@@ -274,14 +279,40 @@ begin
   end;
 end;
 
+procedure TExtractPointSystem.StartExtraction(const APlayerId: TEntityId;
+  const AZoneIndex: Byte);
+var
+  Idx: Integer;
+  P: TPlayerData;
+  Ev: TGameEvent;
+begin
+  Idx := PlayerIndex(APlayerId);
+  if Idx = -1 then
+    Exit;
+  P := WorldObj.Data.Players[Idx];
+  P.IsExtracting := True;
+  P.ExtractionProgress := 0;
+  WorldObj.Data.Players[Idx] := P;
+  Ev.EventType := geExtractionStarted;
+  Ev.EntityId := APlayerId;
+  Ev.SourceId := 0;
+  Ev.Amount := 0;
+  Ev.Position.X := 0;
+  Ev.Position.Y := 0;
+  Ev.Data := nil;
+  WorldObj.QueueEvent(Ev);
+  SendZoneEvent(APlayerId, AZoneIndex, 1, 0, 0, 0);
+  WritelnLog('Server', 'ExtractPoint: extraction of player %d in zone %d started',
+    [APlayerId, AZoneIndex]);
+end;
+
 procedure TExtractPointSystem.OnExtractPointEnter(const AOtherTransform: TCastleTransform;
   const AZoneIndex: Byte);
 var
   Eid: TEntityId;
-  Ev: TGameEvent;
-  Idx: Integer;
-  P: TPlayerData;
+  I: Integer;
   PosX, PosY: Single;
+  Conflicted: Boolean;
 begin
   Eid := PlayerEntityIdByTransform(AOtherTransform);
   if Eid = 0 then
@@ -296,25 +327,20 @@ begin
       [Eid, AZoneIndex]);
     Exit;
   end;
-  if not EvaluateRules(Eid, AZoneIndex) then
+  Conflicted := not EvaluateRules(Eid, AZoneIndex);
+  if Conflicted then
+  begin
+    { В зоне оказались вражеские пати — отменяем экстракцию ВСЕМ в зоне
+      (включая вошедшего, которому мы не успели её начать). }
+    WritelnLog('Server', 'ExtractPoint: zone %d has enemy parties, cancel extraction for all',
+      [AZoneIndex]);
+    if AZoneIndex < Length(FZoneConflicted) then
+      FZoneConflicted[AZoneIndex] := True;
+    for I := 0 to High(FZonePlayers[AZoneIndex]) do
+      CancelExtraction(FZonePlayers[AZoneIndex][I], AZoneIndex);
     Exit;
-  Idx := PlayerIndex(Eid);
-  if Idx = -1 then
-    Exit;
-  P := WorldObj.Data.Players[Idx];
-  P.IsExtracting := True;
-  P.ExtractionProgress := 0;
-  WorldObj.Data.Players[Idx] := P;
-  Ev.EventType := geExtractionStarted;
-  Ev.EntityId := Eid;
-  Ev.SourceId := 0;
-  Ev.Amount := 0;
-  Ev.Position.X := PosX;
-  Ev.Position.Y := PosY;
-  Ev.Data := nil;
-  WorldObj.QueueEvent(Ev);
-  WritelnLog('Server', 'ExtractPoint: player (entity %d) entered zone %d, extraction started',
-    [Eid, AZoneIndex]);
+  end;
+  StartExtraction(Eid, AZoneIndex);
 end;
 
 procedure TExtractPointSystem.OnExtractPointExit(const AOtherTransform: TCastleTransform;
@@ -322,7 +348,7 @@ procedure TExtractPointSystem.OnExtractPointExit(const AOtherTransform: TCastleT
 var
   Eid: TEntityId;
   Ev: TGameEvent;
-  Idx: Integer;
+  Idx, I: Integer;
   P: TPlayerData;
 begin
   Eid := PlayerEntityIdByTransform(AOtherTransform);
@@ -347,6 +373,18 @@ begin
   Ev.Data := nil;
   WorldObj.QueueEvent(Ev);
   WritelnLog('Server', 'ExtractPoint: player (entity %d) left zone %d', [Eid, AZoneIndex]);
+  { Если зона была в конфликте (вражеские пати) и враг покинул её —
+    перезапускаем экстракцию оставшимся (с начала). }
+  if WorldObj.GameState <> sgsPlaying then
+    Exit;
+  if AZoneIndex >= Length(FZoneConflicted) then
+    Exit;
+  if not FZoneConflicted[AZoneIndex] then
+    Exit;
+  FZoneConflicted[AZoneIndex] := False;
+  for I := 0 to High(FZonePlayers[AZoneIndex]) do
+    if EvaluateRules(FZonePlayers[AZoneIndex][I], AZoneIndex) then
+      StartExtraction(FZonePlayers[AZoneIndex][I], AZoneIndex);
 end;
 
 procedure TExtractPointSystem.Update(const SecondsPassed: Single);
