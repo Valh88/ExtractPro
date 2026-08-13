@@ -7,7 +7,7 @@ unit ExtractPointSystem;
 interface
 
 uses
-  SysUtils, Contnrs,
+  SysUtils, Generics.Collections,
   CastleTransform, CastleLog,
   GameWorld, WorldSystemBase, EventBus, EntityTypes, help_types,
   NetMessages, GameConfig, GameSettings,
@@ -19,13 +19,25 @@ type
     RegisterSystems, как SendHitProc у TServerShotSystem). }
   TExtractZoneEventProc = reference to procedure(const ZoneEvent: TExtractZoneEvent);
 
+  { Список правил одной зоны (владеет правилами). }
+  TZoneRuleList = specialize TObjectList<TExtractionRule>;
+
+  { Список списков правил по зонам (владеет вложенными списками). }
+  TZoneRuleListArray = specialize TList<TZoneRuleList>;
+
+const
+  { Специальный индекс зоны: правило применяется ко всем зонам. }
+  AllZones = -1;
+
+type
   TExtractPointSystem = class(TWorldSystemBase)
   private
     FWorldRoot: TCastleAbstractRootTransform;
     FExtractPointHookDone: Boolean;
     FSendZoneEventProc: TExtractZoneEventProc;
     FPartySystem: TServerPartySystem;
-    FRules: TObjectList;
+    FGlobalRules: TZoneRuleList;
+    FRules: TZoneRuleListArray;
     FZonePlayers: array of array of TEntityId;
     FZoneConflicted: array of Boolean;
     FZoneCount: Integer;
@@ -44,11 +56,13 @@ type
     procedure CancelExtraction(const APlayerId: TEntityId; const AZoneIndex: Byte);
     procedure StartExtraction(const APlayerId: TEntityId; const AZoneIndex: Byte);
     function PlayerIndex(const AEntityId: TEntityId): Integer;
+    procedure EnsureZoneRules(const AZoneIndex: Integer);
   public
     constructor Create(AWorldObj: TGameWorld; const AWorldRoot: TCastleAbstractRootTransform);
     destructor Destroy; override;
     procedure Update(const SecondsPassed: Single); override;
-    procedure AddRule(const ARule: TExtractionRule);
+    procedure AddRule(const AZoneIndex: Integer; const ARule: TExtractionRule); overload;
+    procedure AddRule(const ARule: TExtractionRule); overload;
     property SendZoneEventProc: TExtractZoneEventProc read FSendZoneEventProc write FSendZoneEventProc;
     property PartySystem: TServerPartySystem read FPartySystem write FPartySystem;
     property ZoneCount: Integer read FZoneCount;
@@ -68,13 +82,22 @@ constructor TExtractPointSystem.Create(AWorldObj: TGameWorld;
 begin
   inherited Create(AWorldObj);
   FWorldRoot := AWorldRoot;
-  FRules := TObjectList.Create(True);
+  FGlobalRules := TZoneRuleList.Create;
+  FRules := TZoneRuleListArray.Create;
   FZoneCount := 0;
 end;
 
 destructor TExtractPointSystem.Destroy;
+var
+  I: Integer;
 begin
-  FRules.Free;
+  FGlobalRules.Free;
+  if FRules <> nil then
+  begin
+    for I := 0 to FRules.Count - 1 do
+      FRules[I].Free;
+    FRules.Free;
+  end;
   inherited;
 end;
 
@@ -131,6 +154,8 @@ begin
       SetLength(FZonePlayers, FZoneCount);
       SetLength(FZoneConflicted, FZoneCount);
     end;
+    if FRules.Count < FZoneCount then
+      FRules.Add(TZoneRuleList.Create);
     WritelnLog('Server', 'ExtractPoint zone %d attached (node=%s)', [I, NodeName]);
   end;
   FExtractPointHookDone := True;
@@ -228,13 +253,26 @@ end;
 
 function TExtractPointSystem.EvaluateRules(const APlayerId: TEntityId;
   const AZoneIndex: Byte): Boolean;
+
+  function CheckList(const ARules: TZoneRuleList;
+    const Ctx: TExtractionContext): Boolean;
+  var
+    I: Integer;
+  begin
+    Result := True;
+    for I := 0 to ARules.Count - 1 do
+      if not ARules[I].Evaluate(Ctx) then
+      begin
+        WritelnLog('Server', 'ExtractPoint: rule "%s" blocked extraction of player %d in zone %d',
+          [ARules[I].Name, APlayerId, AZoneIndex]);
+        Exit(False);
+      end;
+  end;
+
 var
-  I: Integer;
   Ctx: TExtractionContext;
 begin
   Result := True;
-  if FRules.Count = 0 then
-    Exit;
   Ctx.PlayerId := APlayerId;
   Ctx.ZoneIndex := AZoneIndex;
   Ctx.World := WorldObj;
@@ -242,13 +280,12 @@ begin
   Ctx.ZonePlayers := nil;
   if AZoneIndex < Length(FZonePlayers) then
     Ctx.ZonePlayers := FZonePlayers[AZoneIndex];
-  for I := 0 to FRules.Count - 1 do
-    if not TExtractionRule(FRules[I]).Evaluate(Ctx) then
-    begin
-      WritelnLog('Server', 'ExtractPoint: rule "%s" blocked extraction of player %d in zone %d',
-        [TExtractionRule(FRules[I]).Name, APlayerId, AZoneIndex]);
+  if FGlobalRules.Count > 0 then
+    if not CheckList(FGlobalRules, Ctx) then
       Exit(False);
-    end;
+  if (AZoneIndex < FRules.Count) and (FRules[AZoneIndex].Count > 0) then
+    if not CheckList(FRules[AZoneIndex], Ctx) then
+      Exit(False);
 end;
 
 procedure TExtractPointSystem.CancelExtraction(const APlayerId: TEntityId;
@@ -436,9 +473,27 @@ begin
   end;
 end;
 
+procedure TExtractPointSystem.EnsureZoneRules(const AZoneIndex: Integer);
+begin
+  while FRules.Count <= AZoneIndex do
+    FRules.Add(TZoneRuleList.Create);
+end;
+
+procedure TExtractPointSystem.AddRule(const AZoneIndex: Integer;
+  const ARule: TExtractionRule);
+begin
+  if AZoneIndex = AllZones then
+    FGlobalRules.Add(ARule)
+  else
+  begin
+    EnsureZoneRules(AZoneIndex);
+    FRules[AZoneIndex].Add(ARule);
+  end;
+end;
+
 procedure TExtractPointSystem.AddRule(const ARule: TExtractionRule);
 begin
-  FRules.Add(ARule);
+  FGlobalRules.Add(ARule);
 end;
 
 end.

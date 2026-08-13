@@ -457,7 +457,7 @@ begin
     FNetSystem.Broadcast(M);
   end;
   ExtractSys.PartySystem := FPartySystem;
-  ExtractSys.AddRule(TEnemyPartyInZoneRule.Create);
+  ExtractSys.AddRule(AllZones, TEnemyPartyInZoneRule.Create);
   AddSystem(ExtractSys);
 end;
 
