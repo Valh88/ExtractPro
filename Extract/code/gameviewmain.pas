@@ -15,6 +15,7 @@ type
     Viewport1: TCastleViewport;
     InfoDesign: TCastleDesign;
     TimerSceneStartDesign: TCastleDesign;
+    ExtractTimerDesign: TCastleDesign;
     GameMenuDesign: TCastleDesign;
     Hud: TCastleDesign;
   public
