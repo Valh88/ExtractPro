@@ -382,6 +382,8 @@ begin
         ZonePayload.PosZ := ZoneEv.PosZ;
         if ZoneEv.Entered = 1 then
           E.EventType := cgeExtractZoneEntered
+        else if ZoneEv.Entered = 2 then
+          E.EventType := cgeExtractZoneCancelled
         else
           E.EventType := cgeExtractZoneExited;
         E.Amount := ZoneEv.ZoneIndex;

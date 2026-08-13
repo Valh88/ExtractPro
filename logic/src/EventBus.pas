@@ -20,6 +20,7 @@ type
     geItemPickedUp,
     geExtractZoneEntered,
     geExtractZoneExited,
+    geExtractZoneCancelled,
     gePlayerDiedInZone
   );
 

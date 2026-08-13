@@ -17,6 +17,7 @@ type
     cgeGameStateChanged,   // Amount = ординал TServerGameState
     cgeExtractZoneEntered, // игрок вошёл в зону эвакуации (Data = TExtractZonePayload)
     cgeExtractZoneExited,  // игрок вышел из зоны эвакуации (Data = TExtractZonePayload)
+    cgeExtractZoneCancelled, // извлечение отменено правилом (Data = TExtractZonePayload)
     cgePartyInfo,          // состав отряда (Data = TPartyInfoPayload)
     cgePingUpdate          // пинг до сервера (Amount = RTT мс)
   );

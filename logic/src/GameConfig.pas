@@ -72,7 +72,7 @@ begin
   LobbyPort := LOBBY_SERVER_DEFAULT_PORT;
   GamePort := GAME_SERVER_DEFAULT_PORT;
   RaidTime := 600;
-  ExtractionTime := 5;
+  ExtractionTime := 10;
   MaxPlayers := 8;
   PlayerBaseHealth := 100;
   PlayerBaseSpeed := 5;

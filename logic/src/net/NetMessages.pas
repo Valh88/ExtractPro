@@ -140,8 +140,9 @@ type
     class function FromBytes(const Data: TBytes; out Value: THitData): Boolean; static;
   end;
 
-  { Событие зоны эвакуации: игрок (EntityId) вошёл (Entered=1) или вышел (Entered=0)
-    из зоны ZoneIndex. Позиция — точка входа/выхода. }
+  { Событие зоны эвакуации: игрок (EntityId) вошёл (Entered=1), вышел (Entered=0)
+    или извлечение отменено правилом (Entered=2) в зоне ZoneIndex.
+    Позиция — точка входа/выхода. }
   TExtractZoneEvent = packed record
     EntityId: UInt32;
     Entered: Byte;

@@ -149,6 +149,7 @@ begin
   P.Init;
   P.Status := psInRaid;
   P.ExtractionProgress := 0;
+  P.IsExtracting := False;
   P.Kills := 0;
   P.Damage := 10;
   P.AttackRange := 5;
@@ -280,6 +281,7 @@ begin
   P.Init;
   P.Status := psInRaid;
   P.ExtractionProgress := 0;
+  P.IsExtracting := False;
   P.Kills := 0;
   P.Damage := GlobalConfig.PlayerBaseDamage;
   P.AttackRange := GlobalConfig.PlayerAttackRange;

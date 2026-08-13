@@ -446,6 +446,8 @@ begin
   AddSystem(TServerSnapshotSystem.Create(Self, FNetSystem.Server));
   AddSystem(FShotSystem);
   AddSystem(TJobQueueSystem.Create(Self));
+  FPartySystem := TServerPartySystem.Create(Self);
+  AddSystem(FPartySystem);
   ExtractSys := TExtractPointSystem.Create(Self, FWorldRoot);
   ExtractSys.SendZoneEventProc := procedure(const ZoneEvent: TExtractZoneEvent)
   var
@@ -454,9 +456,8 @@ begin
     M.Init(msgExtractZone, ZoneEvent.ToBytes);
     FNetSystem.Broadcast(M);
   end;
+  ExtractSys.PartySystem := FPartySystem;
   AddSystem(ExtractSys);
-  FPartySystem := TServerPartySystem.Create(Self);
-  AddSystem(FPartySystem);
 end;
 
 procedure TGameWorldServer.Update(const SecondsPassed: Single);
