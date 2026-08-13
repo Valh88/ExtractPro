@@ -8,6 +8,7 @@ uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages,
   help_types, Interfaces,
+  CastleTransform,
   PlayerInterpolationBehavior;
 
 const
@@ -30,6 +31,7 @@ type
     procedure SetLocalPlayerId(const AId: TEntityId);
     procedure HandleSnapshot(const Data: TSnapshotData);
     procedure Update(const SecondsPassed: Single); override;
+    procedure ConfigureRemoteRigidBodies(const ATransform: TCastleTransform);
   end;
 
 implementation
@@ -39,6 +41,25 @@ implementation
 procedure TClientSnapshotSystem.SetLocalPlayerId(const AId: TEntityId);
 begin
   FLocalPlayerId := AId;
+end;
+
+procedure TClientSnapshotSystem.ConfigureRemoteRigidBodies(
+  const ATransform: TCastleTransform);
+var
+  BList: TCastleBehaviorList;
+  I: Integer;
+begin
+  if ATransform = nil then Exit;
+  BList := ATransform.FindAllBehaviors(TCastleRigidBody);
+  try
+    for I := 0 to BList.Count - 1 do
+    begin
+      TCastleRigidBody(BList[I]).Dynamic := False;
+      TCastleRigidBody(BList[I]).Animated := True;
+    end;
+  finally
+    BList.Free;
+  end;
 end;
 
 procedure TClientSnapshotSystem.HandleSnapshot(const Data: TSnapshotData);
@@ -73,11 +94,7 @@ begin
       if Entry.EntityType = 0 then
       begin
         Entity := WorldObj.Factory.CreatePlayerEntity(Entry.EntityId);
-        if Entity.Transform.RigidBody <> nil then
-        begin
-          Entity.Transform.RigidBody.Dynamic := False;
-          Entity.Transform.RigidBody.Animated := True;
-        end;
+        ConfigureRemoteRigidBodies(Entity.Transform);
         WorldObj.AddPlayer(Entity);
       end;
       if Entity = nil then Continue;

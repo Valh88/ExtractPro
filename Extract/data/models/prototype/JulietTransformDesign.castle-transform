@@ -1,0 +1,51 @@
+{
+  "$$ClassName" : "TCastleTransform",
+  "Name" : "PlayerPrototype",
+  "RotationPersistent" : {
+    "$$ClassName" : "TCastleVector4RotationPersistent",
+    "W" : 1.5707963705062866E+000
+  },
+  "$Children" : [
+    {
+      "$$ClassName" : "TCastleTransform",
+      "Name" : "VisualRoot",
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleScene",
+          "Cache" : true,
+          "CastShadows" : false,
+          "ExposeTransforms" : [
+          ],
+          "Name" : "Model",
+          "ProcessEvents" : true,
+          "RenderOptions" : {
+            "$$ClassName" : "TCastleScene.TSceneRenderOptions"
+          },
+          "RotationPersistent" : {
+            "$$ClassName" : "TCastleVector4RotationPersistent",
+            "W" : 1.5707963705062866E+000,
+            "Y" : -1.0000000000000000E+000
+          },
+          "ScalePersistent" : {
+            "$$ClassName" : "TCastleVector3Persistent",
+            "X" : 6.8000000901520252E-003,
+            "Y" : 6.8000000901520252E-003,
+            "Z" : 6.8000000901520252E-003
+          },
+          "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb",
+          "$Behaviors" : [
+            {
+              "$$ClassName" : "TCastleMeshCollider",
+              "Mesh" : "Model",
+              "Name" : "MeshCollider1"
+            },
+            {
+              "$$ClassName" : "TCastleRigidBody",
+              "Name" : "RigidBody1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

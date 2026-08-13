@@ -119,7 +119,7 @@ begin
 
   Factory := TEntityManager.Create(
     'castle-data:/PlayerProto.castle-transform',
-    'castle-data:/PlayerProtoNoCamera.castle-transform',
+    'castle-data:/models/prototype/JulietTransformDesign.castle-transform',
     'castle-data:/EnemyProto.castle-transform',
     Viewport1
   );
