@@ -14,10 +14,12 @@ type
   private
     FMyEntityId: UInt32;
     FVisRoot: TCastleTransform;
+    FPitch: Single;
   public
     constructor Create(AOwner: TComponent; AMyEntityId: UInt32); reintroduce;
     procedure ApplyState(const State: TPlayerStateData);
     property MyEntityId: UInt32 read FMyEntityId;
+    property Pitch: Single read FPitch;
   end;
 
 implementation
@@ -37,6 +39,7 @@ begin
   if Parent = nil then Exit;
 
   Parent.Translation := CastleVectors.Vector3(State.PosX, State.PosY, State.PosZ);
+  FPitch := State.Pitch;
 
   if FVisRoot = nil then
     for I := 0 to Parent.Count - 1 do

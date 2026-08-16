@@ -59,6 +59,7 @@ type
     EntityId: UInt32;
     PosX, PosY, PosZ: Single;
     RotY: Single;
+    Pitch: Single;
     function ToBytes: TBytes;
     class function FromBytes(const Data: TBytes; out Value: TPlayerStateData): Boolean; static;
   end;
@@ -157,6 +158,7 @@ type
     EntityId: UInt32;
     EntityType: Byte;
     PosX, PosY, PosZ, RotY: Single;
+    Pitch: Single;
   end;
 
   TSnapshotData = record

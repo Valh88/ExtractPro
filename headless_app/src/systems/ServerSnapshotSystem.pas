@@ -8,7 +8,8 @@ uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages, NetServer,
   EntityTypes,
-  CastleTransform, CastleVectors, CastleLog;
+  CastleTransform, CastleVectors, CastleLog,
+  ServerPlayerSyncBehavior;
 
 type
   TServerSnapshotSystem = class(TWorldSystemBase)
@@ -47,6 +48,7 @@ var
   Entry: TSnapshotEntry;
   VisRoot: TCastleTransform;
   TmpI: Integer;
+  Sync: TServerPlayerSync;
 begin
   FServerTime := FServerTime + SecondsPassed;
   FTimer := FTimer + SecondsPassed;
@@ -92,6 +94,10 @@ begin
       Entry.RotY := VisRoot.Rotation.W
     else
       Entry.RotY := P.Visual.Transform.Rotation.W;
+    Entry.Pitch := 0;
+    Sync := P.Visual.Transform.FindBehavior(TServerPlayerSync) as TServerPlayerSync;
+    if Sync <> nil then
+      Entry.Pitch := Sync.Pitch;
     Snap.Entries[Cnt] := Entry;
     Inc(Cnt);
   end;

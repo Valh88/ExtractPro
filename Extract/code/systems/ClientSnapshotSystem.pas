@@ -101,7 +101,7 @@ begin
 
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
-      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY, Entry.Pitch);
       Continue;
     end;
 
@@ -110,10 +110,10 @@ begin
     begin
       Interp := TPlayerInterpolation.Create(Entity.Transform);
       Entity.Transform.AddBehavior(Interp);
-      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      Interp.SnapTo(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY, Entry.Pitch);
     end
     else
-      Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY);
+      Interp.ApplyTarget(Entry.PosX, Entry.PosY, Entry.PosZ, Entry.RotY, Entry.Pitch);
   end;
 end;
 

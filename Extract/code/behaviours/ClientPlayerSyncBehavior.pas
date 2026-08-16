@@ -9,7 +9,8 @@ interface
 uses
   SysUtils, Classes, Math,
   CastleTransform, CastleVectors,
-  NetMessages, BehaviorBase;
+  NetMessages, BehaviorBase,
+  FirstPersonCameraBehavior;
 
 type
   TSendMessageProc = reference to procedure(const Msg: TNetMessage; const AChannel: Integer);
@@ -43,6 +44,7 @@ var
   M: TNetMessage;
   VisRoot: TCastleTransform;
   I: Integer;
+  FPSCam: TFirstPersonCameraBehavior;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -67,6 +69,11 @@ begin
       PState.RotY := VisRoot.Rotation.W
     else
       PState.RotY := ArcTan2(Parent.Direction.X, -Parent.Direction.Z);
+    FPSCam := Parent.FindBehavior(TFirstPersonCameraBehavior) as TFirstPersonCameraBehavior;
+    if FPSCam <> nil then
+      PState.Pitch := FPSCam.PitchAngle
+    else
+      PState.Pitch := 0;
     M.Init(msgPlayerState, PState.ToBytes);
     if Assigned(FSendProc) then
       FSendProc(M, NET_CH_UNRELIABLE);

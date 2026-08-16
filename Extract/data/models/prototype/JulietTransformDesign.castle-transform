@@ -3,7 +3,8 @@
   "Name" : "PlayerPrototype",
   "RotationPersistent" : {
     "$$ClassName" : "TCastleVector4RotationPersistent",
-    "W" : 1.5707963705062866E+000
+    "Y" : 1.0000000000000000E+000,
+    "W" : -1.5707963267948966E+000
   },
   "$Children" : [
     {

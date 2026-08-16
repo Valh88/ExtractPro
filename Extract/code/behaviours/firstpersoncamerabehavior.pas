@@ -102,6 +102,7 @@ type
     property FocusHeight: Single read FFocusHeight write FFocusHeight;
     property HorizontalAngle: Single read FAngleH;
     property TargetAngle: Single read FSmoothedH;
+    property PitchAngle: Single read FSmoothedV;
     property VisualRoot: TCastleTransform read FVisualRoot write FVisualRoot;
   end;
 
