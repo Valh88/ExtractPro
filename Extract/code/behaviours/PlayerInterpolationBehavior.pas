@@ -7,26 +7,21 @@ interface
 uses
   SysUtils, Classes, Math,
   CastleTransform, CastleVectors,
-  CastleScene, CastleQuaternions,
-  X3DNodes,
-  BehaviorBase;
+  BehaviorBase,
+  PlayerAnimationBehavior;
 
 type
   TPlayerInterpolation = class(TBehaviorBase)
   private
     FTargetPos: TVector3;
     FTargetRot: Single;
-    FTargetPitch: Single;
     FVisRoot: TCastleTransform;
-    FHeadBone: TTransformNode;
-    FHeadBaseRot: TVector4;
-    FHeadSearched: Boolean;
-    FPitch: Single;
     FSmoothFactor: Single;
-    function FindHeadBone: TTransformNode;
-    function HeadRotationForPitch(const APitch: Single): TVector4;
-    procedure ApplyPitch(const APitch: Single);
-
+    FLastPos: TVector3;
+    FLastTime: Single;
+    FAnim: TPlayerAnimationBehavior;
+    function FindAnimationBehavior: TPlayerAnimationBehavior;
+    function ComputeState(const MoveX, MoveZ: Single): TPlayerMoveState;
   public
     constructor Create(AOwner: TComponent); override;
     procedure ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single);
@@ -49,73 +44,75 @@ const
 const
   VisualRootYOffset: Single = -0.78;
 
+{ Пороги скорости (единицы/сек) для определения состояния анимации. }
+const
+  SpeedIdle = 0.5;
+  SpeedRun = 4.0;
+
 { TPlayerInterpolation }
 
 constructor TPlayerInterpolation.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FSmoothFactor := 20.0;
-  FHeadBone := nil;
-  FHeadSearched := False;
-  FHeadBaseRot := TVector4.Zero;
-  FPitch := 0;
+  FLastPos := TVector3.Zero;
+  FLastTime := 0;
+  FAnim := nil;
 end;
 
-function TPlayerInterpolation.FindHeadBone: TTransformNode;
-var
-  I: Integer;
-  Model: TCastleScene;
+function TPlayerInterpolation.FindAnimationBehavior: TPlayerAnimationBehavior;
 begin
-  Result := FHeadBone;
-  if FHeadSearched then Exit;
-  FHeadSearched := True;
-  if Parent = nil then Exit;
-  if FVisRoot = nil then
-    for I := 0 to Parent.Count - 1 do
-      if Parent.Items[I].Name = 'VisualRoot' then
-      begin
-        FVisRoot := Parent.Items[I];
-        Break;
-      end;
+  if FAnim = nil then
+    FAnim := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
+  Result := FAnim;
+end;
+
+function TPlayerInterpolation.ComputeState(const MoveX, MoveZ: Single): TPlayerMoveState;
+var
+  Yaw: Single;
+  ForwardX, ForwardZ: Single;
+  Dot: Single;
+  MoveLen: Single;
+begin
+  Result := msIdle;
+  MoveLen := Sqrt(Sqr(MoveX) + Sqr(MoveZ));
+  if MoveLen < SpeedIdle then Exit;
+
+  { Направление взгляда (yaw VisualRoot) -> forward вектор }
   if FVisRoot <> nil then
+    Yaw := FVisRoot.Rotation.W
+  else
+    Yaw := Parent.Rotation.W;
+  ForwardX := Sin(Yaw);
+  ForwardZ := -Cos(Yaw);
+
+  if MoveLen >= SpeedRun then
+    Result := msRunForward
+  else
+    Result := msWalkForward;
+
+  { Определяем направление движения относительно взгляда:
+    Dot = (move dir) . (forward dir). }
+  Dot := (MoveX * ForwardX + MoveZ * ForwardZ) / Max(MoveLen, 0.001);
+  if Dot < -0.5 then
+    Result := msWalkBack
+  else if (Dot >= -0.5) and (Dot <= 0.5) then
   begin
-    for I := 0 to FVisRoot.Count - 1 do
-      if FVisRoot.Items[I] is TCastleScene then
-      begin
-        Model := TCastleScene(FVisRoot.Items[I]);
-        if Model.RootNode <> nil then
-        begin
-          Result := Model.RootNode.FindNode(TTransformNode, 'headx',
-            [fnNilOnMissing]) as TTransformNode;
-          if Result <> nil then
-            FHeadBaseRot := Result.Rotation;
-        end;
-        Break;
-      end;
+    { стрейф: знак перекрёстного произведения определяет влево/вправо }
+    if (ForwardX * MoveZ - ForwardZ * MoveX) > 0 then
+      Result := msWalkRight
+    else
+      Result := msWalkLeft;
   end;
-  FHeadBone := Result;
-end;
-
-function TPlayerInterpolation.HeadRotationForPitch(const APitch: Single): TVector4;
-var
-  QBase, QPitch: TQuaternion;
-begin
-  QBase := QuatFromAxisAngle(FHeadBaseRot, true);
-  QPitch := QuatFromAxisAngle(TVector3.One[0], APitch, true);
-  Result := (QBase * QPitch).ToAxisAngle;
-end;
-
-procedure TPlayerInterpolation.ApplyPitch(const APitch: Single);
-begin
-  if FHeadBone <> nil then
-    FHeadBone.Rotation := HeadRotationForPitch(APitch);
 end;
 
 procedure TPlayerInterpolation.ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single);
 begin
   FTargetPos := Vector3(AX, AY, AZ);
   FTargetRot := ARotY;
-  FTargetPitch := -APitch;
+  FAnim := FindAnimationBehavior;
+  if FAnim <> nil then
+    FAnim.SetPitch(-APitch);
 end;
 
 procedure TPlayerInterpolation.SnapTo(const AX, AY, AZ, ARotY, APitch: Single);
@@ -124,7 +121,6 @@ var
 begin
   FTargetPos := Vector3(AX, AY, AZ);
   FTargetRot := ARotY;
-  FTargetPitch := -APitch;
 
   if Parent = nil then Exit;
   Parent.Translation := Vector3(AX, AY - ModelCenterOffset, AZ);
@@ -145,15 +141,17 @@ begin
   else
     Parent.Rotation := Vector4(0, 1, 0, FTargetRot);
 
-  FindHeadBone;
-  FPitch := FTargetPitch;
-  ApplyPitch(FPitch);
+  FAnim := FindAnimationBehavior;
+  if FAnim <> nil then
+    FAnim.SetPitch(-APitch);
 end;
 
 procedure TPlayerInterpolation.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
 var
-  K, Diff, CurrRot, DiffPitch: Single;
+  K, Diff, CurrRot: Single;
   I: Integer;
+  MoveX, MoveZ: Single;
+  DT: Single;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -191,15 +189,17 @@ begin
       Parent.Rotation := Vector4(0, 1, 0, CurrRot + Diff * K);
   end;
 
-  FindHeadBone;
-  DiffPitch := FTargetPitch - FPitch;
-  if DiffPitch > Pi then DiffPitch := DiffPitch - 2 * Pi;
-  if DiffPitch < -Pi then DiffPitch := DiffPitch + 2 * Pi;
-  if Abs(DiffPitch) > 0.001 then
-  begin
-    FPitch := FPitch + DiffPitch * K;
-    ApplyPitch(FPitch);
-  end;
+  { Вычисляем скорость движения по дельте позиции и определяем состояние анимации. }
+  DT := FLastTime;
+  FLastTime := SecondsPassed;
+  MoveX := Parent.Translation.X - FLastPos.X;
+  MoveZ := Parent.Translation.Z - FLastPos.Z;
+  FLastPos := Parent.Translation;
+
+  FAnim := FindAnimationBehavior;
+  if FAnim <> nil then
+    if DT > 0 then
+      FAnim.SetState(ComputeState(MoveX / DT, MoveZ / DT));
 end;
 
 end.

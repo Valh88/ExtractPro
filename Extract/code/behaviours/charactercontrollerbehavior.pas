@@ -8,7 +8,8 @@ uses
   Classes,
   CastleVectors, CastleTransform, CastleCameras,
   CastleViewport, CastleUIControls, CastleKeysMouse, CastleApplicationProperties,
-  FirstPersonCameraBehavior, TouchMoveControl;
+  FirstPersonCameraBehavior, TouchMoveControl,
+  PlayerAnimationBehavior;
 
 type
   TCharacterControllerBehavior = class(TCastleBehavior)
@@ -24,14 +25,16 @@ type
     FCanJump: Boolean;
     FFirstPersonCam: TFirstPersonCameraBehavior;
     FInputEnabled: Boolean;
+    FRunning: Boolean;
+    FMoveDir: TVector3;
     procedure EnsureTouchMoveControl;
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
-    function ForwardDir: TVector3;
-    function RightDir: TVector3;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
+    function ForwardDir: TVector3;
+    function RightDir: TVector3;
 
     property Viewport: TCastleViewport read FViewport write FViewport;
     property Camera: TCastleCamera read FCamera write FCamera;
@@ -41,6 +44,9 @@ type
     property TouchMove: TVector2 read FTouchMove write FTouchMove;
     property FirstPersonCam: TFirstPersonCameraBehavior read FFirstPersonCam write FFirstPersonCam;
     property InputEnabled: Boolean read FInputEnabled write FInputEnabled;
+    property Moving: Boolean read FMoving;
+    property Running: Boolean read FRunning;
+    property MoveDir: TVector3 read FMoveDir;
   end;
 
 implementation
@@ -59,6 +65,8 @@ begin
   FSmoothStop := 8.0;
   FJumpSpeed := 6.0;
   FInputEnabled := True;
+  FRunning := False;
+  FMoveDir := TVector3.Zero;
 end;
 
 procedure TCharacterControllerBehavior.EnsureTouchMoveControl;
@@ -109,8 +117,9 @@ procedure TCharacterControllerBehavior.Update(const SecondsPassed: Single;
 var
   Cont: TCastleContainer;
   RB: TCastleRigidBody;
-  MoveDir, Vel: TVector3;
+  MoveDirLocal, Vel: TVector3;
   Speed: Single;
+  AnimBeh: TPlayerAnimationBehavior;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -138,12 +147,12 @@ begin
 
   Speed := FMoveSpeed;
 
-  MoveDir := TVector3.Zero;
+  MoveDirLocal := TVector3.Zero;
   FMoving := false;
 
   if FTouchMove.Length > 0.01 then
   begin
-    MoveDir := ForwardDir * FTouchMove.Y + RightDir * FTouchMove.X;
+    MoveDirLocal := ForwardDir * FTouchMove.Y + RightDir * FTouchMove.X;
     FMoving := true;
   end;
 
@@ -151,22 +160,22 @@ begin
   begin
     if Cont.Pressed[keyW] or Cont.Pressed[keyArrowUp] then
     begin
-      MoveDir := MoveDir + ForwardDir;
+      MoveDirLocal := MoveDirLocal + ForwardDir;
       FMoving := true;
     end;
     if Cont.Pressed[keyS] or Cont.Pressed[keyArrowDown] then
     begin
-      MoveDir := MoveDir - ForwardDir;
+      MoveDirLocal := MoveDirLocal - ForwardDir;
       FMoving := true;
     end;
     if Cont.Pressed[keyD] or Cont.Pressed[keyArrowRight] then
     begin
-      MoveDir := MoveDir + RightDir;
+      MoveDirLocal := MoveDirLocal + RightDir;
       FMoving := true;
     end;
     if Cont.Pressed[keyA] or Cont.Pressed[keyArrowLeft] then
     begin
-      MoveDir := MoveDir - RightDir;
+      MoveDirLocal := MoveDirLocal - RightDir;
       FMoving := true;
     end;
   end;
@@ -174,14 +183,16 @@ begin
     Speed := Speed * 2
   else
     Speed := FMoveSpeed;
+  FRunning := Cont.Pressed[keyShift];
+  FMoveDir := MoveDirLocal;
   Vel := RB.LinearVelocity;
 
   if FMoving then
   begin
-    if not MoveDir.IsPerfectlyZero then
-      MoveDir := MoveDir.Normalize;
-    Vel.X := MoveDir.X * Speed;
-    Vel.Z := MoveDir.Z * Speed;
+    if not MoveDirLocal.IsPerfectlyZero then
+      MoveDirLocal := MoveDirLocal.Normalize;
+    Vel.X := MoveDirLocal.X * Speed;
+    Vel.Z := MoveDirLocal.Z * Speed;
   end else
   begin
     Vel.X := Vel.X * 0.85;
@@ -192,9 +203,34 @@ begin
 
   FCanJump := Abs(Vel.Y) < 0.01;
   if FCanJump and Cont.Pressed[keySpace] then
+  begin
     Vel.Y := FJumpSpeed;
+    if Parent <> nil then
+    begin
+      AnimBeh := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
+      if AnimBeh <> nil then
+        AnimBeh.RequestJump;
+    end;
+  end;
 
   RB.LinearVelocity := Vel;
+
+  { Определяем состояние анимации локального (майн) игрока. }
+  if Parent <> nil then
+  begin
+    AnimBeh := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
+    if AnimBeh <> nil then
+    begin
+      if not FMoving then
+        AnimBeh.SetState(msIdle)
+      else if FRunning then
+        AnimBeh.SetState(msRunForward)
+      else
+        AnimBeh.SetState(msWalkForward);
+      if FFirstPersonCam <> nil then
+        AnimBeh.SetPitch(FFirstPersonCam.PitchAngle);
+    end;
+  end;
 end;
 
 end.

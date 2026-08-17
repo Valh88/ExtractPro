@@ -8,7 +8,8 @@ uses
   SysUtils, Classes, CastleScene, CastleTransform, CastleVectors, CastleViewport, CastleCameras,
   CastleShapes,
   help_types, Interfaces, EntityBridge, BehaviorBase, BulletTimer,
-  CharacterControllerBehavior, FirstPersonCameraBehavior;
+  CharacterControllerBehavior, FirstPersonCameraBehavior,
+  PlayerAnimationBehavior;
 
 type
   TEntityManager = class(TInterfacedObject, IEntityFactory)
@@ -86,6 +87,8 @@ var
   VisualRoot: TCastleTransform;
   CharCtrl: TCharacterControllerBehavior;
   FPSCam: TFirstPersonCameraBehavior;
+  ModelScene: TCastleScene;
+  AnimBeh: TPlayerAnimationBehavior;
 begin
   Design := TCastleTransformDesign.Create(nil);
   Design.Url := FPlayerUrl;
@@ -120,6 +123,15 @@ begin
   CharCtrl.MoveSpeed := 6;
   CharCtrl.FirstPersonCam := FPSCam;
   Cylinder.AddBehavior(CharCtrl);
+
+  { Поведение анимаций модели игрока (движение + pitch головы). }
+  ModelScene := Design.DesignedComponent('Model', False) as TCastleScene;
+  if ModelScene <> nil then
+  begin
+    AnimBeh := TPlayerAnimationBehavior.Create(Cylinder, ModelScene);
+    AnimBeh.TransitionDuration := 0.25;
+    Cylinder.AddBehavior(AnimBeh);
+  end;
 
   if Cylinder.RigidBody <> nil then
     Cylinder.RigidBody.LockRotation := [0, 1, 2];

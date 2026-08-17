@@ -8,8 +8,8 @@ uses
   SysUtils, Classes,
   WorldSystemBase, GameWorld, NetMessages,
   help_types, Interfaces,
-  CastleTransform,
-  PlayerInterpolationBehavior;
+  CastleTransform, CastleScene,
+  PlayerInterpolationBehavior, PlayerAnimationBehavior;
 
 const
   SNAP_BUFFER_SIZE = 5;
@@ -32,6 +32,7 @@ type
     procedure HandleSnapshot(const Data: TSnapshotData);
     procedure Update(const SecondsPassed: Single); override;
     procedure ConfigureRemoteRigidBodies(const ATransform: TCastleTransform);
+    procedure CreateRemoteAnimator(const ATransform: TCastleTransform);
   end;
 
 implementation
@@ -60,6 +61,35 @@ begin
   finally
     BList.Free;
   end;
+end;
+
+procedure TClientSnapshotSystem.CreateRemoteAnimator(const ATransform: TCastleTransform);
+var
+  I, J: Integer;
+  VisRoot: TCastleTransform;
+  Model: TCastleScene;
+  Anim: TPlayerAnimationBehavior;
+begin
+  if ATransform = nil then Exit;
+  VisRoot := nil;
+  for I := 0 to ATransform.Count - 1 do
+    if ATransform.Items[I].Name = 'VisualRoot' then
+    begin
+      VisRoot := ATransform.Items[I];
+      Break;
+    end;
+  if VisRoot = nil then Exit;
+  Model := nil;
+  for J := 0 to VisRoot.Count - 1 do
+    if VisRoot.Items[J] is TCastleScene then
+    begin
+      Model := TCastleScene(VisRoot.Items[J]);
+      Break;
+    end;
+  if Model = nil then Exit;
+  Anim := TPlayerAnimationBehavior.Create(ATransform, Model);
+  Anim.TransitionDuration := 0.25;
+  ATransform.AddBehavior(Anim);
 end;
 
 procedure TClientSnapshotSystem.HandleSnapshot(const Data: TSnapshotData);
@@ -95,6 +125,7 @@ begin
       begin
         Entity := WorldObj.Factory.CreatePlayerEntity(Entry.EntityId);
         ConfigureRemoteRigidBodies(Entity.Transform);
+        CreateRemoteAnimator(Entity.Transform);
         WorldObj.AddPlayer(Entity);
       end;
       if Entity = nil then Continue;
