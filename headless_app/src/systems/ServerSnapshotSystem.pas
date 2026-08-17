@@ -95,9 +95,14 @@ begin
     else
       Entry.RotY := P.Visual.Transform.Rotation.W;
     Entry.Pitch := 0;
+    Entry.Jump := 0;
     Sync := P.Visual.Transform.FindBehavior(TServerPlayerSync) as TServerPlayerSync;
     if Sync <> nil then
+    begin
       Entry.Pitch := Sync.Pitch;
+      if Sync.Jump then
+        Entry.Jump := 1;
+    end;
     Snap.Entries[Cnt] := Entry;
     Inc(Cnt);
   end;

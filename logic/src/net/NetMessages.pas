@@ -60,6 +60,7 @@ type
     PosX, PosY, PosZ: Single;
     RotY: Single;
     Pitch: Single;
+    Jump: Byte;
     function ToBytes: TBytes;
     class function FromBytes(const Data: TBytes; out Value: TPlayerStateData): Boolean; static;
   end;
@@ -159,6 +160,7 @@ type
     EntityType: Byte;
     PosX, PosY, PosZ, RotY: Single;
     Pitch: Single;
+    Jump: Byte;
   end;
 
   TSnapshotData = record

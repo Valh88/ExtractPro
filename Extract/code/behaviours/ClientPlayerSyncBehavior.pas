@@ -10,7 +10,8 @@ uses
   SysUtils, Classes, Math,
   CastleTransform, CastleVectors,
   NetMessages, BehaviorBase,
-  FirstPersonCameraBehavior;
+  FirstPersonCameraBehavior,
+  PlayerAnimationBehavior;
 
 type
   TSendMessageProc = reference to procedure(const Msg: TNetMessage; const AChannel: Integer);
@@ -45,6 +46,7 @@ var
   VisRoot: TCastleTransform;
   I: Integer;
   FPSCam: TFirstPersonCameraBehavior;
+  AnimBeh: TPlayerAnimationBehavior;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -74,6 +76,11 @@ begin
       PState.Pitch := FPSCam.PitchAngle
     else
       PState.Pitch := 0;
+    AnimBeh := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
+    if (AnimBeh <> nil) and AnimBeh.Jumping then
+      PState.Jump := 1
+    else
+      PState.Jump := 0;
     M.Init(msgPlayerState, PState.ToBytes);
     if Assigned(FSendProc) then
       FSendProc(M, NET_CH_UNRELIABLE);

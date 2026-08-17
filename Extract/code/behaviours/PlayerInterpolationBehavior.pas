@@ -21,12 +21,14 @@ type
     FLastTime: Single;
     FAnim: TPlayerAnimationBehavior;
     FLastState: TPlayerMoveState;
+    FJumpSent: Boolean;
     function FindAnimationBehavior: TPlayerAnimationBehavior;
     function ComputeState(const MoveX, MoveZ: Single): TPlayerMoveState;
+    procedure HandleJump(const AJump: Byte);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single);
-    procedure SnapTo(const AX, AY, AZ, ARotY, APitch: Single);
+    procedure ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single; AJump: Byte);
+    procedure SnapTo(const AX, AY, AZ, ARotY, APitch: Single; AJump: Byte);
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
     property SmoothFactor: Single read FSmoothFactor write FSmoothFactor;
   end;
@@ -62,6 +64,7 @@ begin
   FLastTime := 0;
   FAnim := nil;
   FLastState := msIdle;
+  FJumpSent := False;
 end;
 
 function TPlayerInterpolation.FindAnimationBehavior: TPlayerAnimationBehavior;
@@ -113,16 +116,34 @@ begin
   end;
 end;
 
-procedure TPlayerInterpolation.ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single);
+procedure TPlayerInterpolation.HandleJump(const AJump: Byte);
+begin
+  FAnim := FindAnimationBehavior;
+  if FAnim = nil then Exit;
+  if (AJump <> 0) and not FJumpSent then
+  begin
+    FJumpSent := True;
+    FAnim.RequestJump;
+  end else
+  { Сбрасываем FJumpSent когда анимация прыжка уже завершилась,
+    чтобы следующий прыжок сработал заново. }
+  if not FAnim.Jumping then
+    FJumpSent := False;
+end;
+
+procedure TPlayerInterpolation.ApplyTarget(const AX, AY, AZ, ARotY, APitch: Single; AJump: Byte);
 begin
   FTargetPos := Vector3(AX, AY, AZ);
   FTargetRot := ARotY;
   FAnim := FindAnimationBehavior;
   if FAnim <> nil then
+  begin
     FAnim.SetPitch(-APitch);
+    HandleJump(AJump);
+  end;
 end;
 
-procedure TPlayerInterpolation.SnapTo(const AX, AY, AZ, ARotY, APitch: Single);
+procedure TPlayerInterpolation.SnapTo(const AX, AY, AZ, ARotY, APitch: Single; AJump: Byte);
 var
   I: Integer;
 begin
@@ -150,7 +171,10 @@ begin
 
   FAnim := FindAnimationBehavior;
   if FAnim <> nil then
+  begin
     FAnim.SetPitch(-APitch);
+    HandleJump(AJump);
+  end;
 end;
 
 procedure TPlayerInterpolation.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);

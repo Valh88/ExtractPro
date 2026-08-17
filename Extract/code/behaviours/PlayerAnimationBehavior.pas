@@ -22,8 +22,8 @@ type
     msWalkRight
   );
 
-  { Управляет анимациями модели игрока: движением (плавный cross-fade),
-    pitch головы (поверх анимации) и заделом под прыжок.
+  { Управляет анимациями модели игрока: движением (плавный cross-fade)
+    и pitch головы (поверх анимации).
     Общий для локального (майн) и подключённых игроков. }
   TPlayerAnimationBehavior = class(TCastleBehavior)
   private
@@ -36,7 +36,7 @@ type
     FCurrentState: TPlayerMoveState;
     FStateApplied: Boolean;
     FTransitionDuration: Single;
-    FJumpPending: Boolean;
+    FJumping: Boolean;
     function FindHeadBone: TTransformNode;
     function HeadRotationForPitch(const APitch: Single): TVector4;
     procedure ApplyPitch(const APitch: Single);
@@ -47,18 +47,16 @@ type
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
     procedure SetState(const AState: TPlayerMoveState);
     procedure SetPitch(const APitch: Single);
-    { Задел под прыжок: анимация Run Jump Over. Пока заглушка. }
+    { Прыжок: анимация Run Jump Over разворачивает персонажа на 180°
+      (прыжок-перекат), поэтому не проигрываем её. Прыжок физический. }
     procedure RequestJump;
     property PitchEnabled: Boolean read FPitchEnabled write FPitchEnabled;
     property TransitionDuration: Single read FTransitionDuration write FTransitionDuration;
     property CurrentState: TPlayerMoveState read FCurrentState;
+    property Jumping: Boolean read FJumping;
   end;
 
 implementation
-
-const
-  { Имя анимации прыжка (задел). }
-  JumpAnimationName = 'Run Jump Over';
 
 function TPlayerAnimationBehavior.AnimationNameForState(const AState: TPlayerMoveState): String;
 begin
@@ -84,7 +82,7 @@ begin
   FCurrentState := msIdle;
   FStateApplied := False;
   FTransitionDuration := 0.25;
-  FJumpPending := False;
+  FJumping := False;
 end;
 
 function TPlayerAnimationBehavior.FindHeadBone: TTransformNode;
@@ -146,17 +144,14 @@ end;
 
 procedure TPlayerAnimationBehavior.SetPitch(const APitch: Single);
 begin
-  if not FPitchEnabled then
-  begin
-    FPitch := APitch;
-    Exit;
-  end;
   FPitch := APitch;
 end;
 
 procedure TPlayerAnimationBehavior.RequestJump;
 begin
-  FJumpPending := True;
+  { Анимация Run Jump Over физически разворачивает персонажа на ~180°
+    (прыжок-перекат) — несовместима с геймплеем. Прыжок физический,
+    без отдельной анимации. }
 end;
 
 procedure TPlayerAnimationBehavior.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
@@ -169,14 +164,6 @@ begin
   FindHeadBone;
   if FPitchEnabled and (FHeadBone <> nil) then
     ApplyPitch(FPitch);
-
-  { Задел под прыжок: воспроизвести одноразовую анимацию. }
-  if FJumpPending then
-  begin
-    FJumpPending := False;
-    if FModel <> nil then
-      FModel.PlayAnimation(JumpAnimationName, False);
-  end;
 end;
 
 end.
