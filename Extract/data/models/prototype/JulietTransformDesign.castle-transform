@@ -3,8 +3,8 @@
   "Name" : "PlayerPrototype",
   "RotationPersistent" : {
     "$$ClassName" : "TCastleVector4RotationPersistent",
-    "Y" : 1.0000000000000000E+000,
-    "W" : -1.5707963267948966E+000
+    "W" : -1.5707963705062866E+000,
+    "Y" : 1.0000000000000000E+000
   },
   "$Children" : [
     {
@@ -33,20 +33,26 @@
             "Y" : 6.8000000901520252E-003,
             "Z" : 6.8000000901520252E-003
           },
-          "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb",
-          "$Behaviors" : [
-            {
-              "$$ClassName" : "TCastleMeshCollider",
-              "Mesh" : "Model",
-              "Name" : "MeshCollider1"
-            },
-            {
-              "$$ClassName" : "TCastleRigidBody",
-              "Name" : "RigidBody1"
-            }
-          ]
+          "Url" : "castle-data:/models/prototype/Juliet_Multi-Animations/WXBFESKTTRF6UPB2DELL0KE3F.glb"
         }
       ]
+    }
+  ],
+  "$Behaviors" : [
+    {
+      "$$ClassName" : "TCastleCapsuleCollider",
+      "AutoSize" : false,
+      "Height" : 1.0000000000000000E+000,
+      "Name" : "CapsuleCollider",
+      "Radius" : 5.6277596950531006E-001,
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector3Persistent",
+        "Y" : -7.0000000000000000E-002
+      }
+    },
+    {
+      "$$ClassName" : "TCastleRigidBody",
+      "Name" : "RigidBody"
     }
   ]
 }
