@@ -5,7 +5,8 @@ interface
 implementation
 
 uses
-  CastleWindow, CastleLog, CastleUIControls
+  CastleWindow, CastleLog, CastleUIControls,
+  CastleRenderOptions
   {$region 'Castle Initialization Uses'}
   , GameViewMain
   , StartView
@@ -17,6 +18,10 @@ var
 
 procedure ApplicationInitialize;
 begin
+  { Filmic tonemapping: смягчает тени и приглушает пересветы,
+    чтобы тёмные неосвещённые участки оставались читабельными. }
+  CastleRenderOptions.ToneMapping := tmACES;
+
   Window.Container.LoadSettings('castle-data:/CastleSettings.xml');
 
   {$region 'Castle View Creation'}
