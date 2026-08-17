@@ -90,6 +90,9 @@ begin
   Anim := TPlayerAnimationBehavior.Create(ATransform, Model);
   Anim.TransitionDuration := 0.25;
   ATransform.AddBehavior(Anim);
+  { Сразу запускаем idle-анимацию, чтобы модель не стояла без анимации
+    до первого снапшота движения. }
+  Anim.SetState(msIdle);
 end;
 
 procedure TClientSnapshotSystem.HandleSnapshot(const Data: TSnapshotData);

@@ -34,6 +34,7 @@ type
     FPitch: Single;
     FPitchEnabled: Boolean;
     FCurrentState: TPlayerMoveState;
+    FStateApplied: Boolean;
     FTransitionDuration: Single;
     FJumpPending: Boolean;
     function FindHeadBone: TTransformNode;
@@ -81,6 +82,7 @@ begin
   FPitch := 0;
   FPitchEnabled := False; { pitch головы выключен по умолчанию }
   FCurrentState := msIdle;
+  FStateApplied := False;
   FTransitionDuration := 0.25;
   FJumpPending := False;
 end;
@@ -121,8 +123,10 @@ var
   P: TPlayAnimationParameters;
 begin
   if FModel = nil then Exit;
-  { Не перезапускаем, если анимация та же (walk/run -> "Running"). }
-  if AnimationNameForState(AState) = AnimationNameForState(FCurrentState) then Exit;
+  { Не перезапускаем, если анимация та же (walk/run -> "Running"),
+    кроме первого раза (чтобы idle-анимация запустилась при создании). }
+  if FStateApplied and (AnimationNameForState(AState) = AnimationNameForState(FCurrentState)) then Exit;
+  FStateApplied := True;
   FCurrentState := AState;
   P := TPlayAnimationParameters.Create;
   try
