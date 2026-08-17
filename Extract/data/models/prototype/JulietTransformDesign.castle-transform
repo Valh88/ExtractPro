@@ -44,11 +44,7 @@
       "AutoSize" : false,
       "Height" : 1.0000000000000000E+000,
       "Name" : "CapsuleCollider",
-      "Radius" : 5.6277596950531006E-001,
-      "TranslationPersistent" : {
-        "$$ClassName" : "TCastleVector3Persistent",
-        "Y" : -7.0000000000000000E-002
-      }
+      "Radius" : 5.6277596950531006E-001
     },
     {
       "$$ClassName" : "TCastleRigidBody",

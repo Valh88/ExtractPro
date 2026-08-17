@@ -37,10 +37,17 @@ type
 
 implementation
 
-{ Опускает модель подключённого игрока так, чтобы её низ стоял на серверной
-  позиции Y. Сервер шлёт центр своего тела (половина высоты ~0.85). }
+{ Центр модели подключённого игрока относительно root PlayerPrototype.
+  Модель glb (меш Y от -125 до +125, RigModels translation Y=125, scale 0.0068):
+  bbox Min.Y=-0.92, Max.Y=+0.78 -> центр = -0.07.
+  root.Y = serverY - центр, чтобы центр модели совпадал с серверной позицией. }
 const
-  ModelGroundOffset: Single = 0.85;
+  ModelCenterOffset: Single = 0.07;
+
+{ Опускает визуальную модель (VisualRoot) внутри root, чтобы ноги модели
+  стояли на земле, не сдвигая коллайдер (коллайдер привязан к root). }
+const
+  VisualRootYOffset: Single = -0.78;
 
 { TPlayerInterpolation }
 
@@ -120,7 +127,7 @@ begin
   FTargetPitch := -APitch;
 
   if Parent = nil then Exit;
-  Parent.Translation := Vector3(AX, AY - ModelGroundOffset, AZ);
+  Parent.Translation := Vector3(AX, AY - ModelCenterOffset, AZ);
 
   if FVisRoot = nil then
     for I := 0 to Parent.Count - 1 do
@@ -131,7 +138,10 @@ begin
       end;
 
   if FVisRoot <> nil then
-    FVisRoot.Rotation := Vector4(0, 1, 0, FTargetRot)
+  begin
+    FVisRoot.Rotation := Vector4(0, 1, 0, FTargetRot);
+    FVisRoot.Translation := Vector3(FVisRoot.Translation.X, VisualRootYOffset, FVisRoot.Translation.Z);
+  end
   else
     Parent.Rotation := Vector4(0, 1, 0, FTargetRot);
 
@@ -161,7 +171,10 @@ begin
   K := 1 - Exp(-FSmoothFactor * SecondsPassed);
 
   Parent.Translation := Parent.Translation +
-    (Vector3(FTargetPos.X, FTargetPos.Y - ModelGroundOffset, FTargetPos.Z) - Parent.Translation) * K;
+    (Vector3(FTargetPos.X, FTargetPos.Y - ModelCenterOffset, FTargetPos.Z) - Parent.Translation) * K;
+
+  if FVisRoot <> nil then
+    FVisRoot.Translation := Vector3(FVisRoot.Translation.X, VisualRootYOffset, FVisRoot.Translation.Z);
 
   if FVisRoot <> nil then
     CurrRot := FVisRoot.Rotation.W
