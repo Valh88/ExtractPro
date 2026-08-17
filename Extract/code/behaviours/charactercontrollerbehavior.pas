@@ -27,6 +27,7 @@ type
     FInputEnabled: Boolean;
     FRunning: Boolean;
     FMoveDir: TVector3;
+    FJumpingNow: Boolean;
     procedure EnsureTouchMoveControl;
     function GetContainer: TCastleContainer;
     function GetRigidBody: TCastleRigidBody;
@@ -67,6 +68,7 @@ begin
   FInputEnabled := True;
   FRunning := False;
   FMoveDir := TVector3.Zero;
+  FJumpingNow := False;
 end;
 
 procedure TCharacterControllerBehavior.EnsureTouchMoveControl;
@@ -134,6 +136,13 @@ begin
   RB := GetRigidBody;
   if RB = nil then Exit;
 
+  { Во время прыжка модель неуправляема: движение (WASD) заморожено,
+    работает только камера. }
+  AnimBeh := nil;
+  if Parent <> nil then
+    AnimBeh := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
+  FJumpingNow := (AnimBeh <> nil) and AnimBeh.Jumping;
+
   if not FInputEnabled then
   begin
     RB.LinearVelocity := TVector3.Zero;
@@ -189,6 +198,12 @@ begin
   FMoveDir := MoveDirLocal;
   Vel := RB.LinearVelocity;
 
+  if FJumpingNow then
+  begin
+    { Во время прыжка модель неуправляема клавишами движения,
+      но текущий горизонтальный импульс сохраняется (куда прыгнули — туда и летим). }
+    FMoving := False;
+  end else
   if FMoving then
   begin
     if not MoveDirLocal.IsPerfectlyZero then

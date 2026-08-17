@@ -38,6 +38,8 @@ type
     FTransitionDuration: Single;
     FJumping: Boolean;
     FJumpTimer: Single;
+    FStateBeforeJump: TPlayerMoveState;
+    procedure EndJump;
     function FindHeadBone: TTransformNode;
     function HeadRotationForPitch(const APitch: Single): TVector4;
     procedure ApplyPitch(const APitch: Single);
@@ -48,8 +50,8 @@ type
     procedure Update(const SecondsPassed: Single; var RemoveMe: TRemoveType); override;
     procedure SetState(const AState: TPlayerMoveState);
     procedure SetPitch(const APitch: Single);
-    { Прыжок: анимация Run Jump Over разворачивает персонажа на 180°
-      (прыжок-перекат), поэтому не проигрываем её. Прыжок физический. }
+    { Прыжок: проигрывает анимацию Jump (не разворачивает модель)
+      один раз, затем возвращает анимацию движения. }
     procedure RequestJump;
     property PitchEnabled: Boolean read FPitchEnabled write FPitchEnabled;
     property TransitionDuration: Single read FTransitionDuration write FTransitionDuration;
@@ -67,7 +69,7 @@ begin
     msWalkLeft: Result := 'Left Strafe';
     msWalkRight: Result := 'Right Strafe';
   else
-    Result := 'IdleCasual';
+    Result := 'IdleLong';
   end;
 end;
 
@@ -85,6 +87,7 @@ begin
   FTransitionDuration := 0.25;
   FJumping := False;
   FJumpTimer := 0;
+  FStateBeforeJump := msIdle;
 end;
 
 function TPlayerAnimationBehavior.FindHeadBone: TTransformNode;
@@ -141,6 +144,9 @@ end;
 
 procedure TPlayerAnimationBehavior.SetState(const AState: TPlayerMoveState);
 begin
+  { Пока идёт прыжок — игнорируем смену состояния движения,
+    чтобы анимация прыжка доиграла. }
+  if FJumping then Exit;
   ApplyState(AState);
 end;
 
@@ -149,16 +155,31 @@ begin
   FPitch := APitch;
 end;
 
-procedure TPlayerAnimationBehavior.RequestJump;
+procedure TPlayerAnimationBehavior.EndJump;
 begin
-  { Задел под анимацию прыжка: анимация Run Jump Over в модели
-    разворачивает персонажа на ~180° (прыжок-перекат), поэтому пока
-    не проигрываем её. Прыжок физический, FJumping используется
-    для сетевой передачи (ClientPlayerSync).
-    TODO: включить проигрывание анимации, когда будет подходящая. }
-  if FJumping then Exit;
+  FJumping := False;
+  { Возвращаем анимацию, которая была до прыжка. }
+  FStateApplied := False; { принудительно перезапускаем }
+  ApplyState(FStateBeforeJump);
+end;
+
+procedure TPlayerAnimationBehavior.RequestJump;
+var
+  P: TPlayAnimationParameters;
+begin
+  if (FModel = nil) or FJumping then Exit;
   FJumping := True;
-  FJumpTimer := 0.6;
+  FStateBeforeJump := FCurrentState; { запоминаем анимацию до прыжка }
+  FJumpTimer := 0.88; { длительность анимации Jump }
+  P := TPlayAnimationParameters.Create;
+  try
+    P.Name := 'Jump';
+    P.Loop := False;
+    P.TransitionDuration := FTransitionDuration;
+    FModel.PlayAnimation(P);
+  finally
+    P.Free;
+  end;
 end;
 
 procedure TPlayerAnimationBehavior.Update(const SecondsPassed: Single; var RemoveMe: TRemoveType);
@@ -172,12 +193,12 @@ begin
   if FPitchEnabled and (FHeadBone <> nil) then
     ApplyPitch(FPitch);
 
-  { Сбрасываем FJumping по таймеру (длительность прыжка). }
+  { Прыжок закончился — возвращаем анимацию движения. }
   if FJumping then
   begin
     FJumpTimer := FJumpTimer - SecondsPassed;
     if FJumpTimer <= 0 then
-      FJumping := False;
+      EndJump;
   end;
 end;
 
