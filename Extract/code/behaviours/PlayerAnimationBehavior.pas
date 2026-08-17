@@ -79,7 +79,7 @@ begin
   FHeadBaseRot := TVector4.Zero;
   FHeadSearched := False;
   FPitch := 0;
-  FPitchEnabled := True;
+  FPitchEnabled := False; { pitch головы выключен по умолчанию }
   FCurrentState := msIdle;
   FTransitionDuration := 0.25;
   FJumpPending := False;
@@ -120,7 +120,9 @@ procedure TPlayerAnimationBehavior.ApplyState(const AState: TPlayerMoveState);
 var
   P: TPlayAnimationParameters;
 begin
-  if (FModel = nil) or (AState = FCurrentState) then Exit;
+  if FModel = nil then Exit;
+  { Не перезапускаем, если анимация та же (walk/run -> "Running"). }
+  if AnimationNameForState(AState) = AnimationNameForState(FCurrentState) then Exit;
   FCurrentState := AState;
   P := TPlayAnimationParameters.Create;
   try

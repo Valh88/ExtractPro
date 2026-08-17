@@ -20,6 +20,7 @@ type
     FLastPos: TVector3;
     FLastTime: Single;
     FAnim: TPlayerAnimationBehavior;
+    FLastState: TPlayerMoveState;
     function FindAnimationBehavior: TPlayerAnimationBehavior;
     function ComputeState(const MoveX, MoveZ: Single): TPlayerMoveState;
   public
@@ -44,10 +45,12 @@ const
 const
   VisualRootYOffset: Single = -0.78;
 
-{ Пороги скорости (единицы/сек) для определения состояния анимации. }
+{ Пороги скорости (единицы/сек) для определения состояния анимации,
+  с гистерезисом, чтобы избежать дёрганья idle <-> движение. }
 const
-  SpeedIdle = 0.5;
-  SpeedRun = 4.0;
+  SpeedMoveOn = 0.4;   // скорость входа в движение
+  SpeedMoveOff = 0.15; // скорость выхода в idle
+  SpeedRunOn = 4.0;    // вход в бег
 
 { TPlayerInterpolation }
 
@@ -58,6 +61,7 @@ begin
   FLastPos := TVector3.Zero;
   FLastTime := 0;
   FAnim := nil;
+  FLastState := msIdle;
 end;
 
 function TPlayerInterpolation.FindAnimationBehavior: TPlayerAnimationBehavior;
@@ -69,37 +73,40 @@ end;
 
 function TPlayerInterpolation.ComputeState(const MoveX, MoveZ: Single): TPlayerMoveState;
 var
-  Yaw: Single;
-  ForwardX, ForwardZ: Single;
-  Dot: Single;
-  MoveLen: Single;
+  MoveWorld, MoveLocal: TVector3;
+  MoveLen, Dot: Single;
 begin
-  Result := msIdle;
-  MoveLen := Sqrt(Sqr(MoveX) + Sqr(MoveZ));
-  if MoveLen < SpeedIdle then Exit;
+  MoveWorld := Vector3(MoveX, 0, MoveZ);
+  MoveLen := MoveWorld.Length;
+  if MoveLen < SpeedMoveOn then
+    Exit(msIdle);
 
-  { Направление взгляда (yaw VisualRoot) -> forward вектор }
+  { Гистерезис idle <-> движение }
+  if (FLastState <> msIdle) and (MoveLen < SpeedMoveOff) then
+    Exit(msIdle);
+
+  { Переводим мировой вектор движения в локальные координаты модели
+    (учитывает yaw VisualRoot и статический поворот Model). }
   if FVisRoot <> nil then
-    Yaw := FVisRoot.Rotation.W
+    MoveLocal := FVisRoot.WorldToLocalDirection(MoveWorld)
   else
-    Yaw := Parent.Rotation.W;
-  ForwardX := Sin(Yaw);
-  ForwardZ := -Cos(Yaw);
+    MoveLocal := MoveWorld;
 
-  if MoveLen >= SpeedRun then
+  { Локальный forward модели (из-за Ry(-90) поворота) = -X.
+    Dot = MoveLocal . (-1,0,0) = -MoveLocal.X }
+  Dot := -MoveLocal.X / Max(MoveLen, 0.001);
+
+  if MoveLen >= SpeedRunOn then
     Result := msRunForward
   else
     Result := msWalkForward;
 
-  { Определяем направление движения относительно взгляда:
-    Dot = (move dir) . (forward dir). }
-  Dot := (MoveX * ForwardX + MoveZ * ForwardZ) / Max(MoveLen, 0.001);
   if Dot < -0.5 then
     Result := msWalkBack
   else if (Dot >= -0.5) and (Dot <= 0.5) then
   begin
-    { стрейф: знак перекрёстного произведения определяет влево/вправо }
-    if (ForwardX * MoveZ - ForwardZ * MoveX) > 0 then
+    { стрейф: локальный Z определяет влево/вправо. }
+    if MoveLocal.Z < 0 then
       Result := msWalkRight
     else
       Result := msWalkLeft;
@@ -199,7 +206,10 @@ begin
   FAnim := FindAnimationBehavior;
   if FAnim <> nil then
     if DT > 0 then
-      FAnim.SetState(ComputeState(MoveX / DT, MoveZ / DT));
+    begin
+      FLastState := ComputeState(MoveX / DT, MoveZ / DT);
+      FAnim.SetState(FLastState);
+    end;
 end;
 
 end.

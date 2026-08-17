@@ -120,6 +120,8 @@ var
   MoveDirLocal, Vel: TVector3;
   Speed: Single;
   AnimBeh: TPlayerAnimationBehavior;
+  MoveLen, Dot: Single;
+  MoveLocal: TVector3;
 begin
   inherited Update(SecondsPassed, RemoveMe);
   RemoveMe := rtNone;
@@ -215,7 +217,8 @@ begin
 
   RB.LinearVelocity := Vel;
 
-  { Определяем состояние анимации локального (майн) игрока. }
+  { Определяем состояние анимации локального (майн) игрока,
+    учитывая направление движения относительно взгляда (в локальных осях модели). }
   if Parent <> nil then
   begin
     AnimBeh := Parent.FindBehavior(TPlayerAnimationBehavior) as TPlayerAnimationBehavior;
@@ -223,10 +226,34 @@ begin
     begin
       if not FMoving then
         AnimBeh.SetState(msIdle)
-      else if FRunning then
-        AnimBeh.SetState(msRunForward)
       else
-        AnimBeh.SetState(msWalkForward);
+      begin
+        MoveLen := MoveDirLocal.Length;
+        if (MoveLen > 0.001) and (FFirstPersonCam <> nil) and
+           (FFirstPersonCam.VisualRoot <> nil) then
+        begin
+          { Локальное направление движения в осях модели.
+            Локальный forward (из-за Ry(-90)) = -X. }
+          MoveLocal := FFirstPersonCam.VisualRoot.WorldToLocalDirection(MoveDirLocal);
+          Dot := -MoveLocal.X / MoveLen;
+          if FRunning and (Dot > 0.5) then
+            AnimBeh.SetState(msRunForward)
+          else if Dot > 0.5 then
+            AnimBeh.SetState(msWalkForward)
+          else if Dot < -0.5 then
+            AnimBeh.SetState(msWalkBack)
+          else if MoveLocal.Z < 0 then
+            AnimBeh.SetState(msWalkRight)
+          else
+            AnimBeh.SetState(msWalkLeft);
+        end else
+        begin
+          if FRunning then
+            AnimBeh.SetState(msRunForward)
+          else
+            AnimBeh.SetState(msWalkForward);
+        end;
+      end;
       if FFirstPersonCam <> nil then
         AnimBeh.SetPitch(FFirstPersonCam.PitchAngle);
     end;
