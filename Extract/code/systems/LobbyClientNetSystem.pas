@@ -176,13 +176,20 @@ begin
           2: WritelnLog('Client', 'Match cancelled, re-enqueued');
         end;
       end;
-      E.EventType := cgeReadyCheck;
       if (Length(Msg.Payload) >= 1) and (Msg.Payload[0] = 2) then
-        E.Amount := 2.0
-      else
+      begin
+        E.EventType := cgeReadyCheck;
+        E.Amount := 2.0;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
+      end else
+      if (Length(Msg.Payload) >= 1) and (Msg.Payload[0] = 0) then
+      begin
+        E.EventType := cgeReadyCheck;
         E.Amount := 0.0;
-      GlobalClientEventBus.Queue(E);
-      GlobalClientEventBus.Flush;
+        GlobalClientEventBus.Queue(E);
+        GlobalClientEventBus.Flush;
+      end;
     end;
     msgStartGame:
     begin
