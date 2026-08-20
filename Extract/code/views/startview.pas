@@ -138,8 +138,7 @@ begin
   WritelnLog('StartView', 'OnLoginResult: success=%s', [BoolToStr(Result.Success, True)]);
   if Result.Success then
   begin
-    ShowInfo('', 'Token: ' + Result.Token + sLineBreak +
-      'Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
+    ShowInfo('', 'Connection successful');
     FLobbyClient.NetSystem.AuthToken := Result.Token;
     FLobbyClient.Connect(GlobalConfig.ServerHost, GlobalConfig.LobbyPort);
   end
