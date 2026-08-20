@@ -53,6 +53,7 @@
         ]
       },
       "Name" : "Viewport1",
+      "OcclusionCulling" : true,
       "$Children" : [
         {
           "$$ClassName" : "TCastleVerticalGroup",
@@ -178,8 +179,8 @@
           "Name" : "InfoDesign",
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
-            "X" : 1.3000000000000000E+002,
-            "Y" : 1.0000000000000000E+002
+            "X" : 1.5000000000000000E+002,
+            "Y" : 1.1000000000000000E+002
           },
           "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
           "Width" : 3.2000000000000000E+002
@@ -190,7 +191,7 @@
         "Name" : "",
         "Orthographic" : {
           "$$ClassName" : "TCastleOrthographic",
-          "Height" : 1.1606593017578125E+003,
+          "Height" : 1.2000000000000000E+003,
           "OriginPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
             "X" : 5.0000000000000000E-001,
