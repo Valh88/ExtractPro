@@ -69,9 +69,12 @@ begin
   end;
   Json := _JsonFast(Resp);
   Result.Success := Json.success;
-  Result.SessionToken := string(VariantToUtf8(Json.token));
-  Result.UserId := Json.user_id;
-  Result.Login := string(VariantToUtf8(Json.login));
+  if Result.Success then
+  begin
+    Result.SessionToken := string(VariantToUtf8(Json.token));
+    Result.UserId := Json.user_id;
+    Result.Login := string(VariantToUtf8(Json.login));
+  end;
   Result.ErrorMsg := string(VariantToUtf8(Json.error));
   if Result.Success then
     WritelnLog('AuthClient', 'Login OK: user_id=%d, login=%s', [Result.UserId, Result.Login])
@@ -103,8 +106,11 @@ begin
   end;
   Json := _JsonFast(Resp);
   Result.Success := Json.success;
-  Result.UserId := Json.user_id;
-  Result.Login := string(VariantToUtf8(Json.login));
+  if Result.Success then
+  begin
+    Result.UserId := Json.user_id;
+    Result.Login := string(VariantToUtf8(Json.login));
+  end;
   Result.ErrorMsg := string(VariantToUtf8(Json.error));
   if Result.Success then
     WritelnLog('AuthClient', 'Register OK: user_id=%d, login=%s', [Result.UserId, Result.Login])

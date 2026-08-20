@@ -173,16 +173,16 @@
           ]
         },
         {
-          "$$ClassName" : "TCastleLabel",
-          "Name" : "Information",
-          "Text" : [
-            "Information"
-          ],
+          "$$ClassName" : "TCastleDesign",
+          "Height" : 1.3000000000000000E+002,
+          "Name" : "InfoDesign",
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
-            "X" : 2.4000000000000000E+002,
-            "Y" : 1.6000000000000000E+002
-          }
+            "X" : 1.3000000000000000E+002,
+            "Y" : 1.0000000000000000E+002
+          },
+          "Url" : "castle-data:/user_interfaces/InfoPanel.castle-user-interface",
+          "Width" : 3.2000000000000000E+002
         }
       ],
       "InternalDesignCamera" : {
@@ -190,7 +190,7 @@
         "Name" : "",
         "Orthographic" : {
           "$$ClassName" : "TCastleOrthographic",
-          "Height" : 1.3262050781250000E+003,
+          "Height" : 1.1606593017578125E+003,
           "OriginPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
             "X" : 5.0000000000000000E-001,

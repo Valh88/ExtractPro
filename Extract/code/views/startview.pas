@@ -18,7 +18,7 @@ type
     Password: TCastleEdit;
     Ok: TCastleButton;
     Reg: TCastleButton;
-    Information: TCastleLabel;
+    InfoDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Start; override;
@@ -27,6 +27,7 @@ type
   private
     FLobbyClient: TLobbyClient;
     FConnecting: Boolean;
+    procedure ShowInfo(const ATitle, AText: String);
     procedure DoConnect(Sender: TObject);
     procedure DoRegister(Sender: TObject);
     procedure OnLoginResult(Sender: TObject; const Result: TAuthRequestResult);
@@ -53,6 +54,11 @@ begin
   FConnecting := False;
   Ok.OnClick := @DoConnect;
   Reg.OnClick := @DoRegister;
+  if InfoDesign <> nil then
+  begin
+    InfoDesign.Parent.RemoveControl(InfoDesign);
+    InsertFront(InfoDesign);
+  end;
 end;
 
 procedure TViewStartView.Stop;
@@ -67,6 +73,20 @@ begin
   inherited;
   if FLobbyClient <> nil then
     FLobbyClient.Update(SecondsPassed);
+end;
+
+procedure TViewStartView.ShowInfo(const ATitle, AText: String);
+var
+  Title, Txt: TCastleLabel;
+begin
+  if InfoDesign = nil then Exit;
+  Title := InfoDesign.DesignedComponent('InfoTitle') as TCastleLabel;
+  Txt := InfoDesign.DesignedComponent('InfoText') as TCastleLabel;
+  if Title <> nil then
+    Title.Caption := ATitle;
+  if Txt <> nil then
+    Txt.Caption := AText;
+  InfoDesign.Exists := True;
 end;
 
 procedure TViewStartView.DoConnect(Sender: TObject);
@@ -96,18 +116,14 @@ begin
   WritelnLog('StartView', 'OnLoginResult: success=%s', [BoolToStr(Result.Success, True)]);
   if Result.Success then
   begin
-    Information.Text.Clear;
-    Information.Text.Add('Token: ' + Result.Token);
-    Information.Text.Add('Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
-    Information.Exists := True;
+    ShowInfo('', 'Token: ' + Result.Token + sLineBreak +
+      'Login: ' + Result.UserLogin + ' (id=' + IntToStr(Result.UserId) + ')');
     FLobbyClient.NetSystem.AuthToken := Result.Token;
     FLobbyClient.Connect(GlobalConfig.ServerHost, GlobalConfig.LobbyPort);
   end
   else
   begin
-    Information.Text.Clear;
-    Information.Text.Add('Login failed: ' + Result.ErrorMsg);
-    Information.Exists := True;
+    ShowInfo('', 'Login failed: ' + Result.ErrorMsg);
     FConnecting := False;
   end;
 end;
@@ -118,15 +134,11 @@ begin
   WritelnLog('StartView', 'OnRegisterResult: success=%s', [BoolToStr(Result.Success, True)]);
   if not Result.Success then
   begin
-    Information.Text.Clear;
-    Information.Text.Add('Register failed: ' + Result.ErrorMsg);
-    Information.Exists := True;
+    ShowInfo('', 'Register failed: ' + Result.ErrorMsg);
     FConnecting := False;
     Exit;
   end;
-  Information.Text.Clear;
-  Information.Text.Add('Register OK, logging in...');
-  Information.Exists := True;
+  ShowInfo('', 'Register OK, logging in...');
   FLobbyClient.AuthSystem.OnAuthResult := @OnLoginResult;
   FLobbyClient.NetSystem.OnConnected := @OnLobbyConnected;
   FLobbyClient.AuthSystem.LoginAsync(Login.Text, Password.Text);

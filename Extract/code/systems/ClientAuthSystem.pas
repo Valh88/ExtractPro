@@ -93,24 +93,32 @@ begin
   try
     FillChar(Res, SizeOf(Res), 0);
     Res.Kind := AKind;
-    case AKind of
-      arkLogin:
-      begin
-        Resp := Client.Login(ALogin, APassword);
-        Res.Success := Resp.Success;
-        Res.Token := Resp.SessionToken;
-        Res.UserId := Resp.UserId;
-        Res.UserLogin := Resp.Login;
-        Res.ErrorMsg := Resp.ErrorMsg;
+    try
+      case AKind of
+        arkLogin:
+        begin
+          Resp := Client.Login(ALogin, APassword);
+          Res.Success := Resp.Success;
+          Res.Token := Resp.SessionToken;
+          Res.UserId := Resp.UserId;
+          Res.UserLogin := Resp.Login;
+          Res.ErrorMsg := Resp.ErrorMsg;
+        end;
+        arkRegister:
+        begin
+          Resp := Client.Register(ALogin, APassword, AEmail);
+          Res.Success := Resp.Success;
+          Res.Token := Resp.SessionToken;
+          Res.UserId := Resp.UserId;
+          Res.UserLogin := Resp.Login;
+          Res.ErrorMsg := Resp.ErrorMsg;
+        end;
       end;
-      arkRegister:
+    except
+      on E: Exception do
       begin
-        Resp := Client.Register(ALogin, APassword, AEmail);
-        Res.Success := Resp.Success;
-        Res.Token := Resp.SessionToken;
-        Res.UserId := Resp.UserId;
-        Res.UserLogin := Resp.Login;
-        Res.ErrorMsg := Resp.ErrorMsg;
+        Res.Success := False;
+        Res.ErrorMsg := E.Message;
       end;
     end;
     FAsyncResult := Res;
@@ -129,9 +137,9 @@ begin
       FUserId := FAsyncResult.UserId;
       FLogin := FAsyncResult.UserLogin;
     end;
+    FTask := nil;
     if Assigned(FOnAuthResult) then
       FOnAuthResult(Self, FAsyncResult);
-    FTask := nil;
   end;
 end;
 
