@@ -9,7 +9,8 @@ interface
 uses
   Classes,
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse,
-  LobbyClient, ClientAuthSystem, GameViewLobby, GameConfig;
+  LobbyClient, ClientAuthSystem, GameViewLobby, GameConfig,
+  ViewSwitchTransition, AnimationManager;
 
 type
   TViewStartView = class(TCastleView)
@@ -21,12 +22,16 @@ type
     InfoDesign: TCastleDesign;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Start; override;
     procedure Stop; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
   private
     FLobbyClient: TLobbyClient;
     FConnecting: Boolean;
+    FAnimManager: TAnimationManager;
+    FTransition: TViewSwitchTransition;
+    procedure OnTransitionCompleted(Sender: TObject);
     procedure ShowInfo(const ATitle, AText: String);
     procedure DoConnect(Sender: TObject);
     procedure DoRegister(Sender: TObject);
@@ -46,6 +51,16 @@ constructor TViewStartView.Create(AOwner: TComponent);
 begin
   inherited;
   DesignUrl := 'castle-data:/views/startview.castle-user-interface';
+  FAnimManager := TAnimationManager.Create;
+  FTransition := TViewSwitchTransition.Create;
+  FTransition.OnCompleted := @OnTransitionCompleted;
+end;
+
+destructor TViewStartView.Destroy;
+begin
+  FreeAndNil(FTransition);
+  FreeAndNil(FAnimManager);
+  inherited;
 end;
 
 procedure TViewStartView.Start;
@@ -71,8 +86,15 @@ end;
 procedure TViewStartView.Update(const SecondsPassed: Single; var HandleInput: boolean);
 begin
   inherited;
+  FAnimManager.Update(SecondsPassed);
+  if FTransition <> nil then
+    FTransition.Update(SecondsPassed);
   if FLobbyClient <> nil then
     FLobbyClient.Update(SecondsPassed);
+end;
+
+procedure TViewStartView.OnTransitionCompleted(Sender: TObject);
+begin
 end;
 
 procedure TViewStartView.ShowInfo(const ATitle, AText: String);
@@ -150,7 +172,7 @@ begin
   FConnecting := False;
   ViewLobby.SetLobbyClient(FLobbyClient);
   FLobbyClient := nil;
-  Container.View := ViewLobby;
+  FTransition.Start(Container, Self, ViewLobby, FAnimManager, 0.5, 1.5);
 end;
 
 end.
