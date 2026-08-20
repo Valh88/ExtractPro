@@ -19,12 +19,9 @@ type
     FDuration: Single;
     FDelay: Single;
     FDelayLeft: Single;
-    FPhase: (tpFadeOut, tpFadeIn);
     FOnCompleted: TNotifyEvent;
-    procedure StartFadeOut;
-    procedure StartFadeIn;
+    procedure StartFade;
     procedure OnFadeOutComplete(Sender: TObject);
-    procedure OnFadeInComplete(Sender: TObject);
   public
     constructor Create;
     destructor Destroy; override;
@@ -50,7 +47,6 @@ begin
   FDuration := 0.3;
   FDelay := 0;
   FDelayLeft := 0;
-  FPhase := tpFadeOut;
   FOnCompleted := nil;
   FOverlay := TCastleRectangleControl.Create(nil);
   FOverlay.FullSize := True;
@@ -76,18 +72,16 @@ begin
   FDuration := ADuration;
   FDelay := ADelay;
   FDelayLeft := ADelay;
-  FPhase := tpFadeOut;
   FOverlay.Exists := False;
 
   if FDelay <= 0 then
-    StartFadeOut;
+    StartFade;
 end;
 
-procedure TViewSwitchTransition.StartFadeOut;
+procedure TViewSwitchTransition.StartFade;
 var
   FA: TFadeAnimation;
 begin
-  FPhase := tpFadeOut;
   FOverlay.Color := Vector4(0, 0, 0, 0);
   FOverlay.Exists := True;
   if FFromView <> nil then
@@ -99,43 +93,13 @@ begin
   FA.Start;
 end;
 
-procedure TViewSwitchTransition.StartFadeIn;
-var
-  FA: TFadeAnimation;
-begin
-  FPhase := tpFadeIn;
-  FOverlay.Color := Vector4(0, 0, 0, 1);
-  FOverlay.Exists := True;
-  if FToView <> nil then
-    FToView.InsertFront(FOverlay);
-
-  FA := TFadeAnimation.Create(FOverlay, FDuration, 1, 0);
-  FA.OnComplete := @OnFadeInComplete;
-  FAnimManager.Add(FA);
-  FA.Start;
-end;
-
 procedure TViewSwitchTransition.OnFadeOutComplete(Sender: TObject);
 begin
+  FOverlay.Exists := False;
   if FFromView <> nil then
     FFromView.RemoveControl(FOverlay);
   if FContainer <> nil then
     FContainer.View := FToView;
-  if FToView <> nil then
-    StartFadeIn
-  else
-  begin
-    FOverlay.Exists := False;
-    if Assigned(FOnCompleted) then
-      FOnCompleted(Self);
-  end;
-end;
-
-procedure TViewSwitchTransition.OnFadeInComplete(Sender: TObject);
-begin
-  FOverlay.Exists := False;
-  if FToView <> nil then
-    FToView.RemoveControl(FOverlay);
   if Assigned(FOnCompleted) then
     FOnCompleted(Self);
 end;
@@ -146,7 +110,7 @@ begin
   begin
     FDelayLeft := FDelayLeft - SecondsPassed;
     if FDelayLeft <= 0 then
-      StartFadeOut;
+      StartFade;
   end;
 end;
 

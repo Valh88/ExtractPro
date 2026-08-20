@@ -7,7 +7,8 @@ uses
   CastleVectors, CastleUIControls, CastleControls, CastleKeysMouse, CastleRectangles,
   CastleLog,
   LobbyClient, ClientMatchmakingSystem, GameViewPlay, LobbyViewSystem,
-  ClientEventBus, GameViewMain, GameConfig, ViewSwitchTransition, AnimationManager;
+  ClientEventBus, GameViewMain, GameConfig, ViewSwitchTransition, AnimationManager,
+  UiAnimation;
 
 type
   TViewLobby = class(TCastleView)
@@ -56,6 +57,8 @@ type
       FCheckSlots: array of TCheckSlot;
       FAnimManager: TAnimationManager;
       FTransition: TViewSwitchTransition;
+      FRevealOverlay: TCastleRectangleControl;
+    procedure OnRevealComplete(Sender: TObject);
     procedure OnMMState(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
     procedure OnReadyCheckUpdate(const Event: TClientGameEvent);
@@ -91,8 +94,21 @@ var
   MM: TClientMatchmakingSystem;
   VP: TViewPlay;
   VS: TLobbyViewSystem;
+  FA: TFadeAnimation;
 begin
   inherited;
+  if FRevealOverlay = nil then
+  begin
+    FRevealOverlay := TCastleRectangleControl.Create(nil);
+    FRevealOverlay.FullSize := True;
+    FRevealOverlay.Color := Vector4(0, 0, 0, 1);
+    FRevealOverlay.Exists := True;
+    InsertFront(FRevealOverlay);
+    FA := TFadeAnimation.Create(FRevealOverlay, 0.8, 1, 0);
+    FA.OnComplete := @OnRevealComplete;
+    FAnimManager.Add(FA);
+    FA.Start;
+  end;
   if FLobbyClient <> nil then
   begin
     VS := FLobbyClient.ViewSystem;
@@ -144,9 +160,15 @@ end;
 
 destructor TViewLobby.Destroy;
 begin
+  FreeAndNil(FRevealOverlay);
   FreeAndNil(FTransition);
   FreeAndNil(FAnimManager);
   inherited;
+end;
+
+procedure TViewLobby.OnRevealComplete(Sender: TObject);
+begin
+  FRevealOverlay.Exists := False;
 end;
 
 procedure TViewLobby.Update(const SecondsPassed: Single; var HandleInput: boolean);
