@@ -47,6 +47,7 @@ type
     procedure NotifyMotion(const Position: TVector2);
     procedure OnTabPress(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: Boolean);
+    procedure EnsureActiveView;
     function GetOrCreateView(const ATab: TLobbyViewTab): TCastleView;
     property ActiveTab: TLobbyViewTab read FActiveTab write SetActiveTab;
     property View: TObject read FView write SetView;
@@ -301,13 +302,20 @@ begin
   end;
 
   if FActiveView = nil then
-  begin
-    Container := LobbyView.Container;
-    if Container = nil then Exit;
-    TargetView := GetOrCreateView(FActiveTab);
-    Container.PushView(TargetView);
-    FActiveView := TargetView;
-  end;
+    EnsureActiveView;
+end;
+
+procedure TLobbyViewSystem.EnsureActiveView;
+var
+  Container: TCastleContainer;
+  TargetView: TCastleView;
+begin
+  if FActiveView <> nil then Exit;
+  Container := LobbyView.Container;
+  if Container = nil then Exit;
+  TargetView := GetOrCreateView(FActiveTab);
+  Container.PushView(TargetView);
+  FActiveView := TargetView;
 end;
 
 function TLobbyViewSystem.Press(const Event: TInputPressRelease): Boolean;

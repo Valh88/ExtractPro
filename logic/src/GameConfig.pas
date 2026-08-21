@@ -67,7 +67,7 @@ implementation
 
 procedure TGameConfig.Init;
 begin
-  ServerHost := '127.0.0.1';
+  ServerHost := '195.209.214.10';
   AuthPort := AUTH_SERVER_DEFAULT_PORT;
   LobbyPort := LOBBY_SERVER_DEFAULT_PORT;
   GamePort := GAME_SERVER_DEFAULT_PORT;

@@ -37,6 +37,7 @@ type
     procedure Send(const M: TNetMessage; const AChannel: Byte = NET_CH_RELIABLE);
     procedure RequestRoomList;
     procedure RequestJoinRaid(const ARoomId: UInt32);
+    function IsConnected: Boolean;
 
     property AuthToken: string read FAuthToken write FAuthToken;
     property Rpc: TRpcClient read FRpc write FRpc;
@@ -81,6 +82,11 @@ end;
 procedure TLobbyClientNetSystem.Send(const M: TNetMessage; const AChannel: Byte);
 begin
   FClient.Send(M, AChannel);
+end;
+
+function TLobbyClientNetSystem.IsConnected: Boolean;
+begin
+  Result := FClient.State = csConnected;
 end;
 
 procedure TLobbyClientNetSystem.Update(const SecondsPassed: Single);

@@ -43,6 +43,7 @@ type
     function Press(const Event: TInputPressRelease): Boolean; override;
     function Motion(const Event: TInputMotion): Boolean; override;
     procedure SetLobbyClient(const AValue: TLobbyClient);
+    procedure JoinLobby(const AClient: TLobbyClient; const AHost: string; APort: Word);
   private
     type
       TCheckSlot = record
@@ -51,14 +52,14 @@ type
       end;
     var
       FLobbyClient: TLobbyClient;
+      FHost: string;
+      FPort: Word;
       FSpinnerImage: TCastleImageControl;
       FPlayerGroup: TCastleVerticalGroup;
       FCheckPanelBg: TCastleImageControl;
       FCheckSlots: array of TCheckSlot;
       FAnimManager: TAnimationManager;
       FTransition: TViewSwitchTransition;
-      FRevealOverlay: TCastleRectangleControl;
-    procedure OnRevealComplete(Sender: TObject);
     procedure OnMMState(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
     procedure OnReadyCheckUpdate(const Event: TClientGameEvent);
@@ -94,21 +95,10 @@ var
   MM: TClientMatchmakingSystem;
   VP: TViewPlay;
   VS: TLobbyViewSystem;
-  FA: TFadeAnimation;
 begin
   inherited;
-  if FRevealOverlay = nil then
-  begin
-    FRevealOverlay := TCastleRectangleControl.Create(nil);
-    FRevealOverlay.FullSize := True;
-    FRevealOverlay.Color := Vector4(0, 0, 0, 1);
-    FRevealOverlay.Exists := True;
-    InsertFront(FRevealOverlay);
-    FA := TFadeAnimation.Create(FRevealOverlay, 0.8, 1, 0);
-    FA.OnComplete := @OnRevealComplete;
-    FAnimManager.Add(FA);
-    FA.Start;
-  end;
+  if FLobbyClient <> nil then
+    FLobbyClient.NetSystem.Connect(FHost, FPort);
   if FLobbyClient <> nil then
   begin
     VS := FLobbyClient.ViewSystem;
@@ -144,6 +134,7 @@ begin
       MM := FLobbyClient.MatchmakingSystem;
       VP.MatchmakingSystem := MM;
     end;
+    VS.EnsureActiveView;
   end;
 end;
 
@@ -160,15 +151,17 @@ end;
 
 destructor TViewLobby.Destroy;
 begin
-  FreeAndNil(FRevealOverlay);
   FreeAndNil(FTransition);
   FreeAndNil(FAnimManager);
   inherited;
 end;
 
-procedure TViewLobby.OnRevealComplete(Sender: TObject);
+procedure TViewLobby.JoinLobby(const AClient: TLobbyClient; const AHost: string;
+  APort: Word);
 begin
-  FRevealOverlay.Exists := False;
+  FHost := AHost;
+  FPort := APort;
+  SetLobbyClient(AClient);
 end;
 
 procedure TViewLobby.Update(const SecondsPassed: Single; var HandleInput: boolean);

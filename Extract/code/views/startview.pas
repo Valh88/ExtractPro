@@ -37,7 +37,6 @@ type
     procedure DoRegister(Sender: TObject);
     procedure OnLoginResult(Sender: TObject; const Result: TAuthRequestResult);
     procedure OnRegisterResult(Sender: TObject; const Result: TAuthRequestResult);
-    procedure OnLobbyConnected(Sender: TObject);
   end;
 
 var
@@ -118,7 +117,6 @@ begin
 
   FLobbyClient := TLobbyClient.Create;
   FLobbyClient.AuthSystem.OnAuthResult := @OnLoginResult;
-  FLobbyClient.NetSystem.OnConnected := @OnLobbyConnected;
   FLobbyClient.AuthSystem.LoginAsync(Login.Text, Password.Text);
 end;
 
@@ -140,7 +138,9 @@ begin
   begin
     ShowInfo('', 'Connection successful');
     FLobbyClient.NetSystem.AuthToken := Result.Token;
-    FLobbyClient.Connect(GlobalConfig.ServerHost, GlobalConfig.LobbyPort);
+    ViewLobby.JoinLobby(FLobbyClient, GlobalConfig.ServerHost, GlobalConfig.LobbyPort);
+    FLobbyClient := nil;
+    FTransition.Start(Container, Self, ViewLobby, FAnimManager, 0.5, 1.5);
   end
   else
   begin
@@ -161,17 +161,7 @@ begin
   end;
   ShowInfo('', 'Register OK, logging in...');
   FLobbyClient.AuthSystem.OnAuthResult := @OnLoginResult;
-  FLobbyClient.NetSystem.OnConnected := @OnLobbyConnected;
   FLobbyClient.AuthSystem.LoginAsync(Login.Text, Password.Text);
-end;
-
-procedure TViewStartView.OnLobbyConnected(Sender: TObject);
-begin
-  WritelnLog('StartView', 'OnLobbyConnected');
-  FConnecting := False;
-  ViewLobby.SetLobbyClient(FLobbyClient);
-  FLobbyClient := nil;
-  FTransition.Start(Container, Self, ViewLobby, FAnimManager, 0.5, 1.5);
 end;
 
 end.

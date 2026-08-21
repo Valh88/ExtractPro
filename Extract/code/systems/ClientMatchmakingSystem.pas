@@ -19,7 +19,9 @@ type
     FRpc: TRpcClient;
     FState: TMatchmakingState;
     FPendingPartySize: Byte;
+    FPendingTimeout: Single;
     procedure PublishState;
+    procedure EndPending;
     procedure OnPartySizeChanged(const Event: TClientGameEvent);
     procedure OnReadyCheck(const Event: TClientGameEvent);
   public
@@ -73,6 +75,19 @@ end;
 
 procedure TClientMatchmakingSystem.Update(const SecondsPassed: Single);
 begin
+  if FState = msPending then
+  begin
+    FPendingTimeout := FPendingTimeout + SecondsPassed;
+    if FPendingTimeout >= 5.0 then
+      EndPending;
+  end;
+end;
+
+procedure TClientMatchmakingSystem.EndPending;
+begin
+  if FState <> msPending then Exit;
+  FState := msIdle;
+  PublishState;
 end;
 
 procedure TClientMatchmakingSystem.OnPartySizeChanged(const Event: TClientGameEvent);
@@ -99,6 +114,7 @@ var
 begin
   if FState <> msIdle then Exit;
   FState := msPending;
+  FPendingTimeout := 0;
   PublishState;
   SetLength(Payload, 1);
   Payload[0] := FPendingPartySize;
