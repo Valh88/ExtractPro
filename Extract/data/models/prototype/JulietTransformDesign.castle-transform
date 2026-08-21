@@ -14,7 +14,7 @@
         {
           "$$ClassName" : "TCastleScene",
           "Cache" : true,
-          "CastShadows" : false,
+          "CastGlobalLights" : true,
           "ExposeTransforms" : [
           ],
           "Name" : "Model",

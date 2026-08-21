@@ -8,6 +8,8 @@
       "$Children" : [
         {
           "$$ClassName" : "TCastleScene",
+          "Cache" : true,
+          "CastGlobalLights" : true,
           "Exists" : false,
           "ExposeTransforms" : [
           ],
