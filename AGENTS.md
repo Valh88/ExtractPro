@@ -26,6 +26,19 @@ castle-engine compile --compiler-option=-dVISUAL      # окно + физика 
 # Or: lazbuild --bm=VisualDebug physics_headless_test.lpi --ws=none
 ```
 
+### Production Server (remote /opt/extractpro)
+Deploying the dedicated server to a remote VPS (Ubuntu 22.04, 1 vCPU / 1GB RAM / 10GB):
+
+- **Host:** `195.209.214.10`, user `ubuntu`, SSH with a key file.
+- **Install path:** `/opt/extractpro/` — `ExtractProServer` + `data/` + `server.db`/`8081.db`.
+- **systemd service:** `extractpro.service` (`Type=simple`, `User=ubuntu`, `WorkingDirectory=/opt/extractpro`, `Restart=on-failure`).
+- **Run with auth required:** `ExecStart=/opt/extractpro/ExtractProServer --port=7777 --lobby-port=7776 --max-players=8 --require-auth`.
+- **Ports (ufw):** `7776:7901`/tcp+udp (lobby + game matches), `8081`/tcp (auth HTTP), `22`/tcp (SSH).
+
+Updating the server: build locally (`cd headless_app && castle-engine compile`), `systemctl stop extractpro`, replace the binary + `data/`, `daemon-reload && start`, then check `journalctl -u extractpro`.
+
+**Client → ServerHost:** before building the client, the server address is set in `logic/src/GameConfig.pas` (`ServerHost`). Use `'195.209.214.10'` to connect to the remote server, `'127.0.0.1'` for local.
+
 ### Logic Package (logic/)
 ```bash
 cd logic
