@@ -95,6 +95,8 @@ var
   MM: TClientMatchmakingSystem;
   VP: TViewPlay;
   VS: TLobbyViewSystem;
+  DummyPress: TInputPressRelease;
+  DummyHandle: Boolean;
 begin
   inherited;
   if FLobbyClient <> nil then
@@ -135,6 +137,10 @@ begin
       VP.MatchmakingSystem := MM;
     end;
     VS.EnsureActiveView;
+    DummyHandle := False;
+    FillChar(DummyPress, SizeOf(DummyPress), 0);
+    if TabPlay <> nil then
+      VS.OnTabPress(TabPlay, DummyPress, DummyHandle);
   end;
 end;
 

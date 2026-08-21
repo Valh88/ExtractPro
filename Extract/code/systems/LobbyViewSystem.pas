@@ -92,7 +92,7 @@ begin
   FViewInventory := nil;
   FViewMarket := nil;
   FActiveView := nil;
-  FActiveTab := lvtPlay;
+  FActiveTab := lvtInventory;
   FTransition := TViewTransitionManager.Create;
   FTransition.OnCompleted := @TransitionCompleted;
   FTabIndicator := TCastleRectangleControl.Create(nil);
